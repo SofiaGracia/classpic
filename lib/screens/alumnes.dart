@@ -1,12 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:xml_fotos/screens/widgets/custom_buttom.dart';
 import '../models/alumne.dart';
-import '../models/grup.dart';
 import '../repository/alumnes.dart';
 
 class AlumnesScreen extends StatefulWidget {
-  final Grup grup;
+  final String grup;
 
   const AlumnesScreen({super.key, required this.grup});
 
@@ -15,49 +13,47 @@ class AlumnesScreen extends StatefulWidget {
 }
 
 class _AlumnesScreenState extends State<AlumnesScreen> {
-  late Future<List<Alumne>> alumnesFuture; // Corregit tipus de la variable
+  late Future<List<Alumne>> alumnesFuture;
 
   @override
   void initState() {
     super.initState();
-    // Cridem la funció asíncrona en initState
-    alumnesFuture = obtindreAlumnesClasse(); // Assignem el futur aquí
+    alumnesFuture = _carregarAlumnes(); // Assignem el Future al alumnesFuture
   }
 
-  // La funció que carrega els alumnes
-  Future<List<Alumne>> obtindreAlumnesClasse() async {
-    return await RepositoryAlumnesXML.carregaAlumnesSegonsClasse(widget.grup.toString());
+  // Funció asíncrona per carregar els alumnes
+  Future<List<Alumne>> _carregarAlumnes() async {
+    return await RepositoryAlumnesXML.carregaAlumnesSegonsClasse(widget.grup);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.grup.nom_complet)),
+      appBar: AppBar(title: Text(widget.grup)),
       body: FutureBuilder<List<Alumne>>(
-        future: alumnesFuture,
+        future: alumnesFuture, // Utilitzem el Future assignat a alumnesFuture
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // Quan està carregant, mostrem un indicador de progrés
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             // Si hi ha un error, mostrem un missatge d'error
             return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            // Si tenim dades, les mostrem en una llista
-            List<Alumne> alumnes = snapshot.data!;
-            return ListView.builder(
-              itemCount: alumnes.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(alumnes[index].nom),
-                  trailing: CustomButtom(alumne:alumnes[index]),
-                );
-              },
-            );
-          } else {
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             // Si no tenim dades, mostrem un missatge indicant que no hi ha alumnes
-            return Center(child: Text('No s\'han trobat alumnes'));
+            return const Center(child: Text('No s\'han trobat alumnes'));
           }
+
+          List<Alumne> alumnes = snapshot.data!;
+          return ListView.builder(
+            itemCount: alumnes.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(alumnes[index].nom),
+                trailing: CustomButtom(alumne: alumnes[index]),
+              );
+            },
+          );
         },
       ),
     );

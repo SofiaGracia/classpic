@@ -19,10 +19,11 @@ class RepositoryAlumnesXML {
       for (final student in students) {
         final nomStudent = student.getAttribute('nombre');
         final grupStudent = student.getAttribute('grupo');
-        if (grupStudent != null && nomStudent != null) {
+        final niaStudent = student.getAttribute('NIA');
+        if (grupStudent != null && nomStudent != null && niaStudent != null) {
           if(grupStudent == classe){
             //Comparar ací si el nom del grup es del mateix que volem posar
-            alumnes.add(Alumne(nom: nomStudent, grup: grupStudent ));
+            alumnes.add(Alumne(nia:niaStudent,nom: nomStudent, grup: grupStudent ));
           }
         }
       }
