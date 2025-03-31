@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<centro codigo="46008340" denominacion="IES JAUME II EL JUST" curso="2024" fechaExportacion="20/03/2025 13:32:18" version="1.0">
+    <alumnos>
+        <alumno NIA="60104850" nombre="Martí" apellido1="Costa" apellido2="Moreno" fecha_nac="04/10/2000" municipio_nac="" municipio_nac_ext="" provincia_nac="" pais_nac="" nacionalidad="" sexo="" tipo_doc="" documento="" expediente="" libro_escolaridad="" cod_postal="" tipo_via="" domicilio="" numero="" puerta="" escalera="" letra="" piso="" provincia="" municipio="" localidad="" telefono1="" telefono2="" telefono3="" email1="" email2="" sip="" nuss="" observaciones="" ampa="" seguro="" fecha_matricula="" fecha_ingreso_centro="" estado_matricula="" tipo_matricula="" repite="" num_repeticion="" ensenanza="" curso="" grupo=" " turno="" linea="" trabaja="" fuera_comunidad="" matricula_parcial="" matricula_condic="" informe_medico="" banco="" sucursal="" digito_control="" cuenta="" modalidad="" iban=""/>
+    </alumnos>
+</centro>

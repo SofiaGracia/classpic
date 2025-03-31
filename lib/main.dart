@@ -2,18 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:xml_fotos/providers/info_xml.dart';
-import 'package:xml_fotos/screens/explore_cicles.dart';
-import 'package:xml_fotos/providers/carpeta.dart';
+import 'package:xml_fotos/screens/cicles.dart';
+import 'package:xml_fotos/utils/carpeta.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => InfoXMLProvider()),
-        ChangeNotifierProvider(create: (_) => CarpetaProvider()),
-      ],
+    ChangeNotifierProvider<InfoXMLProvider>(
+      create: (context) => InfoXMLProvider(),
       child: MyApp(),
     ),
   );
@@ -27,6 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         useMaterial3: true,

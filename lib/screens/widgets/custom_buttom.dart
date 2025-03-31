@@ -2,12 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../models/alumne.dart';
-import '../../models/carpeta.dart';
-import '../../providers/carpeta.dart';
-import '../../utils/carpeta_manager.dart';
+import '../../utils/camera.dart';
+import '../../utils/carpeta.dart';
 
 class CustomButtom extends StatelessWidget {
 
@@ -15,23 +13,12 @@ class CustomButtom extends StatelessWidget {
 
   const CustomButtom({super.key, required this.alumne});
 
-  //La funció en sí
-  Future<void> crearIEscriureArxiu(BuildContext context) async {
+  Future<void> crearIEscriureArxiu() async {
 
     String grup = alumne.grup;
-    Map <String, String> valorsCurs = CarpetaManager.obtindreValorsCurs(grup);
+    String? path = GestorCarpetes.obtenirPathCarpeta(grup);
 
-    String? curs = valorsCurs['cicle'];
-    String? modalitat = valorsCurs['modalitat'];
-    String? num = valorsCurs['num'];
-
-    var carpetaProvider = Provider.of<CarpetaProvider>(context, listen: false);
-
-    Carpeta? carpeta_alumne = carpetaProvider.obtenirCarpeta(curs!, modalitat!, num!);
-
-    String path = carpeta_alumne!.path;
-
-    String fitxerPath = '$path/${alumne.nom}.txt';
+    String fitxerPath = '$path/${alumne.nom}_${alumne.nia}.txt';
     final fitxer = File(fitxerPath);
 
     String contingut = 'Hola alumne ${alumne.nom}';
@@ -50,8 +37,12 @@ class CustomButtom extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-
-        crearIEscriureArxiu(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CameraPage(alumne: alumne,),
+          ),
+        );
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.orange,
@@ -61,7 +52,7 @@ class CustomButtom extends StatelessWidget {
         ),
       ),
       child: Text(
-        'Guardar fitxer',
+        'Foto',
         style: TextStyle(
           color: Colors.white,
           fontSize: 16,
