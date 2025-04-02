@@ -40,6 +40,7 @@ dependencies:
   camerawesome: ^2.3.0
   permission_handler: ^10.2.0
   image_picker: ^0.8.5+3
+  intl: ^0.20.2
 
 
 dev_dependencies:
