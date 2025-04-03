@@ -3,22 +3,42 @@ import 'package:flutter/material.dart';
 import 'package:xml_fotos/screens/cicles.dart';
 import 'package:xml_fotos/screens/import.dart';
 
-class SessioWidget extends StatefulWidget {
-  final String? nomSessio;
+import '../../models/sessio.dart';
+import '../../repository/sessio.dart';
 
-  const SessioWidget({super.key, required this.nomSessio});
+class SessioWidget extends StatefulWidget {
+
+  final Function(Sessio sessio) onSessioDeleted;
+  final Sessio sessio;
+
+  const SessioWidget({super.key, required this.sessio, required this.onSessioDeleted});
 
   @override
   State<SessioWidget> createState() => _SessioWidgetState();
 }
 
 class _SessioWidgetState extends State<SessioWidget> {
+
+  SessioRepository sessioRepository = SessioRepository();
+
   @override
   Widget build(BuildContext context) {
-    return buildCard(context, widget.nomSessio);
+    return buildCard(context, widget.sessio);
   }
 
-  Widget buildCard(BuildContext context, String? nomSessio) {
+  void actualitzarSessio(Sessio sessio, String nomFitxerXmlTrobat){
+    setState(() {
+      sessio.nomFitxerXml = nomFitxerXmlTrobat;
+    });
+    //Despres d'açò el que vull és que pose a l'arxiu .json en nom el nom de l'arxiu
+    sessioRepository.guardarMetadades(sessio);
+  }
+
+  void saludar(){
+    debugPrint('Hola');
+  }
+
+  Widget buildCard(BuildContext context, Sessio sessio) {
     return Container(
       margin: const EdgeInsets.all(7),
       child: InkWell(
@@ -27,7 +47,7 @@ class _SessioWidgetState extends State<SessioWidget> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => nomSessio == null? ImportScreen(): CiclesScreen(),
+              builder: (context) => sessio.nomFitxerXml == null? ImportScreen(sessio: sessio, onFileFound: actualitzarSessio,): CiclesScreen(),
             ),
           );
         },
@@ -38,7 +58,7 @@ class _SessioWidgetState extends State<SessioWidget> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: Padding(
@@ -47,11 +67,22 @@ class _SessioWidgetState extends State<SessioWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.nomSessio ?? 'BUIT',
+                        'DATA: ${sessio.dataString}',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Text(
+                        'Fitxer xml: ${sessio.nomFitxerXml ?? 'BUIT'}',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ],
                   ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: IconButton(
+                  onPressed: () => widget.onSessioDeleted(sessio),
+                  icon: const Icon(Icons.delete, color: Colors.grey),
                 ),
               ),
             ],

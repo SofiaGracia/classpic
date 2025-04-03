@@ -47,6 +47,13 @@ class _SessioScreenState extends State<SessioScreen> {
     });
   }
 
+  void _borrarSessio(Sessio sessio) async {
+    await _sessioRepository.borrarSessio(sessio);
+
+    setState(() {
+      _sessioList.remove(sessio);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +76,10 @@ class _SessioScreenState extends State<SessioScreen> {
               padding: const EdgeInsets.all(16),
               itemCount: _sessioList.length,
               itemBuilder: (context, index) {
-                return SessioWidget(nomSessio: _sessioList[index].nomFitxerXml);
+                return SessioWidget(
+                  sessio: _sessioList[index],
+                  onSessioDeleted: _borrarSessio,
+                );
               },
             ),
           ),
