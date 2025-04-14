@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:xml_fotos/screens/cicles.dart';
+import 'package:xml_fotos/screens/cicles_vell.dart';
 import 'package:xml_fotos/screens/import.dart';
 
 import '../../models/sessio.dart';
 import '../../repository/sessio.dart';
+import '../cicles.dart';
 
 class SessioWidget extends StatefulWidget {
 
@@ -19,7 +20,7 @@ class SessioWidget extends StatefulWidget {
 
 class _SessioWidgetState extends State<SessioWidget> {
 
-  SessioRepository sessioRepository = SessioRepository();
+  SessioRepository sessioRepository = SessioRepository.defaultRepo();
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +28,13 @@ class _SessioWidgetState extends State<SessioWidget> {
   }
 
   void actualitzarSessio(Sessio sessio, String nomFitxerXmlTrobat){
-    setState(() {
+    /*setState(() {
       sessio.nomFitxerXml = nomFitxerXmlTrobat;
     });
-    //Despres d'açò el que vull és que pose a l'arxiu .json en nom el nom de l'arxiu
-    sessioRepository.guardarMetadades(sessio);
-  }
-
-  void saludar(){
-    debugPrint('Hola');
+    sessioRepository.guardarMetadades(sessio);*/
+    setState(() {
+      sessioRepository.guardarMetadades(sessio, nomFitxerXmlTrobat);
+    });
   }
 
   Widget buildCard(BuildContext context, Sessio sessio) {

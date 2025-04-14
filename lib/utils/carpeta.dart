@@ -13,6 +13,7 @@ class GestorCarpetes {
     return null;
   }
 
+  //Açò hi ha que canviar-ho pq ara tenim sessions
   static Future<void> inicialitzarCarpetes(List<String> cursos) async {
 
     final directory = await getExternalStorageDirectory();

@@ -1,32 +1,34 @@
+// lib/screens/cicles.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xml_fotos/providers/info_xml.dart';
-
-import 'alumnes.dart';
+import '../repository/interfaces/icursos.dart';
 
 class CiclesScreen extends StatelessWidget {
-  CiclesScreen({super.key});
+  const CiclesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var infoXMLProvider = Provider.of<InfoXMLProvider>(context);
-    List<String> cursos = infoXMLProvider.obtindreCursos();
+    final repo = context.read<IRepositoryCursos>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Cursos')),
-      body: cursos.isEmpty
-          ? const Center(child: CircularProgressIndicator()) // Indicador de càrrega mentre es carreguen les dades
-          : ListView.builder(
-        itemCount: cursos.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(cursos[index]),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AlumnesScreen(grup: cursos[index]),
-                ),
+      appBar: AppBar(title: const Text('Selecciona un cicle')),
+      body: FutureBuilder<List<dynamic>>(
+        future: repo.carregaInfo(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No s’han trobat cicles.'));
+          }
+
+          final cursos = snapshot.data!;
+          return ListView.builder(
+            itemCount: cursos.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(cursos[index]),
               );
             },
           );

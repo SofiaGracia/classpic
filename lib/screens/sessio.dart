@@ -3,26 +3,27 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:xml_fotos/repository/sessio.dart';
-import 'package:xml_fotos/screens/cicles.dart';
 import 'package:xml_fotos/screens/widgets/sessio.dart';
 
 import '../models/sessio.dart';
-import 'import.dart';
 
 class SessioScreen extends StatefulWidget {
-  const SessioScreen({super.key});
+  final SessioRepository? repository;
+
+  const SessioScreen({super.key, this.repository});
 
   @override
   State<SessioScreen> createState() => _SessioScreenState();
 }
 
 class _SessioScreenState extends State<SessioScreen> {
-  final SessioRepository _sessioRepository = SessioRepository();
+  late final SessioRepository _sessioRepository;
   List<Sessio> _sessioList = [];
 
   @override
   void initState() {
     super.initState();
+    _sessioRepository = widget.repository ?? SessioRepository.defaultRepo();
     _loadSessioList();
   }
 
@@ -31,10 +32,6 @@ class _SessioScreenState extends State<SessioScreen> {
     setState(() {
       _sessioList = sessiolist;
     });
-  }
-
-  void saludar(){
-    debugPrint('Hola');
   }
 
   void _crearSessio() async {
