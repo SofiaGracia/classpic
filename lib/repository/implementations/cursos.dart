@@ -1,10 +1,12 @@
 
 import 'package:xml/xml.dart';
 
-import 'info_xml.dart';
+import '../interfaces/icursos.dart';
+import '../info_xml.dart';
 
-class RepositoryCursos {
-  static Future<dynamic> carregaInfo() async {
+class RepositoryCursos  implements IRepositoryCursos {
+  @override
+  Future<List> carregaInfo() async {
     XmlDocument document = await RepositoryInfoXML.carregaXML() as XmlDocument;
 
     final alumnosNode = document

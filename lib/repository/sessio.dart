@@ -1,106 +1,171 @@
-
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-
 import '../models/sessio.dart';
+import '../utils/errorhandler.dart';
+import '../utils/exceptions.dart';
+
+typedef JsonReader = Future<Map<String, dynamic>> Function(String path);
+typedef JsonWriter = Future<void> Function(
+    String path, Map<String, dynamic> data);
 
 class SessioRepository {
-  List<String> _sessioPathList = [];
+  final Future<Directory?> Function() getStorageDir;
+  final JsonReader readJson;
+  final JsonWriter _writeJson;
+
   String? _basePath;
 
-  //Anem a tindre una llista de sessions
-  List<Sessio> _sessioList = [];
+  SessioRepository(
+    this.getStorageDir,
+    this.readJson,
+    this._writeJson,
+  );
 
-  SessioRepository._();
+  // Constructor per a producció
+  factory SessioRepository.defaultRepo() {
+    return SessioRepository(
+      getExternalStorageDirectory,
+      (path) async {
+        final jsonString = await File(path).readAsString();
+        return jsonDecode(jsonString);
+      },
+      (path, data) async {
+        final file = File(path);
+        await file.writeAsString(jsonEncode(data));
+      },
+    );
+  }
 
-  static final SessioRepository _instance = SessioRepository._();
+  Future<String> _getOrInitBasePath() async {
+    try {
+      if (_basePath != null) return _basePath!;
 
-  factory SessioRepository() {
-    return _instance;
+      final directory = await getStorageDir();
+      _basePath = directory?.path ?? "/storage/emulated/0/MyApp";
+
+      return _basePath!;
+    } catch (e) {
+      final errorMessage = ErrorHandler.mapErrorToMessage(e);
+      debugPrint(errorMessage);
+      return "/storage/emulated/0/MyApp";  // Valor per defecte
+    }
+  }
+
+  Future<Sessio?> _readMetadataFile(String path) async {
+    try{
+      final jsonData = await readJson(path);
+      final sessio = Sessio.fromJson(jsonData, path, path);
+      return sessio;
+    } catch (e){
+      final errorMessage = ErrorHandler.mapErrorToMessage(e);
+      debugPrint(errorMessage);
+    }
+    return null;
+  }
+
+  //Fer este mètode privat?
+  Future<void> writeJsonSafely(String path, Map<String, dynamic> data) async {
+    try {
+      await _writeJson(path, data);
+    }  catch (e){
+      final errorMessage = ErrorHandler.mapErrorToMessage(e);
+      debugPrint(errorMessage);
+    }
   }
 
   Future<List<Sessio>> loadListSession() async {
+    List<Sessio> sessioList = [];
+    try {
+      final basePath = await _getOrInitBasePath();
+      final baseDir = Directory(basePath);
 
-    final directory = await getExternalStorageDirectory();
-    _basePath = directory?.path ?? "/storage/emulated/0/MyApp";
-    final baseDir = Directory(_basePath!);
+      if (!await baseDir.exists()) {
+        await baseDir.create(recursive: true);
+      } else {
+        try {
+          final entities = baseDir.listSync();
+          for (var entity in entities) {
+            if (entity is Directory) {
+              final metadataPath = '${entity.path}/metadata.json';
 
-    if (!await baseDir.exists()) {
-      await baseDir.create(recursive: true);
-    } else {
-      try {
-        List<FileSystemEntity> entities = baseDir.listSync(); // Llista tots els fitxers/directoris
-
-        for (var entity in entities) {
-          if (entity is Directory) {
-            _sessioPathList.add(entity.path); // Afegim el nom del directori a la llista
-            String metadataPath = '${entity.path}/metadata.json';
-            File metadataFile = File(metadataPath);
-
-            if (await metadataFile.exists()) {
-              try {
-                String jsonString = await metadataFile.readAsString();
-                Map<String, dynamic> jsonData = jsonDecode(jsonString);
-
-                Sessio sessio = Sessio.fromJson(jsonData, metadataPath, entity.path);
-                if (sessio.dataString != null){
-                  _sessioList.add(sessio);
+              if (await File(metadataPath).exists()) {
+                final sessio = await _readMetadataFile(metadataPath);
+                if (sessio != null) { // Comprova si la sessió és vàlida
+                  sessioList.add(sessio); // Afegeix a la llista
                 }
-
-              } catch (e) {
-                print('Error al llegir el fitxer JSON a ${entity.path}: $e');
               }
             }
           }
+        } catch (e) {
+          debugPrint('Error al llistar directoris: $e');
         }
-
-      } catch (e) {
-        print('Error al llistar directoris: $e');
       }
+    } catch (e){
+      final errorMessage = ErrorHandler.mapErrorToMessage(e);
+      debugPrint(errorMessage);
     }
 
-    return _sessioList; // Ha d'estar fora del try-catch-finally
+    return sessioList;
   }
 
   Future<Sessio> crearSessio() async {
+    try {
+      final basePath = await _getOrInitBasePath();
 
-    DateTime dataSessio = DateTime.now();
-    final dataString = DateFormat('yyyy-MM-dd_HH-mm-ss').format(dataSessio);
-    final sessioDir = Directory('$_basePath/$dataString');
+      final dataString = DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now());
 
-    if (!await sessioDir.exists()) {
-      await sessioDir.create(recursive: true);
+      final metadades = {
+        'data': dataString,
+        'nom': null,
+      };
+
+      final sessioDir = Directory('$basePath/$dataString');
+
+      // Intentar crear el directori
+      if (!await sessioDir.exists()) {
+        await sessioDir.create(recursive: true);
+      }
+
+      final metadataPath = '${sessioDir.path}/metadata.json';
+
+      // Crear una instància de Sessio a partir del dataString
+      final sessio = Sessio.fromDataString(dataString,
+          pathJson: metadataPath, dirPath: sessioDir.path);
+
+      // Intentar escriure les metadades al fitxer JSON
+      await writeJsonSafely(metadataPath, metadades);
+
+      return sessio;
+
+    } catch (e){
+      final errorMessage = ErrorHandler.mapErrorToMessage(e);
+      debugPrint(errorMessage);
+      rethrow;
     }
-
-    final metadataFile = File('${sessioDir.path}/metadata.json');
-
-    Sessio sessio = Sessio(
-      data: dataSessio,
-      pathJson: metadataFile.path,
-      dirPath: sessioDir.path
-    );
-
-    final metadata = {
-      'nom': sessio.nomFitxerXml,
-      'data': sessio.dataString,
-    };
-
-    await metadataFile.writeAsString(jsonEncode(metadata));
-
-    return sessio;
   }
 
-  Future<void> guardarMetadades(Sessio sessio) async {
-    final jsonData = {
-      'nom': sessio.nomFitxerXml,
-      'data': sessio.dataString,
-    };
+  Future<void> guardarMetadades(Sessio sessio, String nomFitxerXmlTrobat) async {
 
-    final file = File(sessio.pathJson);
-    await file.writeAsString(jsonEncode(jsonData));
+    try {
+      final s = await _readMetadataFile(sessio.pathJson);
+
+      if (s != null) {
+        var data = {
+          "nom": nomFitxerXmlTrobat,
+          "data": s.dataString,
+        };
+        await writeJsonSafely(s.pathJson, data);
+      } else {
+        debugPrint('Error al llegir les metadades de la sessió');
+      }
+    } catch (e) {
+      final errorMessage = ErrorHandler.mapErrorToMessage(e);
+      debugPrint(errorMessage);
+    }
   }
 
   Future<void> borrarSessio(Sessio sessio) async {
@@ -109,14 +174,13 @@ class SessioRepository {
 
       if (await sessioDir.exists()) {
         await sessioDir.delete(recursive: true);
-        _sessioList.remove(sessio);
-        _sessioPathList.remove(sessio.dirPath);
         print("Sessió eliminada correctament: ${sessio.dirPath}");
       } else {
         print("No s'ha trobat el directori de la sessió: ${sessio.dirPath}");
       }
-    } catch (e) {
-      print("Error en eliminar la sessió: $e");
+    } catch (e){
+      final errorMessage = ErrorHandler.mapErrorToMessage(e);
+      debugPrint(errorMessage);
     }
   }
 }

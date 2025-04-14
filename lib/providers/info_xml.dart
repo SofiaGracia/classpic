@@ -1,8 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:xml_fotos/utils/carpeta.dart';
-import '../repository/cursos.dart';
+import '../repository/implementations/cursos.dart';
 
+/*
 class InfoXMLProvider with ChangeNotifier {
 
   late var cursos = <String>[];
@@ -20,4 +21,4 @@ class InfoXMLProvider with ChangeNotifier {
   List<String> obtindreCursos() {
     return cursos;
   }
-}
+}*/
