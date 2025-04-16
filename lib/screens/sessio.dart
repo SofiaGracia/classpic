@@ -19,6 +19,7 @@ class SessioScreen extends StatefulWidget {
 class _SessioScreenState extends State<SessioScreen> {
   late final SessioRepository _sessioRepository;
   List<Sessio> _sessioList = [];
+  String? errorMessage;
 
   @override
   void initState() {
@@ -27,36 +28,65 @@ class _SessioScreenState extends State<SessioScreen> {
     _loadSessioList();
   }
 
+  void mostrarErrorSnackBar(String missatgeError) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(missatgeError),
+        backgroundColor: Colors.red, // Color del fons de l'SnackBar
+      ),
+    );
+  }
+
   void _loadSessioList() async {
-    final sessiolist = await _sessioRepository.loadListSession();
-    setState(() {
-      _sessioList = sessiolist;
-    });
+    try {
+      final sessiolist = await _sessioRepository.loadListSession();
+      setState(() {
+        _sessioList = sessiolist;
+      });
+    } catch (e) {
+      mostrarErrorSnackBar('Error al carregar les sessions: $e');
+    }
   }
 
   void _crearSessio() async {
-    // Crear la nova sessió
-    Sessio novaSessio = await _sessioRepository.crearSessio();
+    try {
+      // Crear la nova sessió
+      Sessio novaSessio = await _sessioRepository.crearSessio();
 
-    // Afegir-la a la llista i actualitzar la UI
-    setState(() {
-      _sessioList.add(novaSessio);
-    });
+      // Afegir-la a la llista i actualitzar la UI
+      setState(() {
+        _sessioList.add(novaSessio);
+      });
+
+      //throw Exception('Error al carregar la sessió');
+
+    } catch (e) {
+      mostrarErrorSnackBar('Error al crear la sessió: $e');
+    }
   }
 
   void _borrarSessio(Sessio sessio) async {
-    await _sessioRepository.borrarSessio(sessio);
+    try {
+      // Crear la nova sessió
+      await _sessioRepository.borrarSessio(sessio);
 
-    setState(() {
-      _sessioList.remove(sessio);
-    });
+      // Afegir-la a la llista i actualitzar la UI
+      setState(() {
+        _sessioList.remove(sessio);
+      });
+    } catch (e) {
+      mostrarErrorSnackBar('Error al eliminar la sessió: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sessions de treball', style: Theme.of(context).textTheme.titleLarge,),
+        title: Text(
+          'Sessions de treball',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
       ),
       body: Stack(
         children: [
@@ -64,21 +94,21 @@ class _SessioScreenState extends State<SessioScreen> {
             padding: const EdgeInsets.only(bottom: 150),
             child: _sessioList.isEmpty
                 ? Center(
-              child: Text(
-                "No hi ha cap sessió disponible",
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            )
+                    child: Text(
+                      "No hi ha cap sessió disponible",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  )
                 : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _sessioList.length,
-              itemBuilder: (context, index) {
-                return SessioWidget(
-                  sessio: _sessioList[index],
-                  onSessioDeleted: _borrarSessio,
-                );
-              },
-            ),
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _sessioList.length,
+                    itemBuilder: (context, index) {
+                      return SessioWidget(
+                        sessio: _sessioList[index],
+                        onSessioDeleted: _borrarSessio,
+                      );
+                    },
+                  ),
           ),
           Positioned(
             bottom: 0,

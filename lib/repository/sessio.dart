@@ -101,12 +101,13 @@ class SessioRepository {
             }
           }
         } catch (e) {
-          debugPrint('Error al llistar directoris: $e');
+          throw Exception('Error al llistar directoris: $e');
         }
       }
     } catch (e){
-      final errorMessage = ErrorHandler.mapErrorToMessage(e);
-      debugPrint(errorMessage);
+      throw Exception('Error al carregar la llista de sessions: $e');
+      //final errorMessage = ErrorHandler.mapErrorToMessage(e);
+      //debugPrint(errorMessage);
     }
 
     return sessioList;
@@ -142,9 +143,10 @@ class SessioRepository {
       return sessio;
 
     } catch (e){
-      final errorMessage = ErrorHandler.mapErrorToMessage(e);
-      debugPrint(errorMessage);
-      rethrow;
+      throw Exception('Error al crear una nova sessio: $e');
+      //final errorMessage = ErrorHandler.mapErrorToMessage(e);
+      //debugPrint(errorMessage);
+      //rethrow;
     }
   }
 
@@ -163,8 +165,9 @@ class SessioRepository {
         debugPrint('Error al llegir les metadades de la sessió');
       }
     } catch (e) {
-      final errorMessage = ErrorHandler.mapErrorToMessage(e);
-      debugPrint(errorMessage);
+      throw Exception('Error al llegir el fitxer de metadata: $e');
+      //final errorMessage = ErrorHandler.mapErrorToMessage(e);
+      //debugPrint(errorMessage);
     }
   }
 
@@ -179,8 +182,9 @@ class SessioRepository {
         print("No s'ha trobat el directori de la sessió: ${sessio.dirPath}");
       }
     } catch (e){
-      final errorMessage = ErrorHandler.mapErrorToMessage(e);
-      debugPrint(errorMessage);
+      throw Exception('Error al eliminar sessio: $e');
+      //final errorMessage = ErrorHandler.mapErrorToMessage(e);
+      //debugPrint(errorMessage);
     }
   }
 }
