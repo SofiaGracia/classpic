@@ -1,1 +1,0 @@
-//Ací anirà el codi per a obtindre el xml mitjançant http?
