@@ -2,7 +2,7 @@
 import 'package:provider/provider.dart';
 import 'package:xml_fotos/providers/info_xml.dart';
 
-import 'alumnes.dart';
+import 'usuaris.dart';
 
 class CiclesScreenVell extends StatelessWidget {
   CiclesScreenVell({super.key});

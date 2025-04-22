@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:xml_fotos/screens/widgets/custom_buttom.dart';
 import '../models/alumne.dart';
-import '../repository/alumnes.dart';
+import '../repository/usuaris.dart';
 
 class AlumnesScreen extends StatefulWidget {
   final String grup;
@@ -58,4 +58,4 @@ class _AlumnesScreenState extends State<AlumnesScreen> {
       ),
     );
   }
-}
+}*/

@@ -1,14 +1,14 @@
 // lib/screens/cicles.dart
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../repository/interfaces/icursos.dart';
+import '../repository/interfaces/ixml.dart';
 
 class CiclesScreen extends StatelessWidget {
   const CiclesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final repo = context.read<IRepositoryCursos>();
+    final repo = context.read<IRepositoryXml>();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Selecciona un cicle')),
@@ -37,3 +37,4 @@ class CiclesScreen extends StatelessWidget {
     );
   }
 }
+*/

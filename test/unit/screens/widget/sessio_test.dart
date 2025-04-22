@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:xml_fotos/models/sessio.dart';
 import 'package:xml_fotos/providers/info_xml.dart';
-import 'package:xml_fotos/repository/interfaces/icursos.dart';
+import 'package:xml_fotos/repository/interfaces/ixml.dart';
 import 'package:xml_fotos/screens/cicles.dart';
 import 'package:xml_fotos/screens/cicles_vell.dart';
 import 'package:xml_fotos/screens/import.dart';

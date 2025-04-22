@@ -1,26 +1,20 @@
 import 'package:floor/floor.dart';
 import 'package:xml_fotos/models/persona.dart';
 
-@Entity(tableName: 'alumnes')
-class Alumne extends PersonaBase {
-
-  static const String estatMatriculat = 'M';
+@Entity(tableName: 'professors')
+class Professor extends PersonaBase {
 
   @PrimaryKey(autoGenerate: true)
   final int? id;
 
-  //@ColumnInfo(name: 'nia', unique: true)
-  final String nia;
+  final String dni;
 
-  final String? grup;
-
-  Alumne({
+  Professor({
     this.id,
-    required this.nia,
+    required this.dni,
     required String nom,
     required String c1,
     String? c2,
-    this.grup,
-    String? fotoPath
+    String? fotoPath,
   }) : super(nom: nom, c1: c1, c2: c2, fotoPath: fotoPath);
 }

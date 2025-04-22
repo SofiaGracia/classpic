@@ -1,4 +1,4 @@
-import 'dart:io';
+/*import 'dart:io';
 
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:camerawesome/pigeon.dart';
@@ -122,4 +122,4 @@ class CameraPage extends StatelessWidget {
       ),
     );
   }
-}
+}*/

@@ -1,4 +1,4 @@
-import 'package:xml/xml.dart';
+/*import 'package:xml/xml.dart';
 
 import '../models/alumne.dart';
 import 'info_xml.dart';
@@ -34,4 +34,4 @@ class RepositoryAlumnesXML {
       print('Excepció: $e');
     }
   }
-}
+}*/

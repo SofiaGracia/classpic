@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:xml_fotos/utils/carpeta.dart';
-import '../repository/implementations/cursos.dart';
+import '../repository/implementations/xml.dart';
 
 /*
 class InfoXMLProvider with ChangeNotifier {
