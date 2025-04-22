@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+/*import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:xml_fotos/screens/cicles_vell.dart';
 import 'package:xml_fotos/screens/import.dart';
@@ -90,4 +90,4 @@ class _SessioWidgetState extends State<SessioWidget> {
       ),
     );
   }
-}
+}*/
