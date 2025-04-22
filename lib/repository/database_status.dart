@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:xml_fotos/database/database.dart';
+import 'package:xml_fotos/models/persona.dart';
 
 import '../database/dao/alumne_dao.dart';
 import '../database/dao/professor_dao.dart';
@@ -49,17 +51,11 @@ class DBStatusRepository {
     };
   }
 
-  //Esta funció ja no la gaste
-  /*Future<bool> databaseHasData(Taula taula) async {
-    int? count = 0;
-    switch (taula) {
-      case Taula.alumnes:
-        count = await _alumneDao.countAlumnes();
-        break;
-      case Taula.professors:
-        count = await _professorDao.countProfessors();
-        break;
-    }
-    return count! > 0;
-  }*/
+  Future<void> eliminarUsuari(PersonaBase usuari) async {
+    debugPrint('Has pres eliminarUsuari');
+  }
+
+  Future<void> editarUsuari(PersonaBase usuari) async {
+    debugPrint('Has pres editarUsuari');
+  }
 }

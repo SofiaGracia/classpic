@@ -8,6 +8,7 @@ import 'package:xml_fotos/screens/widgets/status_button.dart';
 import '../models/alumne.dart';
 import '../models/professor.dart';
 import '../providers/usuaris.dart';
+import 'llista_usuaris.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -105,14 +106,24 @@ class _MenuScreenState extends State<MenuScreen> {
                 text: 'Alumnes',
                 carregat: llistaAlumesCarregada,
                 onPressed: () {
-                  debugPrint('Has premut Alumnes');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LlistaUsuaris(tipus: 'alumnes',),
+                    ),
+                  );
                 },
               ),
               StatusButton(
                 text: 'Professors',
                 carregat: llistaProfesCarregada,
                 onPressed: () {
-                  debugPrint('Has premut Professors');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LlistaUsuaris(tipus: 'professors'),
+                    ),
+                  );
                 },
               ),
               const SizedBox(height: 16),
