@@ -10,9 +10,9 @@ class Alumne extends Usuari {
   final int? id;
 
   //@ColumnInfo(name: 'nia', unique: true)
-  final String nia;
+  String nia;
 
-  final String? grup;
+  String? grup;
 
   Alumne({
     this.id,

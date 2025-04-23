@@ -47,7 +47,15 @@ class UsuarisProvider extends ChangeNotifier {
 
   Future<void> editarUsuari(dynamic usuari) async {
     // Aquí pots fer la lògica de substitució, validació, etc.
-    await _repo.editarUsuari(usuari);
+    if (usuari is Alumne) {
+      final index = _alumnes.indexWhere((a) => a.nia == usuari.nia);
+      if (index != -1) _alumnes[index] = usuari;
+    } else if (usuari is Professor) {
+      final index = _professors.indexWhere((p) => p.dni == usuari.dni);
+      if (index != -1) _professors[index] = usuari;
+    }
+
     notifyListeners();
+    await _repo.editarUsuari(usuari);
   }
 }
