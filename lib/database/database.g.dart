@@ -71,7 +71,7 @@ class _$AppDatabase extends AppDatabase {
     Callback? callback,
   ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 2,
+      version: 5,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -124,6 +124,32 @@ class _$AlumneDao extends AlumneDao {
                   'c1': item.c1,
                   'c2': item.c2,
                   'fotoPath': item.fotoPath
+                }),
+        _alumneUpdateAdapter = UpdateAdapter(
+            database,
+            'alumnes',
+            ['id'],
+            (Alumne item) => <String, Object?>{
+                  'id': item.id,
+                  'nia': item.nia,
+                  'grup': item.grup,
+                  'nom': item.nom,
+                  'c1': item.c1,
+                  'c2': item.c2,
+                  'fotoPath': item.fotoPath
+                }),
+        _alumneDeletionAdapter = DeletionAdapter(
+            database,
+            'alumnes',
+            ['id'],
+            (Alumne item) => <String, Object?>{
+                  'id': item.id,
+                  'nia': item.nia,
+                  'grup': item.grup,
+                  'nom': item.nom,
+                  'c1': item.c1,
+                  'c2': item.c2,
+                  'fotoPath': item.fotoPath
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -133,6 +159,10 @@ class _$AlumneDao extends AlumneDao {
   final QueryAdapter _queryAdapter;
 
   final InsertionAdapter<Alumne> _alumneInsertionAdapter;
+
+  final UpdateAdapter<Alumne> _alumneUpdateAdapter;
+
+  final DeletionAdapter<Alumne> _alumneDeletionAdapter;
 
   @override
   Future<int?> countAlumnes() async {
@@ -170,6 +200,16 @@ class _$AlumneDao extends AlumneDao {
   Future<void> insertAlumnes(List<Alumne> alumnes) async {
     await _alumneInsertionAdapter.insertList(alumnes, OnConflictStrategy.abort);
   }
+
+  @override
+  Future<void> updateAlumne(Alumne alumne) async {
+    await _alumneUpdateAdapter.update(alumne, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteAlumne(Alumne alumne) async {
+    await _alumneDeletionAdapter.delete(alumne);
+  }
 }
 
 class _$ProfessorDao extends ProfessorDao {
@@ -187,6 +227,30 @@ class _$ProfessorDao extends ProfessorDao {
                   'c1': item.c1,
                   'c2': item.c2,
                   'fotoPath': item.fotoPath
+                }),
+        _professorUpdateAdapter = UpdateAdapter(
+            database,
+            'professors',
+            ['id'],
+            (Professor item) => <String, Object?>{
+                  'id': item.id,
+                  'dni': item.dni,
+                  'nom': item.nom,
+                  'c1': item.c1,
+                  'c2': item.c2,
+                  'fotoPath': item.fotoPath
+                }),
+        _professorDeletionAdapter = DeletionAdapter(
+            database,
+            'professors',
+            ['id'],
+            (Professor item) => <String, Object?>{
+                  'id': item.id,
+                  'dni': item.dni,
+                  'nom': item.nom,
+                  'c1': item.c1,
+                  'c2': item.c2,
+                  'fotoPath': item.fotoPath
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -196,6 +260,10 @@ class _$ProfessorDao extends ProfessorDao {
   final QueryAdapter _queryAdapter;
 
   final InsertionAdapter<Professor> _professorInsertionAdapter;
+
+  final UpdateAdapter<Professor> _professorUpdateAdapter;
+
+  final DeletionAdapter<Professor> _professorDeletionAdapter;
 
   @override
   Future<int?> countProfessors() async {
@@ -233,5 +301,15 @@ class _$ProfessorDao extends ProfessorDao {
   Future<void> insertProfessors(List<Professor> professors) async {
     await _professorInsertionAdapter.insertList(
         professors, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateProfessor(Professor professor) async {
+    await _professorUpdateAdapter.update(professor, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteProfessor(Professor professor) async {
+    await _professorDeletionAdapter.delete(professor);
   }
 }

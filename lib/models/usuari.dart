@@ -1,10 +1,10 @@
-class PersonaBase {
+class Usuari {
   final String nom;
   final String c1;
   final String? c2;
   final String? fotoPath;
 
-  PersonaBase({
+  Usuari({
     required this.nom,
     required this.c1,
     this.c2,

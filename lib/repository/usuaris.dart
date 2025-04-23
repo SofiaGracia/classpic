@@ -1,13 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:xml_fotos/database/database.dart';
-import 'package:xml_fotos/models/persona.dart';
+import 'package:xml_fotos/models/usuari.dart';
 
 import '../database/dao/alumne_dao.dart';
 import '../database/dao/professor_dao.dart';
+import '../models/alumne.dart';
+import '../models/professor.dart';
 
 enum Taula { alumnes, professors }
 
-class DBStatusRepository {
+class UsuarisRepository {//També podria dir-se Usuaris repository
 
   //Referencia a la base de dades
   AppDatabase? _database;
@@ -19,11 +21,11 @@ class DBStatusRepository {
   AlumneDao get alumneDao => _alumneDao;
   ProfessorDao get professorDao => _professorDao;
 
-  DBStatusRepository._();
+  UsuarisRepository._();
 
-  static final DBStatusRepository _instance = DBStatusRepository._();
+  static final UsuarisRepository _instance = UsuarisRepository._();
 
-  factory DBStatusRepository(){
+  factory UsuarisRepository(){
     return _instance;
   }
 
@@ -39,7 +41,7 @@ class DBStatusRepository {
     }
   }
 
-  Future<Map<String, dynamic>> carregaAlumnesIProfessors() async {
+  Future<Map<String, dynamic>> carregaUsuaris() async {
     await connectaDB();
 
     final alumnes = await _alumneDao.findAllAlumnes();
@@ -51,11 +53,20 @@ class DBStatusRepository {
     };
   }
 
-  Future<void> eliminarUsuari(PersonaBase usuari) async {
-    debugPrint('Has pres eliminarUsuari');
+  //També hem d'eliminar o editar l'usuari de l'estructura de directoris
+  Future<void> eliminarUsuari(Usuari usuari) async {
+    if (usuari is Alumne) {
+      await _alumneDao.deleteAlumne(usuari);
+    } else if (usuari is Professor) {
+      await _professorDao.deleteProfessor(usuari);
+    }
   }
 
-  Future<void> editarUsuari(PersonaBase usuari) async {
-    debugPrint('Has pres editarUsuari');
+  Future<void> editarUsuari(Usuari usuari) async {
+    if (usuari is Alumne) {
+      await _alumneDao.updateAlumne(usuari);
+    } else if (usuari is Professor) {
+      await _professorDao.updateProfessor(usuari);
+    }
   }
 }

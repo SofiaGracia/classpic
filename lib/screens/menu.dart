@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xml_fotos/repository/database_status.dart';
+import 'package:xml_fotos/repository/usuaris.dart';
 import 'package:xml_fotos/screens/configuration.dart';
 import 'package:xml_fotos/screens/widgets/status_button.dart';
 
@@ -40,8 +40,8 @@ class _MenuScreenState extends State<MenuScreen> {
         return;
       }
 
-      final db = DBStatusRepository();
-      final dades = await db.carregaAlumnesIProfessors();
+      final db = UsuarisRepository();
+      final dades = await db.carregaUsuaris();
 
       final alumnes = dades['alumnes'] as List<Alumne>;
       final professors = dades['professors'] as List<Professor>;

@@ -1,8 +1,8 @@
 import 'package:floor/floor.dart';
-import 'package:xml_fotos/models/persona.dart';
+import 'package:xml_fotos/models/usuari.dart';
 
 @Entity(tableName: 'professors')
-class Professor extends PersonaBase {
+class Professor extends Usuari {
 
   @PrimaryKey(autoGenerate: true)
   final int? id;

@@ -12,7 +12,7 @@ import 'dao/professor_dao.dart';
 
 part 'database.g.dart'; // the generated code will be there
 
-@Database(version: 3, entities: [Alumne, Professor])
+@Database(version: 5, entities: [Alumne, Professor])
 abstract class AppDatabase extends FloorDatabase {
   AlumneDao get alumneDao;
   ProfessorDao get professorDao;
