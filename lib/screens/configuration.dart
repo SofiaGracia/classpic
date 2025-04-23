@@ -5,7 +5,7 @@ import 'package:xml_fotos/repository/implementations/professor.dart';
 import 'package:xml_fotos/service/implementations/alumne_service.dart';
 
 import '../providers/usuaris.dart';
-import '../repository/database_status.dart';
+import '../repository/usuaris.dart';
 import '../repository/implementations/alumnes.dart';
 import '../service/implementations/professor_service.dart';
 
@@ -24,7 +24,7 @@ class ConfigurationScreen extends StatelessWidget {
 
   void _importarAlumnes(BuildContext context) async {
     try {
-      final dbRepo = DBStatusRepository();
+      final dbRepo = UsuarisRepository();
       await dbRepo.connectaDB();
 
       final alumneDao = dbRepo.alumneDao;
@@ -46,7 +46,7 @@ class ConfigurationScreen extends StatelessWidget {
 
   void _importarProfessors(BuildContext context) async {
     try {
-      final dbRepo = DBStatusRepository();
+      final dbRepo = UsuarisRepository();
       await dbRepo.connectaDB();
 
       final profeDao = dbRepo.professorDao;

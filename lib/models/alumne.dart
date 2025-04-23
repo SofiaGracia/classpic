@@ -1,8 +1,8 @@
 import 'package:floor/floor.dart';
-import 'package:xml_fotos/models/persona.dart';
+import 'package:xml_fotos/models/usuari.dart';
 
 @Entity(tableName: 'alumnes')
-class Alumne extends PersonaBase {
+class Alumne extends Usuari {
 
   static const String estatMatriculat = 'M';
 

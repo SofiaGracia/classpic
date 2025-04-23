@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:xml_fotos/models/alumne.dart';
 import 'package:xml_fotos/models/professor.dart';
 
-import '../repository/database_status.dart';
+import '../repository/usuaris.dart';
 
 class UsuarisProvider extends ChangeNotifier {
   List<Alumne> _alumnes = [];
   List<Professor> _professors = [];
 
-  final DBStatusRepository _repo = DBStatusRepository();
+  final UsuarisRepository _repo = UsuarisRepository();
 
   List<Alumne> get alumnes => _alumnes;
   List<Professor> get professors => _professors;

@@ -25,4 +25,10 @@ abstract class ProfessorDao {
   //@Insert(onConflict: OnConflictStrategy.ignore)
   @insert
   Future<void> insertProfessors(List<Professor> professors);
+
+  @delete
+  Future<void> deleteProfessor(Professor professor);
+
+  @update
+  Future<void> updateProfessor(Professor professor);
 }
