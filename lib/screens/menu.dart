@@ -109,7 +109,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const LlistaUsuaris(tipus: 'alumnes',),
+                      builder: (context) => const LlistaUsuarisScreen(tipus: 'alumnes',),
                     ),
                   );
                 },
@@ -121,7 +121,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const LlistaUsuaris(tipus: 'professors'),
+                      builder: (context) => const LlistaUsuarisScreen(tipus: 'professors'),
                     ),
                   );
                 },

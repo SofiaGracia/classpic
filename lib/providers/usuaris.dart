@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:xml_fotos/models/alumne.dart';
 import 'package:xml_fotos/models/professor.dart';
 
+import '../models/usuari.dart';
 import '../repository/usuaris.dart';
 
 class UsuarisProvider extends ChangeNotifier {
@@ -57,5 +58,15 @@ class UsuarisProvider extends ChangeNotifier {
 
     notifyListeners();
     await _repo.editarUsuari(usuari);
+  }
+
+  Future<void> insertarUsuari(Usuari usuari) async {
+    if (usuari is Alumne) {
+      _alumnes.add(usuari);
+    } else if (usuari is Professor) {
+      _professors.add(usuari);
+    }
+    notifyListeners();
+    await _repo.insertarUsuari(usuari);
   }
 }
