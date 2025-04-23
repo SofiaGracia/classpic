@@ -9,7 +9,8 @@ import '../models/professor.dart';
 
 enum Taula { alumnes, professors }
 
-class UsuarisRepository {//També podria dir-se Usuaris repository
+class UsuarisRepository {
+  //També podria dir-se Usuaris repository
 
   //Referencia a la base de dades
   AppDatabase? _database;
@@ -25,20 +26,20 @@ class UsuarisRepository {//També podria dir-se Usuaris repository
 
   static final UsuarisRepository _instance = UsuarisRepository._();
 
-  factory UsuarisRepository(){
+  factory UsuarisRepository() {
     return _instance;
   }
 
   Future<void> connectaDB() async {
-    if (_database == null) {
+    if (_database != null) return;
 
-      _database = await $FloorAppDatabase
-          .databaseBuilder('data_base.db') //Com puc comprovar que este és el nom de la basededades?
-          .build();
+    _database = await $FloorAppDatabase
+        .databaseBuilder(
+            'nova_data_base.db') //Com puc comprovar que este és el nom de la basededades?
+        .build();
 
-      _alumneDao = _database!.alumneDao;
-      _professorDao = _database!.professorDao;
-    }
+    _alumneDao = _database!.alumneDao;
+    _professorDao = _database!.professorDao;
   }
 
   Future<Map<String, dynamic>> carregaUsuaris() async {
@@ -67,6 +68,14 @@ class UsuarisRepository {//També podria dir-se Usuaris repository
       await _alumneDao.updateAlumne(usuari);
     } else if (usuari is Professor) {
       await _professorDao.updateProfessor(usuari);
+    }
+  }
+
+  Future<void> insertarUsuari(Usuari usuari) async {
+    if (usuari is Alumne) {
+      await _alumneDao.insertAlumne(usuari);
+    } else if (usuari is Professor) {
+      await _professorDao.insertProfessor(usuari);
     }
   }
 }
