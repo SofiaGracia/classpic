@@ -33,7 +33,7 @@ class UsuarisRepository {//També podria dir-se Usuaris repository
     if (_database == null) {
 
       _database = await $FloorAppDatabase
-          .databaseBuilder('basedades.db') //Com puc comprovar que este és el nom de la basededades?
+          .databaseBuilder('data_base.db') //Com puc comprovar que este és el nom de la basededades?
           .build();
 
       _alumneDao = _database!.alumneDao;

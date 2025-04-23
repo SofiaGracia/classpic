@@ -7,7 +7,7 @@ class Professor extends Usuari {
   @PrimaryKey(autoGenerate: true)
   final int? id;
 
-  final String dni;
+  String dni;
 
   Professor({
     this.id,

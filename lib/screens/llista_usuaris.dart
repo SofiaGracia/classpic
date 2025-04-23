@@ -6,6 +6,7 @@ import 'package:xml_fotos/screens/widgets/usuari.dart';
 import '../models/alumne.dart';
 import '../models/professor.dart';
 import '../providers/usuaris.dart';
+import 'data.dart';
 
 class LlistaUsuaris extends StatefulWidget {
   final String tipus; // 'alumnes' o 'professors'
@@ -36,7 +37,22 @@ class _LlistaUsuarisState extends State<LlistaUsuaris> {
             nom: usuari.nom,
             identificador: widget.tipus == 'alumnes'? (usuari as Alumne).nia: (usuari as Professor).dni,
             foto: usuari.fotoPath != null? usuari.fotoPath as Uint8List : null,
-            onEditar:  () => usuarisProvider.editarUsuari(usuari),
+            onEditar: () async {
+              final resultat = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DataScreen(
+                    usuari: usuari, // pot ser Alumne o Professor
+                    isAlumne: widget.tipus == 'alumnes',
+                  ),
+                ),
+              );
+
+              if (resultat != null) {
+                // Si tornes l'usuari modificat des de DataScreen
+                usuarisProvider.editarUsuari(resultat);
+              }
+            },
             onEliminar:  () => usuarisProvider.eliminarUsuari(usuari)
         );
       },
