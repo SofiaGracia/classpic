@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/usuaris.dart';
-import 'alumnes_curs.dart';
 import 'llista_usuaris.dart';
 
 class CursosScreen extends StatelessWidget {

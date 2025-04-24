@@ -11,9 +11,7 @@ import '../models/usuari.dart';
 import '../providers/usuaris.dart';
 import 'data.dart';
 
-enum TipusUsuari {
-  alumne, professor
-}
+enum TipusUsuari { alumne, professor }
 
 class LlistaUsuarisScreen extends StatefulWidget {
   final String? grup;
@@ -88,4 +86,3 @@ class _LlistaUsuarisScreenState extends State<LlistaUsuarisScreen> {
     );
   }
 }
-
