@@ -8,14 +8,26 @@ import '../repository/usuaris.dart';
 class UsuarisProvider extends ChangeNotifier {
   List<Alumne> _alumnes = [];
   List<Professor> _professors = [];
+  Set<String?> _cursos = {};
 
   final UsuarisRepository _repo = UsuarisRepository();
 
   List<Alumne> get alumnes => _alumnes;
   List<Professor> get professors => _professors;
+  Set<String?> get cursos => _cursos;
 
   void setAlumnes(List<Alumne> nousAlumnes) {
-    _alumnes = nousAlumnes;
+    //_alumnes = nousAlumnes;
+
+    _alumnes = nousAlumnes.map((a) {
+      final grupNet = (a.grup ?? '').trim();
+      a.grup = grupNet.isEmpty ? 'Sense grup' : grupNet;
+      return a;
+    }).toList();
+
+    // També actualitzem els cursos ara que els grups estan netejats
+    _cursos = _alumnes.map((a) => a.grup).toSet();
+
     notifyListeners();
   }
 
@@ -68,5 +80,13 @@ class UsuarisProvider extends ChangeNotifier {
     }
     notifyListeners();
     await _repo.insertarUsuari(usuari);
+  }
+
+  List<Alumne> getAlumnesDelGrup(String grup) =>
+      _alumnes.where((a) => a.grup == grup).toList();
+
+  void afegirCurs(String nouCurs) {
+    _cursos.add(nouCurs);
+    notifyListeners();
   }
 }

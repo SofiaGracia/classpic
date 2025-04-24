@@ -8,6 +8,7 @@ import 'package:xml_fotos/screens/widgets/status_button.dart';
 import '../models/alumne.dart';
 import '../models/professor.dart';
 import '../providers/usuaris.dart';
+import 'cursos.dart';
 import 'llista_usuaris.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -109,7 +110,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const LlistaUsuarisScreen(tipus: 'alumnes',),
+                      builder: (context) => const CursosScreen(),
                     ),
                   );
                 },
@@ -121,7 +122,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const LlistaUsuarisScreen(tipus: 'professors'),
+                      builder: (context) => const LlistaUsuarisScreen(tipus: TipusUsuari.professor,grup: null),
                     ),
                   );
                 },
