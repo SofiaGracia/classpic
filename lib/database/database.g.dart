@@ -6,21 +6,32 @@ part of 'database.dart';
 // FloorGenerator
 // **************************************************************************
 
+abstract class $AppDatabaseBuilderContract {
+  /// Adds migrations to the builder.
+  $AppDatabaseBuilderContract addMigrations(List<Migration> migrations);
+
+  /// Adds a database [Callback] to the builder.
+  $AppDatabaseBuilderContract addCallback(Callback callback);
+
+  /// Creates the database and initializes it.
+  Future<AppDatabase> build();
+}
+
 // ignore: avoid_classes_with_only_static_members
 class $FloorAppDatabase {
   /// Creates a database builder for a persistent database.
   /// Once a database is built, you should keep a reference to it and re-use it.
-  static _$AppDatabaseBuilder databaseBuilder(String name) =>
+  static $AppDatabaseBuilderContract databaseBuilder(String name) =>
       _$AppDatabaseBuilder(name);
 
   /// Creates a database builder for an in memory database.
   /// Information stored in an in memory database disappears when the process is killed.
   /// Once a database is built, you should keep a reference to it and re-use it.
-  static _$AppDatabaseBuilder inMemoryDatabaseBuilder() =>
+  static $AppDatabaseBuilderContract inMemoryDatabaseBuilder() =>
       _$AppDatabaseBuilder(null);
 }
 
-class _$AppDatabaseBuilder {
+class _$AppDatabaseBuilder implements $AppDatabaseBuilderContract {
   _$AppDatabaseBuilder(this.name);
 
   final String? name;
@@ -29,19 +40,19 @@ class _$AppDatabaseBuilder {
 
   Callback? _callback;
 
-  /// Adds migrations to the builder.
-  _$AppDatabaseBuilder addMigrations(List<Migration> migrations) {
+  @override
+  $AppDatabaseBuilderContract addMigrations(List<Migration> migrations) {
     _migrations.addAll(migrations);
     return this;
   }
 
-  /// Adds a database [Callback] to the builder.
-  _$AppDatabaseBuilder addCallback(Callback callback) {
+  @override
+  $AppDatabaseBuilderContract addCallback(Callback callback) {
     _callback = callback;
     return this;
   }
 
-  /// Creates the database and initializes it.
+  @override
   Future<AppDatabase> build() async {
     final path = name != null
         ? await sqfliteDatabaseFactory.getDatabasePath(name!)
@@ -65,13 +76,15 @@ class _$AppDatabase extends AppDatabase {
 
   ProfessorDao? _professorDaoInstance;
 
+  CursDao? _cursDaoInstance;
+
   Future<sqflite.Database> open(
     String path,
     List<Migration> migrations, [
     Callback? callback,
   ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 6,
+      version: 11,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -87,9 +100,11 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `alumnes` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `nia` TEXT NOT NULL, `grup` TEXT, `nom` TEXT NOT NULL, `c1` TEXT NOT NULL, `c2` TEXT, `fotoPath` TEXT)');
+            'CREATE TABLE IF NOT EXISTS `alumnes` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `nia` TEXT NOT NULL, `grup` TEXT, `cursId` INTEGER, `nom` TEXT NOT NULL, `c1` TEXT NOT NULL, `c2` TEXT, `fotoPath` TEXT, FOREIGN KEY (`cursId`) REFERENCES `cursos` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `professors` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `dni` TEXT NOT NULL, `nom` TEXT NOT NULL, `c1` TEXT NOT NULL, `c2` TEXT, `fotoPath` TEXT)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `cursos` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `nom` TEXT NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -106,6 +121,11 @@ class _$AppDatabase extends AppDatabase {
   ProfessorDao get professorDao {
     return _professorDaoInstance ??= _$ProfessorDao(database, changeListener);
   }
+
+  @override
+  CursDao get cursDao {
+    return _cursDaoInstance ??= _$CursDao(database, changeListener);
+  }
 }
 
 class _$AlumneDao extends AlumneDao {
@@ -120,6 +140,7 @@ class _$AlumneDao extends AlumneDao {
                   'id': item.id,
                   'nia': item.nia,
                   'grup': item.grup,
+                  'cursId': item.cursId,
                   'nom': item.nom,
                   'c1': item.c1,
                   'c2': item.c2,
@@ -133,6 +154,7 @@ class _$AlumneDao extends AlumneDao {
                   'id': item.id,
                   'nia': item.nia,
                   'grup': item.grup,
+                  'cursId': item.cursId,
                   'nom': item.nom,
                   'c1': item.c1,
                   'c2': item.c2,
@@ -146,6 +168,7 @@ class _$AlumneDao extends AlumneDao {
                   'id': item.id,
                   'nia': item.nia,
                   'grup': item.grup,
+                  'cursId': item.cursId,
                   'nom': item.nom,
                   'c1': item.c1,
                   'c2': item.c2,
@@ -180,7 +203,8 @@ class _$AlumneDao extends AlumneDao {
             c1: row['c1'] as String,
             c2: row['c2'] as String?,
             grup: row['grup'] as String?,
-            fotoPath: row['fotoPath'] as String?));
+            fotoPath: row['fotoPath'] as String?,
+            cursId: row['cursId'] as int?));
   }
 
   @override
@@ -189,6 +213,21 @@ class _$AlumneDao extends AlumneDao {
         mapper: (Map<String, Object?> row) => row.values.first as String,
         queryableName: 'alumnes',
         isView: false);
+  }
+
+  @override
+  Future<List<Alumne>> obtenirAlumnesDelCurs(int cursId) async {
+    return _queryAdapter.queryList('SELECT * FROM alumnes WHERE cursId = ?1',
+        mapper: (Map<String, Object?> row) => Alumne(
+            id: row['id'] as int?,
+            nia: row['nia'] as String,
+            nom: row['nom'] as String,
+            c1: row['c1'] as String,
+            c2: row['c2'] as String?,
+            grup: row['grup'] as String?,
+            fotoPath: row['fotoPath'] as String?,
+            cursId: row['cursId'] as int?),
+        arguments: [cursId]);
   }
 
   @override
@@ -311,5 +350,66 @@ class _$ProfessorDao extends ProfessorDao {
   @override
   Future<void> deleteProfessor(Professor professor) async {
     await _professorDeletionAdapter.delete(professor);
+  }
+}
+
+class _$CursDao extends CursDao {
+  _$CursDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
+        _cursInsertionAdapter = InsertionAdapter(database, 'cursos',
+            (Curs item) => <String, Object?>{'id': item.id, 'nom': item.nom}),
+        _cursUpdateAdapter = UpdateAdapter(database, 'cursos', ['id'],
+            (Curs item) => <String, Object?>{'id': item.id, 'nom': item.nom}),
+        _cursDeletionAdapter = DeletionAdapter(database, 'cursos', ['id'],
+            (Curs item) => <String, Object?>{'id': item.id, 'nom': item.nom});
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<Curs> _cursInsertionAdapter;
+
+  final UpdateAdapter<Curs> _cursUpdateAdapter;
+
+  final DeletionAdapter<Curs> _cursDeletionAdapter;
+
+  @override
+  Future<List<Curs>> findAllCursos() async {
+    return _queryAdapter.queryList('SELECT * FROM cursos',
+        mapper: (Map<String, Object?> row) =>
+            Curs(id: row['id'] as int?, nom: row['nom'] as String));
+  }
+
+  @override
+  Stream<List<String>> findAllCursosNom() {
+    return _queryAdapter.queryListStream('SELECT nom FROM cursos',
+        mapper: (Map<String, Object?> row) => row.values.first as String,
+        queryableName: 'cursos',
+        isView: false);
+  }
+
+  @override
+  Future<int> insertCurs(Curs curs) {
+    return _cursInsertionAdapter.insertAndReturnId(
+        curs, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> insertCursos(List<Curs> cursos) async {
+    await _cursInsertionAdapter.insertList(cursos, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateCurs(Curs curs) async {
+    await _cursUpdateAdapter.update(curs, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteCurs(Curs curs) async {
+    await _cursDeletionAdapter.delete(curs);
   }
 }

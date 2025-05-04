@@ -1,7 +1,20 @@
 import 'package:floor/floor.dart';
 import 'package:xml_fotos/models/usuari.dart';
 
-@Entity(tableName: 'alumnes')
+import 'curs.dart';
+
+
+@Entity(
+  tableName: 'alumnes',
+  foreignKeys: [
+    ForeignKey(
+      childColumns: ['cursId'],
+      parentColumns: ['id'],
+      entity: Curs,
+      onDelete: ForeignKeyAction.cascade,
+    )
+  ],
+)
 class Alumne extends Usuari {
 
   static const String estatMatriculat = 'M';
@@ -12,7 +25,10 @@ class Alumne extends Usuari {
   //@ColumnInfo(name: 'nia', unique: true)
   String nia;
 
-  String? grup;
+  //Ara en principi curs podria ser required i no null
+  final String? grup;
+
+  late int? cursId;
 
   Alumne({
     this.id,
@@ -21,6 +37,27 @@ class Alumne extends Usuari {
     required String c1,
     String? c2,
     this.grup,
-    String? fotoPath
+    String? fotoPath,
+    this.cursId
   }) : super(nom: nom, c1: c1, c2: c2, fotoPath: fotoPath);
+
+  Alumne copyWith({
+    int? id,
+    String? nia,
+    String? nom,
+    String? c1,
+    String? c2,
+    String? grup,
+    int? cursId,
+  }) {
+    return Alumne(
+      id: id ?? this.id,
+      nia: nia ?? this.nia,
+      nom: nom ?? this.nom,
+      c1: c1 ?? this.c1,
+      c2: c2 ?? this.c2,
+      grup: grup ?? this.grup,
+      cursId: cursId ?? this.cursId,
+    );
+  }
 }

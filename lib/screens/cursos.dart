@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/usuaris.dart';
 import 'llista_usuaris.dart';
@@ -82,3 +82,4 @@ class _CursosScreenState extends State<CursosScreen> {
     );
   }
 }
+*/
