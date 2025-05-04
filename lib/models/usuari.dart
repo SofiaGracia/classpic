@@ -1,3 +1,5 @@
+
+//gastar abstract per a no deixar mai que s'instàncie un Usuari
 class Usuari {
   String nom;
   String c1;

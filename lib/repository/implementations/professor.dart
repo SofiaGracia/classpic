@@ -11,7 +11,7 @@ class RepositoryProfessor implements IRepositoryProfessor {
   RepositoryXml repo = RepositoryXml();
 
   @override
-  Future<List<Professor>> carregaLlistaProfessors() async {
+  Future<List<Professor>> carregaLlistaProfessorsXml() async {
 
     //Retornarem una llista de professors
     List<Professor> llistaProfessors = [];
@@ -41,5 +41,29 @@ class RepositoryProfessor implements IRepositoryProfessor {
       debugPrint('Excepció: $e');
     }
     return llistaProfessors;
+  }
+
+  @override
+  Future<List<Professor>> carregaProfessorsFloor() {
+    // TODO: implement carregaProfessorsFloor
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> editarProfessorFloor(Professor professor) {
+    // TODO: implement editarProfessorFloor
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> eliminarProfessorFloor(String nia) {
+    // TODO: implement eliminarProfessorFloor
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> insertarProfessorFloor(Professor professor) {
+    // TODO: implement insertarProfessorFloor
+    throw UnimplementedError();
   }
 }

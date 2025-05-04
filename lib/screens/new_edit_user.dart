@@ -1,62 +1,63 @@
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:xml_fotos/utils/validator.dart';
-
 import '../models/alumne.dart';
-import '../models/professor.dart';
-import '../models/usuari.dart'; // Si tens aquesta classe
+import '../models/usuari.dart';
+import '../providers/cursos_notifier.dart';
+import '../utils/validator.dart';
 
-class DataScreen extends StatefulWidget {
+class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
+  final T? usuari;
+  //final bool isAlumne;
+  final String Function(T) getId;
+  final T Function({
+    required String id,
+    required String nom,
+    required String c1,
+    required String c2,
+    String? fotoPath,
+    String? grup
+  }) constructor;
   final bool isAlumne;
-  final Usuari? usuari; // pot ser Alumne o Professor, si és null és un nou usuari
+  final int? cursId;
 
-  const DataScreen({
+  const NewEditUserScreen({
     super.key,
+    required this.usuari,
+    required this.getId,
+    required this.constructor,
     required this.isAlumne,
-    this.usuari,
+    this.cursId,
+    //required this.isAlumne,
   });
 
   @override
-  State<DataScreen> createState() => _DataScreenState();
+  ConsumerState<NewEditUserScreen<T>> createState() => _NewEditUserScreenState<T>();
 }
 
-class _DataScreenState extends State<DataScreen> {
+class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUserScreen<T>> {
   final _formKey = GlobalKey<FormState>();
 
-  late TextEditingController niaDniController;
+  late TextEditingController idController;
   late TextEditingController nomController;
   late TextEditingController cognom1Controller;
   late TextEditingController cognom2Controller;
 
   Uint8List? _imatge;
+  String? grupSeleccionat;
 
   @override
   void initState() {
     super.initState();
     final usuari = widget.usuari;
-    niaDniController = TextEditingController(
-        text: widget.isAlumne
-            ? (usuari is Alumne ? usuari.nia : '')
-            : (usuari is Professor ? usuari.dni : ''));
+    idController = TextEditingController(text: usuari != null? widget.getId(usuari) : '');
     nomController = TextEditingController(text: usuari?.nom ?? '');
     cognom1Controller = TextEditingController(text: usuari?.c1 ?? '');
     cognom2Controller = TextEditingController(text: usuari?.c2 ?? '');
-
-    if (usuari?.fotoPath != null) {
-      // Aquí pots carregar la foto del path si vols, o la pots deixar per més tard
-      // Exemple: _foto = await File(usuari!.fotoPath!).readAsBytes();
+    if (usuari is Alumne) {
+      grupSeleccionat = usuari.grup;
     }
-  }
-
-  @override
-  void dispose() {
-    niaDniController.dispose();
-    nomController.dispose();
-    cognom1Controller.dispose();
-    cognom2Controller.dispose();
-    super.dispose();
   }
 
   Future<void> _seleccionarFoto() async {
@@ -71,59 +72,30 @@ class _DataScreenState extends State<DataScreen> {
   }
 
   void _guardarUsuari() {
-    final nomAGuardar = nomController.text.trim();
-    final c1AGuardar = cognom1Controller.text.trim();
-    final c2AGuardar = cognom2Controller.text.trim();
-    final niaDniAGuardar = niaDniController.text.trim();
-
-    if (widget.usuari != null) {
-      // Actualització de l'usuari existent
-      widget.usuari!
-        ..nom = nomAGuardar
-        ..c1 = c1AGuardar
-        ..c2 = c2AGuardar;
-
-      if (widget.isAlumne && widget.usuari is Alumne) {
-        (widget.usuari as Alumne).nia = niaDniAGuardar;
-      } else if (!widget.isAlumne && widget.usuari is Professor) {
-        (widget.usuari as Professor).dni = niaDniAGuardar;
-      }
-
-      // Aquí pots afegir la gestió de la foto si vols:
-      // widget.usuari!.fotoPath = _imatge != null ? guardarFoto(_imatge) : null;
-
-      Navigator.pop(context, widget.usuari); // retornem l'usuari editat
-    } else {
-      // Creació d'un usuari nou
-      if (widget.isAlumne) {
-        final alumne = Alumne(
-          nia: niaDniAGuardar,
-          nom: nomAGuardar,
-          c1: c1AGuardar,
-          c2: c2AGuardar,
-          fotoPath: null, // o guarda la foto si vols
-        );
-        Navigator.pop(context, alumne);
-      } else {
-        final professor = Professor(
-          dni: niaDniAGuardar,
-          nom: nomAGuardar,
-          c1: c1AGuardar,
-          c2: c2AGuardar,
-          fotoPath: null,
-        );
-        Navigator.pop(context, professor);
-      }
+    if (_formKey.currentState!.validate()) {
+      final usuariNou = widget.constructor(
+        id: idController.text.trim(),
+        nom: nomController.text.trim(),
+        c1: cognom1Controller.text.trim(),
+        c2: cognom2Controller.text.trim(),
+        fotoPath: null,
+        grup: widget.isAlumne ? grupSeleccionat : null,
+      );
+      Navigator.pop(context, usuariNou);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+
+    final cursosAsync = widget.isAlumne
+        ? ref.watch(cursosNotifierProvider)
+        : const AsyncValue.data([]);
+
+    final isNou = widget.usuari == null;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.usuari == null
-            ? (widget.isAlumne ? "Nou alumne" : "Nou professor")
-            : (widget.isAlumne ? "Editar alumne" : "Editar professor")),
+        title: Text(isNou ? "Nou usuari" : "Editar usuari"),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -132,9 +104,9 @@ class _DataScreenState extends State<DataScreen> {
           child: Column(
             children: [
               _buildTextField(
-                controller: niaDniController,
-                label: widget.isAlumne ? 'NIA' : 'DNI',
-                validator: widget.isAlumne ? Validator.validarNia : Validator.validarDni,
+                controller: idController,
+                label: "Identificador (NIA o DNI)",
+                //validator: Validator.validarDniONia,
                 icon: Icons.badge,
                 textCapitalization: TextCapitalization.characters,
               ),
@@ -163,24 +135,48 @@ class _DataScreenState extends State<DataScreen> {
                 textCapitalization: TextCapitalization.words,
               ),
               const SizedBox(height: 20),
+              if (widget.isAlumne) ...[
+                cursosAsync.when(
+                  data: (cursos) {
+                    return DropdownButtonFormField<String>(
+                      value: grupSeleccionat, // Ara el valor és un String (pot ser l'ID o alguna altra propietat del curs)
+                      onChanged: (nou) {
+                        setState(() {
+                          grupSeleccionat = nou!;
+                        });
+                      },
+                      decoration: const InputDecoration(
+                        labelText: "Curs",
+                        border: OutlineInputBorder(),
+                      ),
+                      items: cursos.map((c) {
+                        return DropdownMenuItem<String>(
+                          value: c.id.toString(), // El valor que emmagatzemem és un String (el ID del curs)
+                          child: Text(c.nom), // El text visible serà el nom del Curs
+                        );
+                      }).toList(),
+                    );
+                  },
+                  loading: () => const CircularProgressIndicator(),
+                  error: (e, _) => Text('Error carregant cursos: $e'),
+                ),
+              ],
               GestureDetector(
                 onTap: _seleccionarFoto,
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: _imatge != null ? MemoryImage(_imatge!) : null,
+                  backgroundImage:
+                      _imatge != null ? MemoryImage(_imatge!) : null,
                   child: _imatge == null
-                      ? const Icon(Icons.camera_alt, size: 40, color: Colors.white70)
+                      ? const Icon(Icons.camera_alt,
+                          size: 40, color: Colors.white70)
                       : null,
                   backgroundColor: Colors.grey[400],
                 ),
               ),
               const SizedBox(height: 30),
               ElevatedButton.icon(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _guardarUsuari();
-                  }
-                },
+                onPressed: _guardarUsuari,
                 icon: const Icon(Icons.save),
                 label: const Text("Guardar"),
               )
@@ -192,7 +188,7 @@ class _DataScreenState extends State<DataScreen> {
   }
 
   Widget _buildTextField({
-    required TextEditingController? controller,
+    required TextEditingController controller,
     required String label,
     String? Function(String?)? validator,
     required IconData icon,

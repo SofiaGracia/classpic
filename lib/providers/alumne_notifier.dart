@@ -1,0 +1,99 @@
+
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:xml_fotos/repository/database.dart';
+
+import '../database/dao/alumne_dao.dart';
+import '../models/alumne.dart';
+import '../repository/alumne_db.dart';
+
+part 'alumne_notifier.g.dart';
+
+final alumneDaoProvider = FutureProvider<AlumneDao>((ref) async {
+  final dbService = DatabaseService();
+  await dbService.connectaDB();
+  return dbService.alumneDao;
+});
+
+final repositoryAlumneDBProvider = FutureProvider<RepositoryAlumneDB>((ref) async {
+  final dao = await ref.watch(alumneDaoProvider.future);
+  return RepositoryAlumneDB(alumneDao: dao);
+});
+
+// Primer, canviem el provider de alumnes a un `FutureProvider.family`
+// Així podrem passar el cursId i obtenir només els alumnes d'aquest curs.
+
+@riverpod
+Future<List<Alumne>> alumnesPerCurs(AlumnesPerCursRef ref, int cursId) async {
+  final repo = await ref.watch(repositoryAlumneDBProvider.future);
+  final alumnes = await repo.carregaAlumnesDB();
+  return alumnes.where((alumne) => alumne.cursId == cursId).toList();
+}
+
+@riverpod
+class AlumnesNotifier extends _$AlumnesNotifier {
+
+  Future<RepositoryAlumneDB> get _repo async =>
+      await ref.watch(repositoryAlumneDBProvider.future);
+
+  @override
+  Future<List<Alumne>> build() async {
+    final repo = await _repo;
+    return repo.carregaAlumnesDB();
+  }
+
+  Future<void> carregarAlumnes() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final repo = await _repo;
+      return repo.carregaAlumnesDB();
+    });
+  }
+
+  // Mètode per a obtenir els alumnes filtrats pel cursId
+  Future<List<Alumne>> alumnesPerCurs(int cursId) async {
+    final repo = await _repo;
+    final alumnes = await repo.carregaAlumnesDB();
+    return alumnes.where((alumne) => alumne.cursId == cursId).toList();
+  }
+
+  //Te falta inserirAlumnes
+  Future<void> inserirAlumnes(List<Alumne> alumnes) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final repo = await _repo;
+      await repo.inserirAlumnesDB(alumnes);
+      final actuals = state.requireValue; // Obtenim els alumnes actuals
+      return [...actuals, ...alumnes]; // Retornem els alumnes nous, afegint-los a l'estat actual
+    });
+  }
+
+  Future<void> inserirAlumne(Alumne alumne) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final repo = await _repo;
+      await repo.insertarAlumneDB(alumne);
+      final actuals = state.requireValue;
+      return [...actuals, alumne];
+    });
+  }
+
+  Future<void> eliminarAlumne(Alumne alumne) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final repo = await _repo;
+      await repo.eliminarAlumneDB(alumne);
+      final actuals = state.requireValue;
+      return actuals.where((e) => e != alumne).toList();
+    });
+  }
+
+  Future<void> editarAlumne(Alumne alumne) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final repo = await _repo;
+      await repo.editarAlumneDB(alumne);
+      final actuals = state.requireValue;
+      return actuals.map((e) => e.nia == alumne.nia ? alumne : e).toList();
+    });
+  }
+}

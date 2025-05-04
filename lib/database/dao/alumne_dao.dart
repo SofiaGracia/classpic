@@ -19,6 +19,9 @@ abstract class AlumneDao {
   //@Query('SELECT * FROM Alumne WHERE nia = :nia')
   //Stream<Alumne?> findAlumneByNia(int id);
 
+  @Query('SELECT * FROM alumnes WHERE cursId = :cursId')
+  Future<List<Alumne>> obtenirAlumnesDelCurs(int cursId);
+
   @insert
   Future<void> insertAlumne(Alumne alumne);
 

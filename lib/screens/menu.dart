@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+/*import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:xml_fotos/repository/usuaris.dart';
@@ -28,8 +28,7 @@ class _MenuScreenState extends State<MenuScreen> {
     super.initState();
     _comprovaDades();
   }
-
-
+  
   void _comprovaDades() async {
     try {
       final usuarisProvider = Provider.of<UsuarisProvider>(context, listen: false);
@@ -145,4 +144,4 @@ class _MenuScreenState extends State<MenuScreen> {
       ),
     );
   }
-}
+}*/

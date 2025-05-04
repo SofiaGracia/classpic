@@ -1,4 +1,4 @@
-import 'package:xml_fotos/database/dao/professor_dao.dart';
+/*import 'package:xml_fotos/database/dao/professor_dao.dart';
 import 'package:xml_fotos/models/professor.dart';
 import 'package:xml_fotos/repository/implementations/alumnes.dart';
 import 'package:xml_fotos/database/dao/alumne_dao.dart';
@@ -33,4 +33,4 @@ class ProfessorService implements IprofessorService {
     final profes = await dao.findAllProfessors();
     return profes.where((a) => a.fotoPath == null || a.fotoPath!.isEmpty).length;
   }
-}
+}*/
