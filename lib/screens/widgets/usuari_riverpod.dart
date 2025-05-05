@@ -47,7 +47,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetR> {
             String? grup
           }) {
             if (widget.usuari is Alumne) {
-              return Alumne(nia: id, nom: nom, c1: c1, c2: c2, fotoPath: fotoPath);
+              return Alumne(nia: id, nom: nom, c1: c1, c2: c2, fotoPath: fotoPath, grup: grup);
             } else {
               return Professor(dni: id, nom: nom, c1: c1, c2: c2, fotoPath: fotoPath);
             }

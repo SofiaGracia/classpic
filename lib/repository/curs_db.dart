@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 import '../database/dao/curs_dao.dart';
 import '../models/curs.dart';
 
@@ -21,6 +23,13 @@ class RepositoryCursDB {
 
   Future<void> inserirCursosDB(List<Curs> cursos) async {
     await _cursDao.insertCursos(cursos);
+  }
+
+  Future<void> imprimirCursosDB() async {
+    final cursos = await _cursDao.findAllCursos();
+    for (var c in cursos) {
+      debugPrint('${c.id}: ${c.nom}');
+    }
   }
 
   Future<void> eliminarCursDB(Curs curs) async {

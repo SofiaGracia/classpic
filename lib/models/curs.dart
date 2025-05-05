@@ -1,6 +1,9 @@
 import 'package:floor/floor.dart';
 
-@Entity(tableName: 'cursos')
+@Entity(
+  tableName: 'cursos',
+  indices: [Index(value: ['nom'], unique: true)],
+)
 class Curs {
   @PrimaryKey(autoGenerate: true)
   final int? id;

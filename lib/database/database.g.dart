@@ -105,6 +105,8 @@ class _$AppDatabase extends AppDatabase {
             'CREATE TABLE IF NOT EXISTS `professors` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `dni` TEXT NOT NULL, `nom` TEXT NOT NULL, `c1` TEXT NOT NULL, `c2` TEXT, `fotoPath` TEXT)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `cursos` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `nom` TEXT NOT NULL)');
+        await database.execute(
+            'CREATE UNIQUE INDEX `index_cursos_nom` ON `cursos` (`nom`)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -395,7 +397,7 @@ class _$CursDao extends CursDao {
   @override
   Future<int> insertCurs(Curs curs) {
     return _cursInsertionAdapter.insertAndReturnId(
-        curs, OnConflictStrategy.abort);
+        curs, OnConflictStrategy.ignore);
   }
 
   @override

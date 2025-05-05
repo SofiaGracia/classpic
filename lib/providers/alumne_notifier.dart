@@ -23,10 +23,10 @@ final repositoryAlumneDBProvider = FutureProvider<RepositoryAlumneDB>((ref) asyn
 // Així podrem passar el cursId i obtenir només els alumnes d'aquest curs.
 
 @riverpod
-Future<List<Alumne>> alumnesPerCurs(AlumnesPerCursRef ref, int cursId) async {
-  final repo = await ref.watch(repositoryAlumneDBProvider.future);
-  final alumnes = await repo.carregaAlumnesDB();
-  return alumnes.where((alumne) => alumne.cursId == cursId).toList();
+Future<List<Alumne>> alumnesPerCursFiltrat(AlumnesPerCursFiltratRef ref, int? cursId) async {
+  final asyncAlumnes = await ref.watch(alumnesNotifierProvider.future);
+  if (cursId == null) return asyncAlumnes;
+  return asyncAlumnes.where((a) => a.cursId == cursId).toList();
 }
 
 @riverpod
@@ -47,13 +47,6 @@ class AlumnesNotifier extends _$AlumnesNotifier {
       final repo = await _repo;
       return repo.carregaAlumnesDB();
     });
-  }
-
-  // Mètode per a obtenir els alumnes filtrats pel cursId
-  Future<List<Alumne>> alumnesPerCurs(int cursId) async {
-    final repo = await _repo;
-    final alumnes = await repo.carregaAlumnesDB();
-    return alumnes.where((alumne) => alumne.cursId == cursId).toList();
   }
 
   //Te falta inserirAlumnes
@@ -93,7 +86,8 @@ class AlumnesNotifier extends _$AlumnesNotifier {
       final repo = await _repo;
       await repo.editarAlumneDB(alumne);
       final actuals = state.requireValue;
-      return actuals.map((e) => e.nia == alumne.nia ? alumne : e).toList();
+      final nous = actuals.map((e) => e.nia == alumne.nia ? alumne : e).toList();
+      return nous;
     });
   }
 }
