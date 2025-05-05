@@ -10,7 +10,7 @@ import '../models/usuari.dart';
 import '../providers/alumne_notifier.dart';
 
 class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
-  final int? cursId;
+  //final int? cursId;
   final ProviderListenable<AsyncValue<List<T>>> provider;
   final Future<void> Function(T usuari) onEditar;
   final Future<void> Function(T usuari) onBorrar;
@@ -19,7 +19,7 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
 
   const LlistaUsuarisR({
     super.key,
-    this.cursId,
+    //this.cursId,
     required this.provider,
     required this.onEditar,
     required this.onBorrar,
@@ -51,7 +51,7 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
       ),
       floatingActionButton: NewUserR<T>(
         onCreate: (u) => onCreate(u as T),
-        getId: (u) => u is Alumne ? u.nia : (u as Professor).dni,
+        getId: (u) => T == Alumne ? (u as Alumne).nia: (u as Professor).dni,
         constructor: ({
           required String id,
           required String nom,
@@ -61,7 +61,7 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
           String? grup
         }) {
           if (T == Alumne) {
-            return Alumne(nia: id, nom: nom, c1: c1, c2: c2, fotoPath: fotoPath) as T;
+            return Alumne(nia: id, nom: nom, c1: c1, c2: c2, fotoPath: fotoPath, grup: grup) as T;
           } else {
             return Professor(dni: id, nom: nom, c1: c1, c2: c2, fotoPath: fotoPath) as T;
           }

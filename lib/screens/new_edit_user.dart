@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/alumne.dart';
+import '../models/curs.dart';
 import '../models/usuari.dart';
 import '../providers/cursos_notifier.dart';
 import '../utils/validator.dart';
@@ -73,16 +74,47 @@ class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUse
 
   void _guardarUsuari() {
     if (_formKey.currentState!.validate()) {
+      int? idCursSeleccionat;
+      String? nomCursSeleccionat;
+
+      if (widget.isAlumne && grupSeleccionat != null) {
+        final cursos = ref.read(cursosNotifierProvider).maybeWhen(
+          data: (cursos) => cursos,
+          orElse: () => [],//Ací tenim un orElse
+        );
+
+        final cursTrobat = _trobaCurs(cursos as List<Curs>);
+
+        if (cursTrobat != null) {
+          idCursSeleccionat = cursTrobat.id;
+          nomCursSeleccionat = cursTrobat.nom;
+        }
+      }
+
       final usuariNou = widget.constructor(
         id: idController.text.trim(),
         nom: nomController.text.trim(),
         c1: cognom1Controller.text.trim(),
         c2: cognom2Controller.text.trim(),
         fotoPath: null,
-        grup: widget.isAlumne ? grupSeleccionat : null,
+        grup: nomCursSeleccionat,
       );
+
+      if (usuariNou is Alumne) {
+        usuariNou.cursId = idCursSeleccionat;
+      }
+
       Navigator.pop(context, usuariNou);
     }
+  }
+
+  Curs? _trobaCurs(List<Curs> cursos){
+    for(Curs curs in cursos){
+      if (curs.nom == grupSeleccionat){
+        return curs;
+      }
+    }
+    return null;
   }
 
   @override
@@ -138,11 +170,14 @@ class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUse
               if (widget.isAlumne) ...[
                 cursosAsync.when(
                   data: (cursos) {
+                    final curs = _trobaCurs(cursos as List<Curs>);
+                    final valorInicial = curs != null? curs.id.toString(): cursos.first.id.toString();
                     return DropdownButtonFormField<String>(
-                      value: grupSeleccionat, // Ara el valor és un String (pot ser l'ID o alguna altra propietat del curs)
-                      onChanged: (nou) {
+                      value: grupSeleccionat == null ? null : valorInicial,
+                      onChanged: (nouId) {
+                        final nomDelGrup = cursos.firstWhere((c) => c.id.toString() == nouId).nom;
                         setState(() {
-                          grupSeleccionat = nou!;
+                          grupSeleccionat = nomDelGrup;
                         });
                       },
                       decoration: const InputDecoration(
@@ -151,8 +186,8 @@ class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUse
                       ),
                       items: cursos.map((c) {
                         return DropdownMenuItem<String>(
-                          value: c.id.toString(), // El valor que emmagatzemem és un String (el ID del curs)
-                          child: Text(c.nom), // El text visible serà el nom del Curs
+                          value: c.id.toString(),
+                          child: Text(c.nom),
                         );
                       }).toList(),
                     );

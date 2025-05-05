@@ -29,8 +29,6 @@ class ImportController extends AsyncNotifier<void> {
   Future<void> importaDades({required bool isAlumne}) async {
 
     try {
-      //final doc = await ref.read(repositoryXmlProvider.future);
-
       final repoXml = RepositoryXml();
       final doc = await repoXml.carregaInfo();
 
@@ -47,22 +45,17 @@ class ImportController extends AsyncNotifier<void> {
         await cursosNotifier.carregarCursos();
         final cursosDB = await ref.read(cursosNotifierProvider.future);
 
-        /*cursosState.when(
-          data: (cursosDB) async {
-            final alumnes = alumnesICursos['alumnes'];
-            final alumnesAmbId = await repo.assignaIdCursAlsAlumnes(alumnes, cursosDB);
-            await ref.read(alumnesNotifierProvider.notifier).inserirAlumnes(alumnesAmbId);
-          },
-          loading: () => print('Encara carregant cursos...'), // pots posar un return o res
-          error: (e, _) => print('Error carregant cursos: $e'),
-        );*/
-
         //Ara que ja están inserits podem assigarnar-los als alumnes
         final alumnes = alumnesICursos['alumnes'];
         final alumnesAmbId = await repo.assignaIdCursAlsAlumnes(alumnes, cursosDB);
 
         //I ara que ja tenim els alumnes ara podem inserir-los en la base de dades
         await ref.read(alumnesNotifierProvider.notifier).inserirAlumnes(alumnesAmbId);
+
+        //A mode de debug:
+        final repoCurs = await ref.watch(repositoryCursDBProvider.future);
+        await repoCurs.imprimirCursosDB();
+
       } else {
         state = const AsyncLoading();
         final professors = await RepositoryProfessorXml(doc: doc!).carregaLlistaProfessorsXml();

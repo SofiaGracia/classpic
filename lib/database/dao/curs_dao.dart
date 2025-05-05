@@ -11,7 +11,7 @@ abstract class CursDao {
   @Query('SELECT nom FROM cursos')
   Stream<List<String>> findAllCursosNom();
 
-  @insert
+  @Insert(onConflict: OnConflictStrategy.ignore)
   Future<int> insertCurs(Curs curs);
 
   @insert

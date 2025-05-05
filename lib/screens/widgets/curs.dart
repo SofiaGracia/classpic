@@ -45,7 +45,8 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
             context,
             MaterialPageRoute(
               builder: (context) => LlistaUsuarisR<Alumne>(
-                provider: alumnesPerCursProvider(widget.cursId),
+                provider: alumnesPerCursFiltratProvider(widget.cursId),
+                //cursId: widget.cursId,
                 onEditar: (a) async => await ref.read(alumnesNotifierProvider.notifier).editarAlumne(a),//Hauria d'instanciar ací NewEditUserScreen no?
                 onBorrar: (a) async => await ref.read(alumnesNotifierProvider.notifier).eliminarAlumne(a),
                 onCreate: (a) async => await ref.read(alumnesNotifierProvider.notifier).inserirAlumne(a),
