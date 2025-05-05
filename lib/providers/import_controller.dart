@@ -44,7 +44,18 @@ class ImportController extends AsyncNotifier<void> {
             .toList();
         final cursosNotifier = ref.read(cursosNotifierProvider.notifier);
         await cursosNotifier.inserirCursos(cursos);
-        final cursosDB = cursosNotifier.state.requireValue;
+        await cursosNotifier.carregarCursos();
+        final cursosDB = await ref.read(cursosNotifierProvider.future);
+
+        /*cursosState.when(
+          data: (cursosDB) async {
+            final alumnes = alumnesICursos['alumnes'];
+            final alumnesAmbId = await repo.assignaIdCursAlsAlumnes(alumnes, cursosDB);
+            await ref.read(alumnesNotifierProvider.notifier).inserirAlumnes(alumnesAmbId);
+          },
+          loading: () => print('Encara carregant cursos...'), // pots posar un return o res
+          error: (e, _) => print('Error carregant cursos: $e'),
+        );*/
 
         //Ara que ja están inserits podem assigarnar-los als alumnes
         final alumnes = alumnesICursos['alumnes'];
