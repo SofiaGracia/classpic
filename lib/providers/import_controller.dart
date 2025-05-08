@@ -144,13 +144,6 @@ class ImportController extends AsyncNotifier<void> {
       ) async {
     try {
 
-      final totsElsAlumnesP = await ref.watch(alumnesTotsProvider.future);
-      final totsElsAlumnes = alumneNot.state.requireValue;
-
-      if(totsElsAlumnesP == totsElsAlumnes){
-        print('Antonces?');
-      }
-
       final cursosNot = ref.read(cursosNotifierProvider.notifier);
 
       final cursosNous = cursosXml.map((nom) => Curs(nom: nom)).toList();
