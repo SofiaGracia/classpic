@@ -39,8 +39,10 @@ class RepositoryAlumneXml {
         final aluNom = alu.getAttribute('nombre');
         final aluC1 = alu.getAttribute('apellido1');
         final aluC2 = alu.getAttribute('apellido2');
-        var aluGrup = alu.getAttribute('grupo') ?? 'Sense grup';
-
+        var aluGrup  = alu.getAttribute('grupo');
+        if (aluGrup == null || (aluGrup.trim()).isEmpty){
+          aluGrup = 'Sense grup';
+        }
         cursosUnics.add(aluGrup);
 
         if (aluNia != null && aluNom != null && aluC1 != null) {
