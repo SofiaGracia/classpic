@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/utils/camera.dart';
 
 import '../../models/alumne.dart';
 import '../../models/professor.dart';
 import '../../models/usuari.dart';
+import '../../service/storage_service.dart';
+import '../../utils/constants.dart';
 import '../new_edit_user.dart';
 
 class UsuariWidgetR extends ConsumerStatefulWidget {
@@ -73,13 +76,32 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetR> {
         child: Row(
           children: [
             // Foto de l'usuari
-            CircleAvatar(
-              radius: 30,
-              //backgroundImage: foto != null ? MemoryImage(foto!) : null,
-              child: foto == null ? const Icon(Icons.person) : null,
+            GestureDetector(
+              onTap: () async {
+                debugPrint('HOLA');
+                String pahtPhoto = '';
+                String pathDir = '';
+                if (widget.usuari is Alumne) {
+                  pahtPhoto = await ref.read(StorageServiceProvider).getPathAlumne((widget.usuari as Alumne).grup!, widget.usuari.nom);
+                  pathDir = '$baseFolderName/$alumnesFolder/${(widget.usuari as Alumne).grup}';
+                }else{
+                  pahtPhoto = await ref.read(StorageServiceProvider).getPathProfessor(widget.usuari.nom);
+                  pathDir = '$baseFolderName/$professorsFolder';
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CameraPage(usuari: widget.usuari, pathPhoto: pahtPhoto, pathDir: pathDir),
+                  ),
+                );
+              },
+              child: CircleAvatar(
+                radius: 30,
+                //backgroundImage: foto != null ? MemoryImage(foto!) : null,
+                child: foto == null ? const Icon(Icons.person) : null,
+              ),
             ),
             const SizedBox(width: 12),
-
             // Dades del usuari
             Expanded(
               child: Column(
