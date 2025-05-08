@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
 import 'package:xml_fotos/providers/alumne_notifier.dart';
 import 'package:xml_fotos/providers/professor_notifier.dart';
+import 'package:xml_fotos/utils/change_group.dart';
 
 import '../database/dao/curs_dao.dart';
 import '../models/alumne.dart';
@@ -155,10 +156,16 @@ class ImportController extends AsyncNotifier<void> {
       final nomsNous = cursosNous.map((c) => c.nom).toSet();
       final cursosPerEsborrar = cursosActuals.where((actual) => !nomsNous.contains(actual.nom)).toList();
 
-      debugPrint('');
       //Esborrem i inserim
       await cursosNot.eliminarCursos(cursosPerEsborrar);
+      //Ací borrariem els directoris antics
+      final nomsCursosABorrar = cursosPerEsborrar.map((c) => c.nom).toSet();
+      //Encara no esborrem els cursos pq necessitem passar les fotos
+
       await cursosNot.inserirCursos(cursosPerAfegir);
+      //Ací creariem els directoris nous
+      final nomsNousCursos = cursosPerAfegir.map((c) => c.nom).toSet();
+      await ref.read(StorageServiceProvider).creaEstructuraAlumnes(nomsNousCursos);
 
       final cursosActualitzats = await ref.watch(cursTotsProvider.future);
       // Alumnes a inserir o editar
@@ -168,6 +175,7 @@ class ImportController extends AsyncNotifier<void> {
       final alumnesNiesXml = alumnesXml.map((a) => a.nia).toSet();
 
       final alumnesXmlAmbId = await repo.assignaIdCursAlsAlumnes(alumnesXml, cursosActualitzats);
+      List<CanviDeCursAlumne> alumnesACanviar = [];
 
       for (final alum in alumnesXmlAmbId) {
         final existent = alumnesDBMap[alum.nia];
@@ -175,26 +183,25 @@ class ImportController extends AsyncNotifier<void> {
           alumnesAInserir.add(alum);
         } else if (existent.cursId != alum.cursId) {
 
-          //Alumne nou al que se li possa el id del vell
-          //Però sospitem que el copyWith no retorna exactament això i per això no sabem
-          final alumneAmbCursCanviat = alum.copyWith(id: existent.id);
+          alumnesACanviar.add(CanviDeCursAlumne(cursVell: existent.grup!, cursNou: alum.grup!, nomAlumne: existent.nom));
 
-          //I ara comparem el existent i el existentCanviat
-          bool iguals = existent == alumneAmbCursCanviat;
-          debugPrint('${iguals}');
+          final alumneAmbCursCanviat = alum.copyWith(id: existent.id);
 
           alumnesAEditar.add(alumneAmbCursCanviat);
         }
       }
-
       // Alumnes que s'han d'eliminar
       final alumnesAEliminar = alumnesDB.where((a) => !alumnesNiesXml.contains(a.nia)).toList();
       if (alumnesAEliminar.isNotEmpty) await alumneNot.eliminarAlumnes(alumnesAEliminar);
 
-      //final alumDB = await ref.watch(alumnesTotsProvider.future);
-      //print(alumDB.length);
-
       if (alumnesAEditar.isNotEmpty) await alumneNot.editarAlumnes(alumnesAEditar);
+
+      for (final alumne in alumnesACanviar) {
+        await ref.read(StorageServiceProvider).mouFotoAlumne(alumne.cursVell, alumne.cursNou, alumne.nomAlumne);
+      }
+
+      //Val, ací ja podria eliminar els cursos vells no?
+      await ref.read(StorageServiceProvider).eliminaCarpetesAlumnes(nomsCursosABorrar);
 
       return alumnesAInserir;
 
