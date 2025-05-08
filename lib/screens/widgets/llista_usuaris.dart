@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+/*import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:xml_fotos/screens/widgets/usuari.dart';
 
@@ -38,4 +38,4 @@ class LlistaUsuarisWidget extends StatelessWidget {
       },
     );
   }
-}
+}*/

@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+/*import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/models/alumne.dart';
@@ -102,3 +102,4 @@ class UsuariTile extends ConsumerWidget {
     );
   }
 }
+*/
