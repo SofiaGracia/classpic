@@ -100,7 +100,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `alumnes` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `nia` TEXT NOT NULL, `grup` TEXT, `cursId` INTEGER, `nom` TEXT NOT NULL, `c1` TEXT NOT NULL, `c2` TEXT, `fotoPath` TEXT, FOREIGN KEY (`cursId`) REFERENCES `cursos` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
+            'CREATE TABLE IF NOT EXISTS `alumnes` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `nia` TEXT NOT NULL, `grup` TEXT, `cursId` INTEGER, `nom` TEXT NOT NULL, `c1` TEXT NOT NULL, `c2` TEXT, `fotoPath` TEXT, FOREIGN KEY (`cursId`) REFERENCES `cursos` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `professors` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `dni` TEXT NOT NULL, `nom` TEXT NOT NULL, `c1` TEXT NOT NULL, `c2` TEXT, `fotoPath` TEXT)');
         await database.execute(
@@ -248,8 +248,18 @@ class _$AlumneDao extends AlumneDao {
   }
 
   @override
+  Future<void> updateAlumnes(List<Alumne> alumnes) async {
+    await _alumneUpdateAdapter.updateList(alumnes, OnConflictStrategy.abort);
+  }
+
+  @override
   Future<void> deleteAlumne(Alumne alumne) async {
     await _alumneDeletionAdapter.delete(alumne);
+  }
+
+  @override
+  Future<void> deleteAlumnes(List<Alumne> alumnes) async {
+    await _alumneDeletionAdapter.deleteList(alumnes);
   }
 }
 
@@ -353,6 +363,11 @@ class _$ProfessorDao extends ProfessorDao {
   Future<void> deleteProfessor(Professor professor) async {
     await _professorDeletionAdapter.delete(professor);
   }
+
+  @override
+  Future<void> deleteProfessors(List<Professor> professors) async {
+    await _professorDeletionAdapter.deleteList(professors);
+  }
 }
 
 class _$CursDao extends CursDao {
@@ -395,6 +410,11 @@ class _$CursDao extends CursDao {
   }
 
   @override
+  Future<void> buidarCursos() async {
+    await _queryAdapter.queryNoReturn('DELETE FROM cursos');
+  }
+
+  @override
   Future<int> insertCurs(Curs curs) {
     return _cursInsertionAdapter.insertAndReturnId(
         curs, OnConflictStrategy.ignore);
@@ -413,5 +433,10 @@ class _$CursDao extends CursDao {
   @override
   Future<void> deleteCurs(Curs curs) async {
     await _cursDeletionAdapter.delete(curs);
+  }
+
+  @override
+  Future<void> deleteCursos(List<Curs> cursos) async {
+    await _cursDeletionAdapter.deleteList(cursos);
   }
 }

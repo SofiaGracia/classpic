@@ -36,6 +36,14 @@ class RepositoryCursDB {
     await _cursDao.deleteCurs(curs);
   }
 
+  Future<void> eliminarCursosDB(List<Curs> cursos) async {
+    await _cursDao.deleteCursos(cursos);
+  }
+
+  Future<void> buidarCursosBD() async {
+    await _cursDao.buidarCursos();
+  }
+
   Future<void> editarCursDB(Curs curs) async {
     await _cursDao.updateCurs(curs);
   }

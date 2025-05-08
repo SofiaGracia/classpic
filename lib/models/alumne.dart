@@ -11,7 +11,7 @@ import 'curs.dart';
       childColumns: ['cursId'],
       parentColumns: ['id'],
       entity: Curs,
-      onDelete: ForeignKeyAction.cascade,
+      onDelete: ForeignKeyAction.setNull,
     )
   ],
 )
@@ -41,6 +41,14 @@ class Alumne extends Usuari {
     this.cursId
   }) : super(nom: nom, c1: c1, c2: c2, fotoPath: fotoPath);
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is Alumne && nia == other.nia;
+
+  @override
+  int get hashCode => nia.hashCode;
+
   Alumne copyWith({
     int? id,
     String? nia,
@@ -48,6 +56,7 @@ class Alumne extends Usuari {
     String? c1,
     String? c2,
     String? grup,
+    String? fotoPath,
     int? cursId,
   }) {
     return Alumne(
@@ -57,6 +66,7 @@ class Alumne extends Usuari {
       c1: c1 ?? this.c1,
       c2: c2 ?? this.c2,
       grup: grup ?? this.grup,
+      fotoPath: fotoPath ?? this.fotoPath,
       cursId: cursId ?? this.cursId,
     );
   }

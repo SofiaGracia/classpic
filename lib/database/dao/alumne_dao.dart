@@ -32,6 +32,12 @@ abstract class AlumneDao {
   @delete
   Future<void> deleteAlumne(Alumne alumne);
 
+  @delete
+  Future<void> deleteAlumnes(List<Alumne> alumnes);
+
   @update
   Future<void> updateAlumne(Alumne alumne);
+
+  @update
+  Future<void> updateAlumnes(List<Alumne> alumnes);
 }
