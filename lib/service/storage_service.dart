@@ -60,4 +60,33 @@ class StorageService {
     final baseDir = await _getBaseDirectory();
     return '${baseDir.path}/$_professorsFolder/$nomProfessor.jpg';
   }
+
+  Future<void> eliminaCarpetesAlumnes(Set<String> nomsCursos) async {
+    final baseDir = await _getBaseDirectory();
+    final alumnesDir = Directory('${baseDir.path}/$_alumnesFolder');
+
+    for (final nomCurs in nomsCursos) {
+      final cursDir = Directory('${alumnesDir.path}/$nomCurs');
+      if (await cursDir.exists()) {
+        await cursDir.delete(recursive: true);
+      }
+    }
+  }
+
+  Future<void> mouFotoAlumne(String nomCursVell, String nomCursNou, String nomAlumne) async {
+    final baseDir = await _getBaseDirectory();
+
+    final origen = File('${baseDir.path}/$_alumnesFolder/$nomCursVell/$nomAlumne.jpg');
+    final destiDir = Directory('${baseDir.path}/$_alumnesFolder/$nomCursNou');
+
+    if (!await destiDir.exists()) {
+      await destiDir.create(recursive: true);
+    }
+
+    final desti = File('${destiDir.path}/$nomAlumne.jpg');
+
+    if (await origen.exists()) {
+      await origen.rename(desti.path);
+    }
+  }
 }
