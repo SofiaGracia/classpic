@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart';
 import 'package:xml_fotos/repository/implementations/xml.dart';
 import 'package:xml_fotos/repository/interfaces/ixml.dart';
-import 'package:xml_fotos/screens/menu.dart';
 import 'package:xml_fotos/screens/menu_riverpod.dart';
-import 'package:xml_fotos/screens/sessio.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

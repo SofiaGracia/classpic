@@ -1,28 +1,32 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/models/alumne.dart';
+import 'package:xml_fotos/utils/camera.dart';
 
-class UsuariTile extends StatelessWidget {
-  final String primerCognom;
-  final String segonCognom;
-  final String nom;
-  final String identificador; // DNI o NIA
-  final Uint8List? foto; // Nullable per si no té foto
+import '../../models/usuari.dart';
+import '../../service/storage_service.dart';
+import '../../utils/constants.dart';
+
+//
+class UsuariTile extends ConsumerWidget {
+  final Usuari usuari;
+  final String identificador;
+  final Uint8List? foto;
   final VoidCallback onEditar;
   final VoidCallback onEliminar;
 
   const UsuariTile({
     super.key,
-    required this.primerCognom,
-    required this.segonCognom,
-    required this.nom,
+    required this.usuari,
     required this.identificador,
-    this.foto,
     required this.onEditar,
     required this.onEliminar,
+    this.foto,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Padding(
@@ -30,24 +34,49 @@ class UsuariTile extends StatelessWidget {
         child: Row(
           children: [
             // Foto de l'usuari
-            CircleAvatar(
-              radius: 30,
-              backgroundImage: foto != null ? MemoryImage(foto!) : null,
-              child: foto == null ? const Icon(Icons.person) : null,
+            GestureDetector(
+              onTap: () {
+                debugPrint('HOLA');
+              },
+              /*onTap: () async {
+                String pahtPhoto = '';
+                String pathDir = '';
+                if (usuari is Alumne) {
+                  pahtPhoto = await ref.read(StorageServiceProvider).getPathAlumne((usuari as Alumne).grup!, usuari.nom);
+                  pathDir = '$baseFolderName/$alumnesFolder/${(usuari as Alumne).grup}';
+                }else{
+                  pahtPhoto = await ref.read(StorageServiceProvider).getPathProfessor(usuari.nom);
+                  pathDir = '$baseFolderName/$professorsFolder';
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CameraPage(
+                      usuari: usuari,
+                      pathPhoto: pahtPhoto,
+                      pathDir: pathDir,
+                    ),
+                  ),
+                );
+              },*/
+              child: CircleAvatar(
+                radius: 30,
+                backgroundImage: foto != null ? MemoryImage(foto!) : null,
+                child: foto == null ? const Icon(Icons.person) : null,
+              ),
             ),
             const SizedBox(width: 12),
-
             // Dades del usuari
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '$primerCognom $segonCognom',
+                    '${usuari.c1} ${usuari.c2}',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   Text(
-                    nom,
+                    usuari.nom,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   Text(

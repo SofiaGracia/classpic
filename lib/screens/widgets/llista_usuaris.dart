@@ -27,9 +27,7 @@ class LlistaUsuarisWidget extends StatelessWidget {
       itemBuilder: (context, index) {
         final usuari = usuaris[index];
         return UsuariTile(
-          primerCognom: usuari.c1,
-          segonCognom: usuari.c2 ?? '',
-          nom: usuari.nom,
+          usuari: usuari,
           identificador: isAlumne
               ? (usuari as Alumne).nia
               : (usuari as Professor).dni,

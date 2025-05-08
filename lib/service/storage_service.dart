@@ -2,19 +2,18 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../utils/constants.dart';
+
 final StorageServiceProvider = Provider<StorageService>((ref) {
   return StorageService();
 });
 
 class StorageService {
-  static const _baseFolderName = 'ClassPic';
-  static const _alumnesFolder = 'Alumnes';
-  static const _professorsFolder = 'Professors';
 
   /// Obté el directori base de l’aplicació a l’emmagatzematge extern
   Future<Directory> _getBaseDirectory() async {
     final extDir = await getExternalStorageDirectory();
-    final appDir = Directory('${extDir?.path}/$_baseFolderName');
+    final appDir = Directory('${extDir?.path}/$baseFolderName');
 
     if (!await appDir.exists()) {
       await appDir.create(recursive: true);
@@ -25,7 +24,7 @@ class StorageService {
   /// Crea l’estructura inicial per als alumnes (un directori per curs)
   Future<void> creaEstructuraAlumnes(Set<String> nomsCursos) async {
     final baseDir = await _getBaseDirectory();
-    final alumnesDir = Directory('${baseDir.path}/$_alumnesFolder');
+    final alumnesDir = Directory('${baseDir.path}/$alumnesFolder');
 
     if (!await alumnesDir.exists()) {
       await alumnesDir.create();
@@ -42,7 +41,7 @@ class StorageService {
   /// Crea la carpeta base de professors si no existeix
   Future<void> creaEstructuraProfessors() async {
     final baseDir = await _getBaseDirectory();
-    final professorsDir = Directory('${baseDir.path}/$_professorsFolder');
+    final professorsDir = Directory('${baseDir.path}/$professorsFolder');
 
     if (!await professorsDir.exists()) {
       await professorsDir.create(recursive: true);
@@ -52,18 +51,29 @@ class StorageService {
   /// Obté el path de la carpeta d’un alumne concret
   Future<String> getPathAlumne(String nomCurs, String nomAlumne) async {
     final baseDir = await _getBaseDirectory();
-    return '${baseDir.path}/$_alumnesFolder/$nomCurs/$nomAlumne.jpg';
+    return '${baseDir.path}/$alumnesFolder/$nomCurs/$nomAlumne.jpg';
   }
 
   /// Obté el path de la foto d’un professor concret
   Future<String> getPathProfessor(String nomProfessor) async {
     final baseDir = await _getBaseDirectory();
-    return '${baseDir.path}/$_professorsFolder/$nomProfessor.jpg';
+    return '${baseDir.path}/$professorsFolder/$nomProfessor.jpg';
+  }
+
+  Future<String> getDirAlumne(String nomCurs, String nomAlumne) async {
+    final baseDir = await _getBaseDirectory();
+    return '${baseDir.path}/$alumnesFolder/$nomCurs';
+  }
+
+  /// Obté el path de la foto d’un professor concret
+  Future<String> getDirProfessor(String nomProfessor) async {
+    final baseDir = await _getBaseDirectory();
+    return '${baseDir.path}/$professorsFolder';
   }
 
   Future<void> eliminaCarpetesAlumnes(Set<String> nomsCursos) async {
     final baseDir = await _getBaseDirectory();
-    final alumnesDir = Directory('${baseDir.path}/$_alumnesFolder');
+    final alumnesDir = Directory('${baseDir.path}/$alumnesFolder');
 
     for (final nomCurs in nomsCursos) {
       final cursDir = Directory('${alumnesDir.path}/$nomCurs');
@@ -76,8 +86,8 @@ class StorageService {
   Future<void> mouFotoAlumne(String nomCursVell, String nomCursNou, String nomAlumne) async {
     final baseDir = await _getBaseDirectory();
 
-    final origen = File('${baseDir.path}/$_alumnesFolder/$nomCursVell/$nomAlumne.jpg');
-    final destiDir = Directory('${baseDir.path}/$_alumnesFolder/$nomCursNou');
+    final origen = File('${baseDir.path}/$alumnesFolder/$nomCursVell/$nomAlumne.jpg');
+    final destiDir = Directory('${baseDir.path}/$alumnesFolder/$nomCursNou');
 
     if (!await destiDir.exists()) {
       await destiDir.create(recursive: true);

@@ -1,18 +1,20 @@
-/*import 'dart:io';
+import 'dart:io';
 
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:camerawesome/pigeon.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:xml_fotos/utils/carpeta.dart';
-
-import '../models/alumne.dart';
+import '../models/usuari.dart';
 
 class CameraPage extends StatelessWidget {
+  final Usuari usuari;
+  final String pathPhoto;
+  final String pathDir;
 
-  final Alumne alumne;
-
-  const CameraPage({super.key, required this.alumne});
+  const CameraPage(
+      {super.key,
+      required this.usuari,
+      required this.pathPhoto,
+      required this.pathDir});
 
   @override
   Widget build(BuildContext context) {
@@ -60,15 +62,9 @@ class CameraPage extends StatelessWidget {
           saveConfig: SaveConfig.photoAndVideo(
             initialCaptureMode: CaptureMode.photo,
             photoPathBuilder: (sensors) async {
-              //final Directory extDir = await getTemporaryDirectory();
-              String? pathDir = GestorCarpetes.obtenirPathCarpeta(alumne.grup);
-              final Directory extDir = Directory(pathDir!);
-              /*final testDir = await Directory(
-                '${extDir.path}/camerawesome',
-              ).create(recursive: true);*/
+              final Directory extDir = Directory(pathDir);
               if (sensors.length == 1) {
-                final String filePath =
-                    '${extDir.path}/${alumne.nom}_${alumne.nia}.jpg';
+                final String filePath = pathPhoto;
                 return SingleCaptureRequest(filePath, sensors.first);
               }
               // Separate pictures taken with front and back camera
@@ -76,11 +72,11 @@ class CameraPage extends StatelessWidget {
                 {
                   for (final sensor in sensors)
                     sensor:
-                    '${extDir.path}/${sensor.position == SensorPosition.front ? 'front_' : "back_"}${DateTime.now().millisecondsSinceEpoch}.jpg',
+                        '${extDir.path}/${sensor.position == SensorPosition.front ? 'front_' : "back_"}${DateTime.now().millisecondsSinceEpoch}.jpg',
                 },
               );
             },
-            videoOptions: VideoOptions(
+            /*videoOptions: VideoOptions(
               enableAudio: true,
               ios: CupertinoVideoOptions(
                 fps: 10,
@@ -89,7 +85,7 @@ class CameraPage extends StatelessWidget {
                 bitrate: 6000000,
                 fallbackStrategy: QualityFallbackStrategy.lower,
               ),
-            ),
+            ),*/
             exifPreferences: ExifPreferences(saveGPSLocation: true),
           ),
           sensorConfig: SensorConfig.single(
@@ -122,4 +118,4 @@ class CameraPage extends StatelessWidget {
       ),
     );
   }
-}*/
+}
