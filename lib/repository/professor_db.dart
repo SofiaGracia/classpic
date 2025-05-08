@@ -27,6 +27,10 @@ class RepositoryProfessorDB {
     await _professorDao.deleteProfessor(professor);
   }
 
+  Future<void> eliminarProfessorsDB(List<Professor> professors) async {
+    await _professorDao.deleteProfessors(professors);
+  }
+
   Future<void> editarProfessorDB(Professor professor) async {
     await _professorDao.updateProfessor(professor);
   }

@@ -2,9 +2,14 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
 
 import '../interfaces/ixml.dart';
+
+final RepositoryXmlProvider = Provider<RepositoryXml>((ref) {
+  return RepositoryXml();
+});
 
 class RepositoryXml  implements IRepositoryXml {
 

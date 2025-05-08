@@ -32,7 +32,7 @@ class DatabaseService {
     try {
       if (_db != null) return _db!;
       _db = await $FloorAppDatabase
-          .databaseBuilder('ftw.db')
+          .databaseBuilder('provessssssssssssssssssssssssssss.db')
           .build();
       _alumneDao = _db!.alumneDao;
       _professorDao = _db!.professorDao;

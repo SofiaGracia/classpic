@@ -27,8 +27,16 @@ class RepositoryAlumneDB {
     await _alumneDao.deleteAlumne(alumne);
   }
 
+  Future<void> eliminarAlumnesDB(List<Alumne> alumnesABorrar) async {
+    await _alumneDao.deleteAlumnes(alumnesABorrar);
+  }
+
   Future<void> editarAlumneDB(Alumne alumne) async {
     await _alumneDao.updateAlumne(alumne);
+  }
+
+  Future<void> editarAlumnesDB(List<Alumne> alumnes) async {
+    await _alumneDao.updateAlumnes(alumnes);
   }
 
 }

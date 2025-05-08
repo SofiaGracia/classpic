@@ -29,6 +29,9 @@ abstract class ProfessorDao {
   @delete
   Future<void> deleteProfessor(Professor professor);
 
+  @delete
+  Future<void> deleteProfessors(List<Professor> professors);
+
   @update
   Future<void> updateProfessor(Professor professor);
 }

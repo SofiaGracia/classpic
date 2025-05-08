@@ -20,6 +20,12 @@ abstract class CursDao {
   @delete
   Future<void> deleteCurs(Curs curs);
 
+  @delete
+  Future<void> deleteCursos(List<Curs> cursos);
+
+  @Query('DELETE FROM cursos')
+  Future<void> buidarCursos();
+
   @update
   Future<void> updateCurs(Curs curs);
 }

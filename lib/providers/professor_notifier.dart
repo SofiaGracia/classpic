@@ -76,6 +76,22 @@ class ProfessorNotifier extends _$ProfessorNotifier {
     });
   }
 
+  Future<void> eliminarProfessors(List<Professor> professors) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final repo = await _repo;
+
+      // Elimina de la base de dades
+      await repo.eliminarProfessorsDB(professors);
+
+      // Actualitza l'estat traient-los del llistat actual
+      final actuals = state.requireValue;
+      final dniAEliminar = professors.map((p) => p.dni).toSet();
+
+      return actuals.where((e) => !dniAEliminar.contains(e.dni)).toList();
+    });
+  }
+
   Future<void> editarProfessor(Professor professor) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
