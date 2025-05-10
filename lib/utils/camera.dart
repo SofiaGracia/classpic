@@ -1,20 +1,45 @@
-import 'dart:io';
+/*import 'dart:io';
 
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:camerawesome/pigeon.dart';
 import 'package:flutter/material.dart';
-import '../models/usuari.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class CameraPage extends StatelessWidget {
-  final Usuari usuari;
   final String pathPhoto;
   final String pathDir;
 
   const CameraPage(
       {super.key,
-      required this.usuari,
       required this.pathPhoto,
       required this.pathDir});
+
+  //Cuidao en el que retornem: No sé si vull un File o un XFijle
+  Future<XFile?> compressToUnder100KB(File file, String targetPath) async {
+    int quality = 80;
+    File? result;
+
+    while (quality > 10) {
+      final compressed = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        targetPath,
+        quality: quality,
+        minWidth: 640,
+        minHeight: 480,
+      );
+
+      if (compressed == null) return null;
+
+      final size = await compressed.length();
+      if (size <= 102400) {
+        return compressed;
+      } else {
+        quality -= 10;
+      }
+    }
+
+    return null; // no s'ha pogut aconseguir sota 100KB
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +52,23 @@ class CameraPage extends StatelessWidget {
             switch ((event.status, event.isPicture, event.isVideo)) {
               case (MediaCaptureStatus.capturing, true, false):
                 debugPrint('Capturing picture...');
-              case (MediaCaptureStatus.success, true, false):
+              case (MediaCaptureStatus.success, true, false)://Ací
                 event.captureRequest.when(
-                  single: (single) {
+                  single: (single) async {
+                    //Per ací és la última parada
                     debugPrint('Picture saved: ${single.file?.path}');
+
+                    final original = single.file!;
+                    //ACÍ PODRIEM COMPRIMIR LA FOTO
+                    File file = File(original.path);
+                    final compressed = await compressToUnder100KB(file, single.file!.path);
+
+                    //ACÍ RETORNEM LA FOTO
+                    if (Navigator.of(context).canPop()) {
+
+                      File file = File(compressed!.path);
+                      Navigator.pop(context, file);
+                    }
                   },
                   multiple: (multiple) {
                     multiple.fileBySensor.forEach((key, value) {
@@ -76,16 +114,7 @@ class CameraPage extends StatelessWidget {
                 },
               );
             },
-            /*videoOptions: VideoOptions(
-              enableAudio: true,
-              ios: CupertinoVideoOptions(
-                fps: 10,
-              ),
-              android: AndroidVideoOptions(
-                bitrate: 6000000,
-                fallbackStrategy: QualityFallbackStrategy.lower,
-              ),
-            ),*/
+            //Ací aniria les videoOptions
             exifPreferences: ExifPreferences(saveGPSLocation: true),
           ),
           sensorConfig: SensorConfig.single(
@@ -118,4 +147,4 @@ class CameraPage extends StatelessWidget {
       ),
     );
   }
-}
+}*/
