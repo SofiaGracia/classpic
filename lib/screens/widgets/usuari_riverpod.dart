@@ -1,13 +1,16 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/utils/camera.dart';
 
 import '../../models/alumne.dart';
 import '../../models/professor.dart';
 import '../../models/usuari.dart';
 import '../../service/storage_service.dart';
 import '../../utils/constants.dart';
+import '../camera_camera.dart';
 import '../new_edit_user.dart';
 
 class UsuariWidgetR extends ConsumerStatefulWidget {
@@ -78,26 +81,35 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetR> {
             // Foto de l'usuari
             GestureDetector(
               onTap: () async {
-                debugPrint('HOLA');
-                String pahtPhoto = '';
+                String pathPhoto = '';
                 String pathDir = '';
                 if (widget.usuari is Alumne) {
-                  pahtPhoto = await ref.read(StorageServiceProvider).getPathAlumne((widget.usuari as Alumne).grup!, widget.usuari.nom);
+                  pathPhoto = await ref.read(StorageServiceProvider).getPathAlumne((widget.usuari as Alumne).grup!, widget.usuari.nom);
                   pathDir = '$baseFolderName/$alumnesFolder/${(widget.usuari as Alumne).grup}';
                 }else{
-                  pahtPhoto = await ref.read(StorageServiceProvider).getPathProfessor(widget.usuari.nom);
+                  pathPhoto = await ref.read(StorageServiceProvider).getPathProfessor(widget.usuari.nom);
                   pathDir = '$baseFolderName/$professorsFolder';
                 }
-                Navigator.push(
+                final File? novaFoto = await Navigator.push<File?>(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CameraPage(usuari: widget.usuari, pathPhoto: pahtPhoto, pathDir: pathDir),
+                    builder: (context) => CameraPage(
+                      pathPhoto: pathPhoto,
+                      pathDir: pathDir,
+                    ),
                   ),
                 );
+                if (novaFoto != null) {
+                  final nouUsuari = widget.usuari is Alumne
+                      ? (widget.usuari as Alumne).copyWith(fotoPath: novaFoto.path)
+                      : (widget.usuari as Professor).copyWith(fotoPath: novaFoto.path);
+
+                  await widget.onEditar(nouUsuari);
+                }
               },
               child: CircleAvatar(
                 radius: 30,
-                //backgroundImage: foto != null ? MemoryImage(foto!) : null,
+                backgroundImage: foto != null ? FileImage(File(foto)) : null,
                 child: foto == null ? const Icon(Icons.person) : null,
               ),
             ),
