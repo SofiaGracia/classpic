@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/providers/alumne_notifier.dart';
 import 'package:xml_fotos/providers/professor_notifier.dart';
 import 'package:xml_fotos/screens/cursos_riverpod.dart';
+import 'package:xml_fotos/screens/widgets/counter.dart';
 import 'package:xml_fotos/screens/widgets/status_button_riverpod.dart';
 
+import '../models/alumne.dart';
 import '../models/professor.dart';
 import 'configuration.dart';
 import 'llista_usuaris_riverpod.dart';
@@ -18,7 +20,6 @@ class MenuScreenR extends ConsumerStatefulWidget {
 }
 
 class _MenuScreenRState extends ConsumerState<MenuScreenR> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,43 +42,60 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
               ),
               const SizedBox(height: 24),
               // Botó per a alumnes
-              StatusButtonR(
-                  text: 'Alumnes',
-                  onPressed: () {
-                    /*Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LlistaUsuarisScreen(),
-                      ),
-                    );*/
-                    debugPrint("Anem a LlistaCursosScreen");
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CursosScreen(),
-                      ),
-                    );
-                  },
-                  provider: alumnesNotifierProvider),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  StatusButtonR(
+                      text: 'Alumnes',
+                      onPressed: () {
+                        debugPrint("Anem a LlistaCursosScreen");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CursosScreen(),
+                          ),
+                        );
+                      },
+                      provider: alumnesNotifierProvider),
+                  const SizedBox(width: 8),
+                  CounterWidget<Alumne>(
+                    provider: alumnesNotifierProvider,
+                  ),
+                ],
+              ),
               // Botó per a professors
-              StatusButtonR(
-                  text: 'Professors',
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LlistaUsuarisR<Professor>(
-                          provider: professorNotifierProvider,
-                          onEditar: (p) async => await ref.read(professorNotifierProvider.notifier).editarProfessor(p),
-                          onBorrar: (p) async => await ref.read(professorNotifierProvider.notifier).eliminarProfessor(p),
-                          onCreate: (p) async => await ref.read(professorNotifierProvider.notifier).inserirProfessor(p),
-                        ),
-                      ),
-                    );
-                    debugPrint("Anem a LlistaUsuarisScreen");
-                  },
-                  provider: professorNotifierProvider),
-              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  StatusButtonR(
+                      text: 'Professors',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LlistaUsuarisR<Professor>(
+                              provider: professorNotifierProvider,
+                              onEditar: (p) async => await ref
+                                  .read(professorNotifierProvider.notifier)
+                                  .editarProfessor(p),
+                              onBorrar: (p) async => await ref
+                                  .read(professorNotifierProvider.notifier)
+                                  .eliminarProfessor(p),
+                              onCreate: (p) async => await ref
+                                  .read(professorNotifierProvider.notifier)
+                                  .inserirProfessor(p),
+                            ),
+                          ),
+                        );
+                        debugPrint("Anem a LlistaUsuarisScreen");
+                      },
+                      provider: professorNotifierProvider),
+                  const SizedBox(width: 8),
+                  CounterWidget<Professor>(
+                    provider: professorNotifierProvider,
+                  ),
+                ],
+              ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
