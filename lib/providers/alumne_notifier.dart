@@ -142,19 +142,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     try {
       final repo = await _repo;
 
-      final aBDBefore = await repo.carregaAlumnesDB();
-
-      for (final a in aBDBefore){
-        debugPrint('${a.id} ${a.nom} ${a.grup}');
-      }
-
       await repo.editarAlumnesDB(alumnes);
-
-      final aBDAfter = await repo.carregaAlumnesDB();
-
-      for (final a in aBDAfter){
-        debugPrint('${a.id} ${a.nom} ${a.grup}');
-      }
 
       final actuals = state.requireValue;
 

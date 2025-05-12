@@ -366,6 +366,12 @@ class _$ProfessorDao extends ProfessorDao {
   }
 
   @override
+  Future<void> updateProfessors(List<Professor> professor) async {
+    await _professorUpdateAdapter.updateList(
+        professor, OnConflictStrategy.abort);
+  }
+
+  @override
   Future<void> deleteProfessor(Professor professor) async {
     await _professorDeletionAdapter.delete(professor);
   }
