@@ -34,4 +34,7 @@ abstract class ProfessorDao {
 
   @update
   Future<void> updateProfessor(Professor professor);
+
+  @update
+  Future<void> updateProfessors(List<Professor> professor);
 }

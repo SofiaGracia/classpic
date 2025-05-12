@@ -84,7 +84,7 @@ class _$AppDatabase extends AppDatabase {
     Callback? callback,
   ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 11,
+      version: 12,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -357,6 +357,12 @@ class _$ProfessorDao extends ProfessorDao {
   @override
   Future<void> updateProfessor(Professor professor) async {
     await _professorUpdateAdapter.update(professor, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateProfessors(List<Professor> professor) async {
+    await _professorUpdateAdapter.updateList(
+        professor, OnConflictStrategy.abort);
   }
 
   @override
