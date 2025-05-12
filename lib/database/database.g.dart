@@ -100,9 +100,9 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `alumnes` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `nia` TEXT NOT NULL, `grup` TEXT, `cursId` INTEGER, `nom` TEXT NOT NULL, `c1` TEXT NOT NULL, `c2` TEXT, `fotoPath` TEXT, FOREIGN KEY (`cursId`) REFERENCES `cursos` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL)');
+            'CREATE TABLE IF NOT EXISTS `alumnes` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `nia` TEXT NOT NULL, `grup` TEXT, `cursId` INTEGER, `nom` TEXT NOT NULL, `c1` TEXT NOT NULL, `c2` TEXT, `fotoPath` TEXT, `fotoPathHash` TEXT, FOREIGN KEY (`cursId`) REFERENCES `cursos` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `professors` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `dni` TEXT NOT NULL, `nom` TEXT NOT NULL, `c1` TEXT NOT NULL, `c2` TEXT, `fotoPath` TEXT)');
+            'CREATE TABLE IF NOT EXISTS `professors` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `dni` TEXT NOT NULL, `nom` TEXT NOT NULL, `c1` TEXT NOT NULL, `c2` TEXT, `fotoPath` TEXT, `fotoPathHash` TEXT)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `cursos` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `nom` TEXT NOT NULL)');
         await database.execute(
@@ -146,7 +146,8 @@ class _$AlumneDao extends AlumneDao {
                   'nom': item.nom,
                   'c1': item.c1,
                   'c2': item.c2,
-                  'fotoPath': item.fotoPath
+                  'fotoPath': item.fotoPath,
+                  'fotoPathHash': item.fotoPathHash
                 }),
         _alumneUpdateAdapter = UpdateAdapter(
             database,
@@ -160,7 +161,8 @@ class _$AlumneDao extends AlumneDao {
                   'nom': item.nom,
                   'c1': item.c1,
                   'c2': item.c2,
-                  'fotoPath': item.fotoPath
+                  'fotoPath': item.fotoPath,
+                  'fotoPathHash': item.fotoPathHash
                 }),
         _alumneDeletionAdapter = DeletionAdapter(
             database,
@@ -174,7 +176,8 @@ class _$AlumneDao extends AlumneDao {
                   'nom': item.nom,
                   'c1': item.c1,
                   'c2': item.c2,
-                  'fotoPath': item.fotoPath
+                  'fotoPath': item.fotoPath,
+                  'fotoPathHash': item.fotoPathHash
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -277,7 +280,8 @@ class _$ProfessorDao extends ProfessorDao {
                   'nom': item.nom,
                   'c1': item.c1,
                   'c2': item.c2,
-                  'fotoPath': item.fotoPath
+                  'fotoPath': item.fotoPath,
+                  'fotoPathHash': item.fotoPathHash
                 }),
         _professorUpdateAdapter = UpdateAdapter(
             database,
@@ -289,7 +293,8 @@ class _$ProfessorDao extends ProfessorDao {
                   'nom': item.nom,
                   'c1': item.c1,
                   'c2': item.c2,
-                  'fotoPath': item.fotoPath
+                  'fotoPath': item.fotoPath,
+                  'fotoPathHash': item.fotoPathHash
                 }),
         _professorDeletionAdapter = DeletionAdapter(
             database,
@@ -301,7 +306,8 @@ class _$ProfessorDao extends ProfessorDao {
                   'nom': item.nom,
                   'c1': item.c1,
                   'c2': item.c2,
-                  'fotoPath': item.fotoPath
+                  'fotoPath': item.fotoPath,
+                  'fotoPathHash': item.fotoPathHash
                 });
 
   final sqflite.DatabaseExecutor database;

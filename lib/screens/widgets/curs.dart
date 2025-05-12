@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/service/storage_service.dart';
+import 'package:xml_fotos/models/fotopathcacheext.dart';
 
 import '../../models/alumne.dart';
 import '../../providers/alumne_notifier.dart';
 import '../../providers/cursos_notifier.dart';
+import '../../service/storage_service.dart';
 import '../llista_usuaris_riverpod.dart';
 
 class CursWidget extends ConsumerStatefulWidget {
@@ -47,7 +48,10 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
             MaterialPageRoute(
               builder: (context) => LlistaUsuarisR<Alumne>(
                 provider: alumnesPerCursFiltratProvider(widget.cursId),
-                onEditar: (a) async => await ref.read(alumnesNotifierProvider.notifier).editarAlumne(a),
+                onEditar: (a) async {
+                  await ref.read(alumnesNotifierProvider.notifier).editarAlumne(a);
+                  await a.setFotoPathIfNeeded(ref.read(StorageServiceProvider));
+                },
                 onBorrar: (a) async => await ref.read(alumnesNotifierProvider.notifier).eliminarAlumne(a),
                 onCreate: (a) async => await ref.read(alumnesNotifierProvider.notifier).inserirAlumne(a),
               ),
@@ -73,29 +77,29 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
                 icon: Icon(isEditing ? Icons.check : Icons.edit),
                   onPressed: () async {
                     if (isEditing) {
-                      final nouNom = _controller.text.trim();
                       final storageService = ref.read(StorageServiceProvider);
-
                       try {
-                        await storageService.renombraCarpetaCurs(curs.nom, nouNom);
+                        await storageService.renombraCarpetaCurs(curs.nom, _controller.text);
 
+                        // Actualitza el nom del curs en la base de dades
                         await ref.read(cursosNotifierProvider.notifier)
-                            .editarCurs(curs.copyWith(nom: nouNom));
+                            .editarCurs(curs.copyWith(nom: _controller.text));
 
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Curs '$nouNom' actualitzat correctament.")),
+                            const SnackBar(content: Text('Nom del curs actualitzat correctament.')),
                           );
                         }
                       } catch (e) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Error: $e")),
+                            SnackBar(content: Text('Error al renombrar la carpeta: $e')),
                           );
                         }
                       }
                     }
 
+                    // Sempre canviem l'estat (no cal que siga async)
                     setState(() {
                       isEditing = !isEditing;
                     });
@@ -105,6 +109,7 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
                 icon: Icon(Icons.delete),
                 onPressed: () {
                   ref.read(cursosNotifierProvider.notifier).eliminarCurs(curs);
+                  ref.read(StorageServiceProvider).eliminarFotosCarpetaCurs(curs.nom);
                 },
               ),
             ],

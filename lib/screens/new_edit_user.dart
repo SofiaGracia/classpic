@@ -70,7 +70,7 @@ class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUse
     }
   }
 
-  void _guardarUsuari() {
+  Future<void> _guardarUsuari() async {
     if (_formKey.currentState!.validate()) {
       int? idCursSeleccionat;
       String? nomCursSeleccionat;
@@ -86,6 +86,10 @@ class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUse
         if (cursTrobat != null) {
           idCursSeleccionat = cursTrobat.id;
           nomCursSeleccionat = cursTrobat.nom;
+
+          if(widget.usuari!= null && grupSeleccionat != cursTrobat){
+            await ref.read(StorageServiceProvider).mouFotoAlumne((widget.usuari as Alumne).grup!, nomCursSeleccionat, widget.usuari!.nom);
+          }
         }
       }
 

@@ -83,6 +83,45 @@ class StorageService {
     }
   }
 
+  Future<void> renombraCarpetaCurs(String nomActual, String nouNom) async {
+    final baseDir = await getExternalStorageDirectory();
+    if (baseDir == null) throw Exception("No s'ha pogut accedir a l'emmagatzematge.");
+
+    final origen = Directory('${baseDir.path}/$baseFolderName/$alumnesFolder/$nomActual');
+    final desti = Directory('${baseDir.path}/$baseFolderName/$alumnesFolder/$nouNom');
+
+    if (await desti.exists()) {
+      throw Exception("Ja existeix una carpeta amb el nom '$nouNom'.");
+    }
+
+    if (!await origen.exists()) {
+      throw Exception("La carpeta d'origen no existeix.");
+    }
+
+    await origen.rename(desti.path);
+  }
+
+
+  /// Elimina totes les fotos (fitxers `.jpg`) dins d'una carpeta de curs
+  Future<void> eliminarFotosCarpetaCurs(String nomCurs) async {
+    final baseDir = await _getBaseDirectory();
+    final carpetaCurs = Directory('${baseDir.path}/$alumnesFolder/$nomCurs');
+
+    if (await carpetaCurs.exists()) {
+      final arxius = carpetaCurs.listSync();
+
+      for (final arxiu in arxius) {
+        if (arxiu is File && arxiu.path.endsWith('.jpg')) {
+          await arxiu.delete();
+        }
+      }
+
+      if (carpetaCurs.listSync().isEmpty) {
+        await carpetaCurs.delete();
+      }
+    }
+  }
+
   Future<void> mouFotoAlumne(String nomCursVell, String nomCursNou, String nomAlumne) async {
     final baseDir = await _getBaseDirectory();
 

@@ -1,15 +1,11 @@
-
-//gastar abstract per a no deixar mai que s'instàncie un Usuari
-class Usuari {
+abstract class Usuari {
   String nom;
   String c1;
   String? c2;
-  String? fotoPath;
+  String? fotoPath; // Ací només guardarem temporalment el path generat
 
-  Usuari({
-    required this.nom,
-    required this.c1,
-    this.c2,
-    this.fotoPath,
-  });
+  // Afegim _fotoPathHash per a la lògica del cache
+  String? fotoPathHash;
+
+  Usuari({required this.nom, required this.c1, this.c2, this.fotoPath});
 }
