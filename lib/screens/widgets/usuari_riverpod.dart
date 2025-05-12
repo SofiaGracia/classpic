@@ -36,6 +36,10 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetR> {
     await widget.onBorrar(widget.usuari);
   }
 
+  Future<void> _moureCarpetaUsuari(String nomCursVell, String nomCursNou, String nomAlumne) async {
+    await ref.read(StorageServiceProvider).mouFotoAlumne(nomCursVell, nomCursNou, nomAlumne);
+  }
+
   Future<void> _editarUsuari() async {
     final nouUsuari = await Navigator.push<Usuari>(
       context,
@@ -53,7 +57,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetR> {
             String? grup
           }) {
             if (widget.usuari is Alumne) {
-              return Alumne(nia: id, nom: nom, c1: c1, c2: c2, fotoPath: fotoPath, grup: grup);
+              return Alumne(nia: id, nom: nom, c1: c1, c2: c2, grup: grup, fotoPath: fotoPath);
             } else {
               return Professor(dni: id, nom: nom, c1: c1, c2: c2, fotoPath: fotoPath);
             }

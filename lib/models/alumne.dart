@@ -38,7 +38,7 @@ class Alumne extends Usuari {
     String? c2,
     this.grup,
     String? fotoPath,
-    this.cursId
+    this.cursId,
   }) : super(nom: nom, c1: c1, c2: c2, fotoPath: fotoPath);
 
   @override
