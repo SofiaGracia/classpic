@@ -149,21 +149,4 @@ class StorageService {
   Future<void> eliminaFotos(List<String> paths) async {
     await Future.wait(paths.map((path) => eliminaFoto(path)));
   }
-
-  Future<void> renombraCarpetaCurs(String nomActual, String nouNom) async {
-    final baseDir = await _getBaseDirectory();
-
-    final origen = Directory('${baseDir.path}/$alumnesFolder/$nomActual');
-    final desti = Directory('${baseDir.path}/$alumnesFolder/$nouNom');
-
-    if (!await origen.exists()) {
-      throw Exception("La carpeta d'origen no existeix.");
-    }
-
-    if (await desti.exists()) {
-      throw Exception("Ja existeix una carpeta amb el nom '$nouNom'.");
-    }
-
-    await origen.rename(desti.path);
-  }
 }

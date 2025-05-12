@@ -4,10 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/models/fotopathcacheext.dart';
 
 import '../../models/alumne.dart';
+import '../../models/usuari.dart';
 import '../../providers/alumne_notifier.dart';
 import '../../providers/cursos_notifier.dart';
 import '../../service/storage_service.dart';
 import '../llista_usuaris_riverpod.dart';
+import 'counter.dart';
 
 class CursWidget extends ConsumerStatefulWidget {
   final int cursId;
@@ -73,6 +75,9 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              CounterWidget<Alumne>(
+                provider: alumnesPerCursFiltratProvider(widget.cursId),
+              ),
               IconButton(
                 icon: Icon(isEditing ? Icons.check : Icons.edit),
                   onPressed: () async {
