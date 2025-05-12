@@ -35,4 +35,8 @@ class RepositoryProfessorDB {
     await _professorDao.updateProfessor(professor);
   }
 
+  Future<void> editarProfessorsDB(List<Professor> professors) async {
+    await _professorDao.updateProfessors(professors);
+  }
+
 }

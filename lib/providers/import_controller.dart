@@ -9,6 +9,7 @@ import 'package:xml_fotos/utils/change_group.dart';
 import '../database/dao/curs_dao.dart';
 import '../models/alumne.dart';
 import '../models/curs.dart';
+import '../models/professor.dart';
 import '../repository/alumne_xml.dart';
 import '../repository/curs_db.dart';
 import '../repository/database.dart';
@@ -67,12 +68,22 @@ class ImportController extends AsyncNotifier<void> {
       await storageService.creaEstructuraProfessors();
       await profNot.inserirProfessors(professorsXml);
     } else {
-      final profDBSet = professorsDB.map((e) => e.dni).toSet();
-      final aAfegir = professorsXml.where((p) => !profDBSet.contains(p.dni)).toList();
-      final aEliminar = professorsDB.where((p) => !professorsXml.any((px) => px.dni == p.dni)).toList();
 
-      if (aAfegir.isNotEmpty) await profNot.inserirProfessors(aAfegir);
-      if (aEliminar.isNotEmpty) await profNot.eliminarProfessors(aEliminar);
+      final profDBSet = professorsDB.map((e) => e.dni).toSet();
+      final pAfegir = professorsXml.where((p) => !profDBSet.contains(p.dni)).toList();
+      final pEliminar = professorsDB.where((p) => !professorsXml.any((px) => px.dni == p.dni)).toList();
+
+      if (pAfegir.isNotEmpty) await profNot.inserirProfessors(pAfegir);
+      if (pEliminar.isNotEmpty){
+        List<String> fotoPaths = [];
+        for(final p in pEliminar){
+          if(p.fotoPath != null){
+            fotoPaths.add(p.fotoPath!);
+          }
+        }
+        await storageService.eliminaFotos(fotoPaths);
+        await profNot.eliminarProfessors(pEliminar);
+      }
     }
   }
 
@@ -98,12 +109,12 @@ class ImportController extends AsyncNotifier<void> {
         : await _actualitzaAlumnes(alumneNot, repo, alumnesXml, alumnesDB, cursosXml);
 
     if (alumnesAInserir != null) await alumneNot.inserirAlumnes(alumnesAInserir);
-    final alumnesALaBD = await ref.watch(alumnesTotsProvider.future);
+    //final alumnesALaBD = await ref.watch(alumnesTotsProvider.future);
 
-    debugPrint('PRINT DE _importaAlumnes');
+    /*debugPrint('PRINT DE _importaAlumnes');
     for(Alumne alumne in alumnesALaBD){
       debugPrint('${alumne.id} ${alumne.nom} ${alumne.grup}');
-    }
+    }*/
   }
 
   //Realment no fa falta que li passem cursosNot
@@ -146,6 +157,7 @@ class ImportController extends AsyncNotifier<void> {
     try {
 
       final cursosNot = ref.read(cursosNotifierProvider.notifier);
+      final storageServiceProvider = ref.read(StorageServiceProvider);
 
       final cursosNous = cursosXml.map((nom) => Curs(nom: nom)).toList();
       final cursosActuals = await ref.watch(cursTotsProvider.future);
@@ -165,7 +177,7 @@ class ImportController extends AsyncNotifier<void> {
       await cursosNot.inserirCursos(cursosPerAfegir);
       //Ací creariem els directoris nous
       final nomsNousCursos = cursosPerAfegir.map((c) => c.nom).toSet();
-      await ref.read(StorageServiceProvider).creaEstructuraAlumnes(nomsNousCursos);
+      await storageServiceProvider.creaEstructuraAlumnes(nomsNousCursos);
 
       final cursosActualitzats = await ref.watch(cursTotsProvider.future);
       // Alumnes a inserir o editar
@@ -184,24 +196,40 @@ class ImportController extends AsyncNotifier<void> {
         } else if (existent.cursId != alum.cursId) {
 
           alumnesACanviar.add(CanviDeCursAlumne(cursVell: existent.grup!, cursNou: alum.grup!, nomAlumne: existent.nom));
+          final novaFotoPath = await storageServiceProvider.getPathAlumne(alum.grup!, existent.nom);
 
-          final alumneAmbCursCanviat = alum.copyWith(id: existent.id);
+          final alumneAmbCursCanviat = alum.copyWith(id: existent.id, fotoPath: novaFotoPath);
 
           alumnesAEditar.add(alumneAmbCursCanviat);
         }
       }
       // Alumnes que s'han d'eliminar
       final alumnesAEliminar = alumnesDB.where((a) => !alumnesNiesXml.contains(a.nia)).toList();
-      if (alumnesAEliminar.isNotEmpty) await alumneNot.eliminarAlumnes(alumnesAEliminar);
+
+      if (alumnesAEliminar.isNotEmpty){
+        List<String> fotoPaths = [];
+        for(final a in alumnesAEliminar){
+          if(a.fotoPath != null){
+            fotoPaths.add(a.fotoPath!);
+          }
+        }
+        await storageServiceProvider.eliminaFotos(fotoPaths);
+        await alumneNot.eliminarAlumnes(alumnesAEliminar);
+      }
 
       if (alumnesAEditar.isNotEmpty) await alumneNot.editarAlumnes(alumnesAEditar);
 
-      for (final alumne in alumnesACanviar) {
-        await ref.read(StorageServiceProvider).mouFotoAlumne(alumne.cursVell, alumne.cursNou, alumne.nomAlumne);
-      }
+      await Future.wait(alumnesACanviar.map((alumne) {
+        return storageServiceProvider.mouFotoAlumne(
+          alumne.cursVell,
+          alumne.cursNou,
+          alumne.nomAlumne,
+        );
+      }));
+
 
       //Val, ací ja podria eliminar els cursos vells no?
-      await ref.read(StorageServiceProvider).eliminaCarpetesAlumnes(nomsCursosABorrar);
+      await storageServiceProvider.eliminaCarpetesAlumnes(nomsCursosABorrar);
 
       return alumnesAInserir;
 

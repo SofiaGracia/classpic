@@ -101,4 +101,25 @@ class ProfessorNotifier extends _$ProfessorNotifier {
       return actuals.map((e) => e.dni == professor.dni ? professor : e).toList();
     });
   }
+
+  Future<void> editarProfessors(List<Professor> professors) async {
+    try{
+      final repo = await _repo;
+      await repo.editarProfessorsDB(professors);
+      final actuals = state.requireValue;
+      final idsEditats = professors.map((p) => p.id).toSet();
+      final List<Professor> actualitzats = [];
+      for (final p in actuals){
+        if(idsEditats.contains(p.id)){
+          final professorEditat = professors.firstWhere((editat) => editat.id == p.id);
+          actualitzats.add(professorEditat);
+        }else{
+          actualitzats.add(p);
+        }
+      }
+      state = AsyncValue.data(actualitzats);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    }
+  }
 }

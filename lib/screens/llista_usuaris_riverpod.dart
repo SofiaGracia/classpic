@@ -8,13 +8,12 @@ import '../models/alumne.dart';
 import '../models/professor.dart';
 import '../models/usuari.dart';
 import '../providers/alumne_notifier.dart';
+import '../service/storage_service.dart';
 
 class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
-  //final int? cursId;
   final ProviderListenable<AsyncValue<List<T>>> provider;
   final Future<void> Function(T usuari) onEditar;
   final Future<void> Function(T usuari) onBorrar;
-  //Ací deuriem tindre un onCreate;
   final Future<void> Function(T usuari) onCreate;
 
   const LlistaUsuarisR({
@@ -42,8 +41,19 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
             children: llista.map((usuari) {
               return UsuariWidgetR(
                 usuari: usuari,
-                onEditar: (u) => onEditar(u as T),
-                onBorrar: (u) => onBorrar(u as T),
+                onEditar: (u) async {
+                  if(usuari is Alumne){
+                    final cursVell = (usuari as Alumne).grup!;
+                    await ref.read(StorageServiceProvider).mouFotoAlumne(cursVell, (u as Alumne).grup!, u.nom);
+                  }
+                  onEditar(u as T);
+                },
+                onBorrar: (u) async {
+                  if(u.fotoPath != null){
+                    await ref.read(StorageServiceProvider).eliminaFoto(u.fotoPath!);
+                  }
+                  await onBorrar(u as T);
+                },
               );
             }).toList(),
           );
