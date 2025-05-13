@@ -1,8 +1,8 @@
 import 'package:xml_fotos/database/dao/curs_dao.dart';
 
-import '../database/dao/alumne_dao.dart';
-import '../database/dao/professor_dao.dart';
-import '../database/database.dart'; // On tens la teva base de dades definides
+import 'dao/alumne_dao.dart';
+import 'dao/professor_dao.dart';
+import 'database.dart'; // On tens la teva base de dades definides
 
 class DatabaseService {
   static AppDatabase? _db;

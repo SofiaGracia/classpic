@@ -4,6 +4,8 @@ import 'package:floor/floor.dart';
 
 import '../../models/alumne.dart';
 
+/// DAO per gestionar operacions amb la taula d’alumnes.
+/// Inclou insercions, actualitzacions, eliminacions i consultes.
 @dao
 abstract class AlumneDao {
 

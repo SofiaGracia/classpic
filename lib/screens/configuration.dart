@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:xml_fotos/screens/widgets/import_button.dart';
 
+/// Pantalla amb opcions per importar dades d'alumnes o professors.
 class ConfigurationScreen extends StatelessWidget {
   const ConfigurationScreen({super.key});
 

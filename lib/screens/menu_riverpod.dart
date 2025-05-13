@@ -12,6 +12,9 @@ import '../models/professor.dart';
 import 'configuration.dart';
 import 'llista_usuaris_riverpod.dart';
 
+
+/// Pantalla principal amb accés a les seccions d’alumnes, professors i configuració.
+/// Utilitza [StatusButtonR] per mostrar l’estat de càrrega de dades.
 class MenuScreenR extends ConsumerStatefulWidget {
   const MenuScreenR({super.key});
 

@@ -2,20 +2,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../providers/alumne_notifier.dart';
-
+/// Botó amb estat que reflecteix l'estat de càrrega d'un provider.
+/// Mostra un indicador, un error o un botó actiu segons les dades.
 class StatusButtonR extends ConsumerWidget {
   final String text;
   final VoidCallback onPressed;
   final AutoDisposeAsyncNotifierProvider<dynamic, dynamic> provider;
-  final Widget? trailing;
+  //final Widget? trailing;
 
   StatusButtonR({
     super.key,
     required this.text,
     required this.onPressed,
     required this.provider,
-    this.trailing,
+    //this.trailing,
   });
 
   @override
