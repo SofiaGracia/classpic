@@ -1,21 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:provider/provider.dart';
-import 'package:xml_fotos/repository/implementations/xml.dart';
-import 'package:xml_fotos/repository/interfaces/ixml.dart';
-import 'package:xml_fotos/screens/menu_riverpod.dart';
+import 'package:xml_fotos/presentation/screens/menu_riverpod.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  /*runApp(MultiProvider(
-    providers: [
-      //Provider<IRepositoryCursos>(create: (_) => RepositoryCursos()),
-      ChangeNotifierProvider<UsuarisProvider>(create: (_) => UsuarisProvider()),
-      // altres providers
-    ],
-    child: MyApp(),
-  ));*/
   runApp(const ProviderScope(child: MyApp()));
 }
 
