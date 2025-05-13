@@ -2,6 +2,8 @@ import 'package:floor/floor.dart';
 
 import '../../models/curs.dart';
 
+//DAO per gestionar operacions amb la taula de curs.
+// Inclou insercions, actualitzacions, eliminacions i consultes.
 @dao
 abstract class CursDao {
 

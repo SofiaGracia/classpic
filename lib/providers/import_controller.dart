@@ -12,7 +12,7 @@ import '../models/curs.dart';
 import '../models/professor.dart';
 import '../repository/alumne_xml.dart';
 import '../repository/curs_db.dart';
-import '../repository/database.dart';
+import '../database/database_service.dart';
 import '../repository/implementations/xml.dart';
 import '../repository/professor_xml.dart';
 import '../service/storage_service.dart';

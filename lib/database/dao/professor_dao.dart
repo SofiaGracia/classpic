@@ -4,6 +4,8 @@ import 'package:floor/floor.dart';
 
 import '../../models/professor.dart';
 
+//DAO per gestionar operacions amb la taula de professors.
+// Inclou insercions, actualitzacions, eliminacions i consultes.
 @dao
 abstract class ProfessorDao {
 

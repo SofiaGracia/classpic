@@ -1,7 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:xml_fotos/repository/database.dart';
+import 'package:xml_fotos/database/database_service.dart';
 
 import '../database/dao/alumne_dao.dart';
 import '../models/alumne.dart';

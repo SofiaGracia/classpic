@@ -1,4 +1,4 @@
-// database.dart
+// database_service.dart
 
 // required package imports
 import 'dart:async';
@@ -14,6 +14,8 @@ import 'dao/professor_dao.dart';
 
 part 'database.g.dart'; // the generated code will be there
 
+//Defineix l’esquema de la base de dades SQLite de l’app,
+// amb les entitats i DAOs que utilitzarà Floor per generar automàticament el codi d’accés a dades.
 @Database(version: 12, entities: [Alumne, Professor, Curs])
 abstract class AppDatabase extends FloorDatabase {
   AlumneDao get alumneDao;
