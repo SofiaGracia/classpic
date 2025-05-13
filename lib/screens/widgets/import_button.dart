@@ -3,8 +3,6 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/import_controller.dart';
 
-/// Botó reutilitzable per importar dades XML.
-/// Mostra l'estat de càrrega i informa l'usuari del resultat.
 class ImportButton extends ConsumerWidget {
   final bool isAlumne;
 

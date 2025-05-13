@@ -19,12 +19,11 @@ final repositoryProfessorDBProvider = FutureProvider<RepositoryProfessorDB>((ref
   return RepositoryProfessorDB(professorDao: dao);
 });
 
-/*@riverpod
-Future<List<Professor>> professorLlista(ProfessorLlista ref, int algo) async {
-  final repo = await ref.watch(repositoryProfessorDBProvider.future);
-  final professors = await repo.carregaProfessorsDB();
+@riverpod
+Future<List<Professor>> professorsTots(ProfessorsTotsRef ref) async {
+  final professors = await ref.watch(professorNotifierProvider.future);
   return professors;
-}*/
+}
 
 @riverpod
 class ProfessorNotifier extends _$ProfessorNotifier {

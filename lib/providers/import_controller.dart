@@ -1,37 +1,16 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml/xml.dart';
-import 'package:xml_fotos/providers/alumne_notifier.dart';
-import 'package:xml_fotos/providers/professor_notifier.dart';
-import 'package:xml_fotos/utils/change_group.dart';
-
-import '../database/dao/curs_dao.dart';
-import '../models/alumne.dart';
-import '../models/curs.dart';
-import '../models/professor.dart';
-import '../repository/alumne_xml.dart';
-import '../repository/curs_db.dart';
-import '../database/database_service.dart';
 import '../repository/implementations/xml.dart';
-import '../repository/professor_xml.dart';
+import '../service/alumne_import_handler.dart';
+import '../service/professor_import_handler.dart';
 import '../service/storage_service.dart';
-import 'cursos_notifier.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final cursDaoProvider = FutureProvider<CursDao>((ref) async {
-  final dbService = DatabaseService();
-  await dbService.connectaDB();
-  return dbService.cursDao;
-});
+part 'import_controller.g.dart';
 
-final importControllerProvider =
-AsyncNotifierProvider<ImportController, void>(() => ImportController());
-
-
-class ImportController extends AsyncNotifier<void> {
+@riverpod
+class ImportController extends _$ImportController {
   bool get isLoading => state.isLoading;
 
-  @override
   Future<void> build() async {
     // No fem res ací; només gestionem estat des de l'onPressed.
   }
@@ -39,11 +18,14 @@ class ImportController extends AsyncNotifier<void> {
   Future<void> importaDades({required bool isAlumne}) async {
     try {
       final doc = await ref.read(RepositoryXmlProvider).carregaInfo();
+      final storage = ref.read(StorageServiceProvider);
 
       if (isAlumne) {
-        await _importaAlumnes(doc!);
+        final handler = AlumneImportHandler(ref, storage);
+        await handler.processa(doc!);
       } else {
-        await _importaProfessors(doc!);
+        final handler = ProfessorImportHandler(ref, storage);
+        await handler.processa(doc!);
       }
 
       state = const AsyncData(null);
@@ -52,7 +34,7 @@ class ImportController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> _importaProfessors(XmlDocument doc) async {
+  /*Future<void> _importaProfessors(XmlDocument doc) async {
     state = const AsyncLoading();
 
     final storageService = ref.read(StorageServiceProvider);
@@ -237,6 +219,6 @@ class ImportController extends AsyncNotifier<void> {
       debugPrint('Error a _actualitzaAlumnes: $e\n$st');
       return null;
     }
-  }
+  }*/
 }
 
