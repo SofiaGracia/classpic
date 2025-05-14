@@ -16,14 +16,13 @@ import 'camera_camera.dart';
 class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
   final T? usuari;
   final String Function(T) getId;
-  final T Function({
-    required String id,
-    required String nom,
-    required String c1,
-    required String c2,
-    String? fotoPath,
-    String? grup
-  }) constructor;
+  final T Function(
+      {required String id,
+      required String nom,
+      required String c1,
+      required String c2,
+      String? fotoPath,
+      String? grup}) constructor;
   final bool isAlumne;
   final int? cursId;
 
@@ -38,10 +37,12 @@ class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<NewEditUserScreen<T>> createState() => _NewEditUserScreenState<T>();
+  ConsumerState<NewEditUserScreen<T>> createState() =>
+      _NewEditUserScreenState<T>();
 }
 
-class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUserScreen<T>> {
+class _NewEditUserScreenState<T extends Usuari>
+    extends ConsumerState<NewEditUserScreen<T>> {
   final _formKey = GlobalKey<FormState>();
 
   late TextEditingController idController;
@@ -61,7 +62,8 @@ class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUse
     _imatge = widget.usuari?.fotoPath;
 
     final usuari = widget.usuari;
-    idController = TextEditingController(text: usuari != null? widget.getId(usuari) : '');
+    idController =
+        TextEditingController(text: usuari != null ? widget.getId(usuari) : '');
     nomController = TextEditingController(text: usuari?.nom ?? '');
     cognom1Controller = TextEditingController(text: usuari?.c1 ?? '');
     cognom2Controller = TextEditingController(text: usuari?.c2 ?? '');
@@ -77,9 +79,9 @@ class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUse
 
       if (widget.isAlumne && grupSeleccionat != null) {
         final cursos = ref.read(cursosNotifierProvider).maybeWhen(
-          data: (cursos) => cursos,
-          orElse: () => [],//Ací tenim un orElse
-        );
+              data: (cursos) => cursos,
+              orElse: () => [], //Ací tenim un orElse
+            );
 
         final cursTrobat = _trobaCurs(cursos as List<Curs>);
 
@@ -87,8 +89,11 @@ class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUse
           idCursSeleccionat = cursTrobat.id;
           nomCursSeleccionat = cursTrobat.nom;
 
-          if(widget.usuari!= null && grupSeleccionat != cursTrobat){
-            await ref.read(StorageServiceProvider).mouFotoAlumne((widget.usuari as Alumne).grup!, nomCursSeleccionat, widget.usuari!.nom);
+          if (widget.usuari != null && grupSeleccionat != cursTrobat) {
+            await ref.read(StorageServiceProvider).mouFotoAlumne(
+                (widget.usuari as Alumne).grup!,
+                nomCursSeleccionat,
+                widget.usuari!.nom);
           }
         }
       }
@@ -110,9 +115,9 @@ class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUse
     }
   }
 
-  Curs? _trobaCurs(List<Curs> cursos){
-    for(Curs curs in cursos){
-      if (curs.nom == grupSeleccionat){
+  Curs? _trobaCurs(List<Curs> cursos) {
+    for (Curs curs in cursos) {
+      if (curs.nom == grupSeleccionat) {
         return curs;
       }
     }
@@ -120,13 +125,14 @@ class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUse
   }
 
   Future<Map<String, String>?> getPaths() async {
-
     if (idController.text.trim().isEmpty ||
         nomController.text.trim().isEmpty ||
-        cognom1Controller.text.trim().isEmpty) {
+        cognom1Controller.text.trim().isEmpty ||
+        cognom2Controller.text.trim().isEmpty) {
       // Mostrem un avís a l'usuari si falta informació
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Has d’omplir ID, Nom i Cognom 1')),
+        const SnackBar(
+            content: Text('Has d’omplir ID, Nom, Primer i Segon Cognom')),
       );
       return null;
     }
@@ -136,9 +142,9 @@ class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUse
 
     if (widget.isAlumne && grupSeleccionat != null) {
       final cursos = ref.read(cursosNotifierProvider).maybeWhen(
-        data: (cursos) => cursos,
-        orElse: () => [],
-      );
+            data: (cursos) => cursos,
+            orElse: () => [],
+          );
 
       final cursTrobat = _trobaCurs(cursos as List<Curs>);
       if (cursTrobat != null) {
@@ -150,20 +156,23 @@ class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUse
     String pathPhoto = '';
     String pathDir = '';
     if (widget.isAlumne) {
-      pathPhoto = await ref.read(StorageServiceProvider).getPathAlumne(nomCursSeleccionat!, nomController.text);
+      pathPhoto = await ref
+          .read(StorageServiceProvider)
+          .getPathAlumne(nomCursSeleccionat!, nomController.text);
       pathDir = '$baseFolderName/$alumnesFolder/$nomCursSeleccionat';
-    }else{
-      pathPhoto = await ref.read(StorageServiceProvider).getPathProfessor(nomController.text);
+    } else {
+      pathPhoto = await ref
+          .read(StorageServiceProvider)
+          .getPathProfessor(nomController.text);
       pathDir = '$baseFolderName/$professorsFolder';
     }
-    return {'foto': pathPhoto, 'dir':pathDir};
+    return {'foto': pathPhoto, 'dir': pathDir};
   }
 
   Future<void> _gestionaFoto() async {
-
     final paths = await getPaths();
 
-    if(paths != null){
+    if (paths != null) {
       String pathPhoto = paths['foto']!;
       String pathDir = paths['dir']!;
 
@@ -181,14 +190,12 @@ class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUse
         setState(() {
           _imatge = novaFoto.path;
         });
-
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
     final cursosAsync = widget.isAlumne
         ? ref.watch(cursosNotifierProvider)
         : const AsyncValue.data([]);
@@ -240,11 +247,15 @@ class _NewEditUserScreenState<T extends Usuari> extends ConsumerState<NewEditUse
                 cursosAsync.when(
                   data: (cursos) {
                     final curs = _trobaCurs(cursos as List<Curs>);
-                    final valorInicial = curs != null? curs.id.toString(): cursos.first.id.toString();
+                    final valorInicial = curs != null
+                        ? curs.id.toString()
+                        : cursos.first.id.toString();
                     return DropdownButtonFormField<String>(
                       value: grupSeleccionat == null ? null : valorInicial,
                       onChanged: (nouId) {
-                        final nomDelGrup = cursos.firstWhere((c) => c.id.toString() == nouId).nom;
+                        final nomDelGrup = cursos
+                            .firstWhere((c) => c.id.toString() == nouId)
+                            .nom;
                         setState(() {
                           grupSeleccionat = nomDelGrup;
                         });

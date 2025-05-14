@@ -38,5 +38,4 @@ class RepositoryAlumneDB {
   Future<void> editarAlumnesDB(List<Alumne> alumnes) async {
     await _alumneDao.updateAlumnes(alumnes);
   }
-
 }

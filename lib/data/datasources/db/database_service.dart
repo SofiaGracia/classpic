@@ -32,7 +32,7 @@ class DatabaseService {
     try {
       if (_db != null) return _db!;
       _db = await $FloorAppDatabase
-          .databaseBuilder('provessssssssssssssssssssssssssssss.db')
+          .databaseBuilder('classpic_database.db')
           .build();
       _alumneDao = _db!.alumneDao;
       _professorDao = _db!.professorDao;
