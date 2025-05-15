@@ -23,7 +23,7 @@ class CursController extends _$CursController {
     curs = await ref.watch(cursPerIdProvider(cursId).future);
   }
 
-  Future<void> editarNom(String nouNom) async {
+  /*Future<void> editarNom(String nouNom) async {
     try {
       if (curs == null) return;
       final storageService = ref.read(StorageServiceProvider);
@@ -38,6 +38,25 @@ class CursController extends _$CursController {
     } catch (e, st) {
       state = AsyncError(e, st);
     }
+  }*/
+
+  Future<void> editarNomNou(String nouNom) async {
+    final repo = await _repo;
+    final cursos = await repo.carregarCursDB();
+    final nomNormalitzat = nouNom.trim().toLowerCase();
+
+    final jaExisteix = cursos.any(
+          (c) => c.id != curs!.id && c.nom.trim().toLowerCase() == nomNormalitzat,
+    );
+    if (jaExisteix) {
+      throw Exception('Ja existeix un curs amb el nom "$nouNom".');
+    }
+
+    curs = curs!.copyWith(nom: nouNom);
+    final actualitzat = await repo.editarCursDB(curs!);
+    //curs = actualitzat;
+    // Si vols notificar canvis al notifier:
+    //await ref.read(cursosNotifierProvider.notifier).carregarCursos();
   }
 
   Future<void> eliminarCurs() async {

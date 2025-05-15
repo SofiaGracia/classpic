@@ -134,7 +134,8 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
     if (nouNom.isEmpty || nouNom == controller.curs?.nom) return;
 
     try {
-      await controller.editarNom(nouNom);
+      //await controller.editarNom(nouNom);
+      await controller.editarNomNou(nouNom);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
