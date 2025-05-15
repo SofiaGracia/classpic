@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
 
+import '../../application/services/storage_service.dart';
 import '../../domain/entities/curs.dart';
 
 class NewCursR extends ConsumerWidget {
@@ -10,12 +12,73 @@ class NewCursR extends ConsumerWidget {
 
   const NewCursR({required this.provider});
 
+  String crearGrupSenseNom(Set<String> nomsCursos) {
+    String nomBase = 'nou grup';
+    int index = 0;
+    String nomFinal = nomBase;
+    while (nomsCursos.contains(nomFinal)) {
+      index++;
+      nomFinal = '$nomBase ($index)';
+    }
+    return nomFinal;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     return FloatingActionButton(
       onPressed: () async {
-        await ref.read(provider.notifier).inserirCurs(Curs(nom: 'Nou grup'));
+
+        final controlador = TextEditingController();
+        final cursos = await ref.read(cursTotsProvider.future);
+        final nomsExistents = cursos.map((c) => c.nom.toLowerCase()).toSet();
+
+        final nom = await showDialog<String>(
+          context: context,
+          builder: (context) {
+            final nomFinal = crearGrupSenseNom(nomsExistents);
+            controlador.text = nomFinal;
+
+            return AlertDialog(
+              title: const Text('Nom del nou curs'),
+              content: TextField(
+                controller: controlador,
+                decoration: const InputDecoration(
+                  hintText: 'Introdueix el nom del curs',
+                ),
+                autofocus: true,
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    //controlador.dispose();
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Cancel·la'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    final nomIntrod = controlador.text.trim();
+                    if (nomIntrod.isEmpty || nomsExistents.contains(nomIntrod.toLowerCase())) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Nom no vàlid o ja existent')),
+                      );
+                    } else {
+                      Navigator.pop(context, nomIntrod); // Retorna el nom
+                    }
+                  },
+                  child: const Text('Crea'),
+                ),
+              ],
+            );
+          },
+        );
+
+        if (nom != null) {
+          final nouCurs = Curs(nom: nom);
+          await ref.read(cursosNotifierProvider.notifier).inserirCurs(nouCurs);
+            final storage = ref.read(StorageServiceProvider);
+          await storage.creaCarpetaGrup(nouCurs.nom);
+        }
       },
       child: const Icon(Icons.add),
       tooltip: 'Afegir curs',

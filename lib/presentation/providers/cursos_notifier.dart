@@ -58,8 +58,14 @@ class CursosNotifier extends _$CursosNotifier {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repo = await _repo;
+      final actuals = await repo.carregarCursDB();
+      final nomNormalitzat = curs.nom.trim().toLowerCase();
+
+      final jaExisteix = actuals.any((c) => c.nom.trim().toLowerCase() == nomNormalitzat);
+      if (jaExisteix) {
+        throw Exception('Ja existeix un curs amb el nom "${curs.nom}".');
+      }
       final nouCurs = await repo.insertarCursDB(curs);
-      final actuals = state.requireValue;
       return [...actuals, nouCurs];
     });
   }

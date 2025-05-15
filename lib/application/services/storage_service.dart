@@ -83,6 +83,15 @@ class StorageService {
     }
   }
 
+  Future<void> creaCarpetaGrup(String nomCurs) async {
+    final baseDir = await _getBaseDirectory();
+    final grupDir = Directory('${baseDir.path}/$alumnesFolder/$nomCurs');
+
+    if (!await grupDir.exists()) {
+      await grupDir.create(recursive: true);
+    }
+  }
+
   Future<void> renombraCarpetaCurs(String nomActual, String nouNom) async {
     final baseDir = await getExternalStorageDirectory();
     if (baseDir == null) throw Exception("No s'ha pogut accedir a l'emmagatzematge.");
