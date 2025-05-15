@@ -26,6 +26,13 @@ Future<List<Curs>> cursTots(CursTotsRef ref) async {
 }
 
 @riverpod
+Future<Curs> cursPerId(CursPerIdRef ref, int cursId) async {
+  final cursos = await ref.watch(cursosNotifierProvider.future);
+  // Filtra i retorna el curs amb el cursId especificat
+  return cursos.firstWhere((curs) => curs.id == cursId);
+}
+
+@riverpod
 class CursosNotifier extends _$CursosNotifier {
 
   Future<RepositoryCursDB> get _repo async => await ref.watch(repositoryCursDBProvider.future);
@@ -121,7 +128,7 @@ class CursosNotifier extends _$CursosNotifier {
     }
   }
 
-  Future<void> editarCurs(Curs curs) async {
+  /*Future<void> editarCurs(Curs curs) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repo = await _repo;
@@ -129,5 +136,5 @@ class CursosNotifier extends _$CursosNotifier {
       final actuals = state.requireValue;
       return actuals.map((e) => e.id == curs.id ? curs : e).toList();
     });
-  }
+  }*/
 }

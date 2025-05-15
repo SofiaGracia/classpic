@@ -10,6 +10,7 @@ import '../../domain/entities/professor.dart';
 import '../../domain/models/usuari.dart';
 import '../../application/services/storage_service.dart';
 import '../../shared/utils/constants.dart';
+import '../../shared/utils/dialog.dart';
 import '../screens/camera_camera.dart';
 import '../screens/new_edit_user.dart';
 
@@ -146,7 +147,17 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetR> {
             ),
             IconButton(
               icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: _borrarUsuari,
+              onPressed: () async {
+                final confirmat = await showConfirmacioEliminacioDialog(
+                  context: context,
+                  titol: 'Eliminar usuari',
+                  missatge: 'Estàs segur que vols eliminar aquest usuari?',
+                );
+
+                if (confirmat == true) {
+                  _borrarUsuari;
+                }
+              },
             ),
           ],
         ),
