@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/domain/models/fotopathcacheext.dart';
 
 import '../../domain/entities/alumne.dart';
+import '../../shared/utils/dialog.dart';
 import '../providers/alumne_notifier.dart';
+import '../providers/curs_controller.dart';
 import '../providers/cursos_notifier.dart';
 import '../../application/services/storage_service.dart';
 import '../screens/llista_usuaris_riverpod.dart';
@@ -12,8 +14,14 @@ import 'counter.dart';
 
 class CursWidget extends ConsumerStatefulWidget {
   final int cursId;
+  final bool seleccionat;
+  final VoidCallback? onLongPress;
 
-  const CursWidget({required this.cursId, super.key});
+  const CursWidget({
+    required this.cursId,
+    this.seleccionat = false,
+    this.onLongPress,
+  });
 
   @override
   ConsumerState<CursWidget> createState() => _CursWidgetState();
@@ -26,100 +34,120 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
   @override
   void initState() {
     super.initState();
-    final curs = ref
-        .read(cursosNotifierProvider)
-        .value
-        ?.firstWhere((c) => c.id == widget.cursId);
-    _controller = TextEditingController(text: curs?.nom ?? '');
+    final nomCurs = ref.read(CursControllerProvider(widget.cursId).notifier);
+    _controller = TextEditingController(text: nomCurs.curs?.nom ?? '');
   }
 
   @override
   Widget build(BuildContext context) {
-    final curs = ref
-        .watch(cursosNotifierProvider)
-        .value
-        ?.firstWhere((c) => c.id == widget.cursId);
-    if (curs == null) return SizedBox.shrink();
+    // Nom del curs reactiu, només actualitza aquest widget quan canvia aquest valor
+    final nom = ref.watch(
+      cursosNotifierProvider.select((state) {
+        return state.when(
+          data: (llista) => llista.firstWhere((c) => c.id == widget.cursId).nom,
+          loading: () => 'Carregant...',
+          error: (_, __) => 'Error',
+        );
+      }),
+    );
+
+    //final estat = ref.watch(cursControllerProvider(widget.cursId));
+    final controller = ref.read(CursControllerProvider(widget.cursId).notifier);
 
     return GestureDetector(
-        onTap: () {
-          // Navegar a una altra pantalla
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => LlistaUsuarisR<Alumne>(
-                provider: alumnesPerCursFiltratProvider(widget.cursId),
-                onEditar: (a) async {
-                  await ref.read(alumnesNotifierProvider.notifier).editarAlumne(a);
-                  await a.setFotoPathIfNeeded(ref.read(StorageServiceProvider));
-                },
-                onBorrar: (a) async => await ref.read(alumnesNotifierProvider.notifier).eliminarAlumne(a),
-                onCreate: (a) async => await ref.read(alumnesNotifierProvider.notifier).inserirAlumne(a),
-              ),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LlistaUsuarisR<Alumne>(
+              provider: alumnesPerCursFiltratProvider(widget.cursId),
+              onEditar: (a) async {
+                await ref
+                    .read(alumnesNotifierProvider.notifier)
+                    .editarAlumne(a);
+                await a.setFotoPathIfNeeded(ref.read(StorageServiceProvider));
+              },
+              onBorrar: (a) async => await ref
+                  .read(alumnesNotifierProvider.notifier)
+                  .eliminarAlumne(a),
+              onCreate: (a) async => await ref
+                  .read(alumnesNotifierProvider.notifier)
+                  .inserirAlumne(a),
             ),
-          );
-        },
-        child: ListTile(
-          title: isEditing
-              ? TextField(
-                  controller: _controller,
-                  /*onSubmitted: (value) {
-                    ref.read(cursosNotifierProvider.notifier).editarCurs(
-                          curs.copyWith(nom: value),
-                        );
-                    setState(() => isEditing = false);
-                  },*/
-                )
-              : Text(curs.nom),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CounterWidget<Alumne>(
-                provider: alumnesPerCursFiltratProvider(widget.cursId),
-              ),
-              IconButton(
-                icon: Icon(isEditing ? Icons.check : Icons.edit),
-                  onPressed: () async {
-                    if (isEditing) {
-                      final storageService = ref.read(StorageServiceProvider);
-                      try {
-                        await storageService.renombraCarpetaCurs(curs.nom, _controller.text);
-
-                        // Actualitza el nom del curs en la base de dades
-                        await ref.read(cursosNotifierProvider.notifier)
-                            .editarCurs(curs.copyWith(nom: _controller.text));
-
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Nom del curs actualitzat correctament.')),
-                          );
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error al renombrar la carpeta: $e')),
-                          );
-                        }
-                      }
-                    }
-
-                    // Sempre canviem l'estat (no cal que siga async)
-                    setState(() {
-                      isEditing = !isEditing;
-                    });
-                  }
-              ),
-              IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () {
-                  ref.read(cursosNotifierProvider.notifier).eliminarCurs(curs);
-                  ref.read(StorageServiceProvider).eliminarFotosCarpetaCurs(curs.nom);
-                },
-              ),
-            ],
           ),
-        )
+        );
+      },
+      child: ListTile(
+        title: isEditing
+            ? TextField(
+                controller: _controller,
+                autofocus: true,
+                onSubmitted: (_) => _guardarNom(controller),
+              )
+            : Text(nom),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CounterWidget<Alumne>(
+              provider: alumnesPerCursFiltratProvider(widget.cursId),
+            ),
+            IconButton(
+              icon: Icon(isEditing ? Icons.check : Icons.edit),
+              onPressed: () => _onEditTap(controller),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () async {
+                final confirmat = await showConfirmacioEliminacioDialog(
+                  context: context,
+                  titol: 'Eliminar curs',
+                  missatge: 'Estàs segur que vols eliminar aquest curs?',
+                );
+                if (confirmat == true) {
+                  await controller.eliminarCurs();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Curs eliminat.')),
+                    );
+                  }
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
+  }
+
+  void _onEditTap(CursController controller) async {
+    if (isEditing) {
+      await _guardarNom(controller);
+    }
+
+    setState(() {
+      isEditing = !isEditing;
+    });
+  }
+
+  Future<void> _guardarNom(CursController controller) async {
+    final nouNom = _controller.text.trim();
+    if (nouNom.isEmpty || nouNom == controller.curs?.nom) return;
+
+    try {
+      await controller.editarNom(nouNom);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Nom del curs actualitzat correctament.')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al renombrar la carpeta: $e')),
+        );
+      }
+    }
   }
 
   @override

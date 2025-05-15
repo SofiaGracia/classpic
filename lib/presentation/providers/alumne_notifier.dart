@@ -55,11 +55,6 @@ class AlumnesNotifier extends _$AlumnesNotifier {
   }
 
   Future<void> carregarAlumnes() async {
-    /*state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final repo = await _repo;
-      return repo.carregaAlumnesDB();
-    });*/
 
     try{
       final repo = await _repo;
