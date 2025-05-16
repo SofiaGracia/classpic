@@ -91,7 +91,7 @@ class ProfessorNotifier extends _$ProfessorNotifier {
     });
   }
 
-  Future<void> editarProfessor(Professor professor) async {
+  /*Future<void> editarProfessor(Professor professor) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repo = await _repo;
@@ -120,5 +120,5 @@ class ProfessorNotifier extends _$ProfessorNotifier {
     } catch (e, st) {
       state = AsyncError(e, st);
     }
-  }
+  }*/
 }
