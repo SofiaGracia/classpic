@@ -48,7 +48,7 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
                   onEditar(u as T);
                 },
                 onBorrar: (u) async {
-                  if((u as Usuari).fotoPath != null){
+                  if((u).fotoPath != null){
                     await ref.read(StorageServiceProvider).eliminaFoto(u.fotoPath!);
                   }
                   await onBorrar(u as T);
