@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:xml_fotos/data/datasources/db/database_service.dart';
+import 'package:xml_fotos/presentation/providers/repository.dart';
 
 import '../../data/datasources/db/dao/alumne_dao.dart';
 import '../../domain/entities/alumne.dart';
@@ -9,16 +10,7 @@ import '../../data/repository/alumne_db.dart';
 
 part 'alumne_notifier.g.dart';
 
-final alumneDaoProvider = FutureProvider<AlumneDao>((ref) async {
-  final dbService = DatabaseService();
-  await dbService.connectaDB();
-  return dbService.alumneDao;
-});
 
-final repositoryAlumneDBProvider = FutureProvider<RepositoryAlumneDB>((ref) async {
-  final dao = await ref.watch(alumneDaoProvider.future);
-  return RepositoryAlumneDB(alumneDao: dao);
-});
 
 // Primer, canviem el provider de alumnes a un `FutureProvider.family`
 // Així podrem passar el cursId i obtenir només els alumnes d'aquest curs.
@@ -158,4 +150,28 @@ class AlumnesNotifier extends _$AlumnesNotifier {
       state = AsyncError(e, st);
     }
   }
+
+  Future<List<Alumne>> getAlumnesSenseModificarState() async {
+    final repo = await _repo;
+    return repo.carregaAlumnesDB();
+  }
+  Future<void> actualitza(Alumne usuariActualitzat) async {
+    try {
+      final actuals = state.requireValue;
+
+      state = const AsyncLoading();
+
+      final repo = await _repo;
+      await repo.editarAlumneDB(usuariActualitzat);
+
+      final actualitzats = actuals.map((alumne) {
+        return alumne.id == usuariActualitzat.id ? usuariActualitzat : alumne;
+      }).toList();
+
+      state = AsyncValue.data(actualitzats);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    }
+  }
+
 }

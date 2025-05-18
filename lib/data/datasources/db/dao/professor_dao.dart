@@ -21,6 +21,9 @@ abstract class ProfessorDao {
   //@Query('SELECT * FROM Professor WHERE dni = :dni')
   //Stream<Professor?> findProfessorByDni(int dni);
 
+  @Query('SELECT * FROM professors WHERE id = :id')
+  Future<Professor?> findProfessorById(int id);
+
   @insert
   Future<void> insertProfessor(Professor professor);
 

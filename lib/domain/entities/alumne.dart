@@ -25,6 +25,9 @@ class Alumne extends Usuari {
   //@ColumnInfo(name: 'nia', unique: true)
   String nia;
 
+  @override
+  String get usuId => nia;
+
   //Ara en principi curs podria ser required i no null
   final String? grup;
 
@@ -40,14 +43,6 @@ class Alumne extends Usuari {
     String? fotoPath,
     this.cursId,
   }) : super(nom: nom, c1: c1, c2: c2, fotoPath: fotoPath);
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is Alumne && nia == other.nia;
-
-  @override
-  int get hashCode => nia.hashCode;
 
   Alumne copyWith({
     int? id,

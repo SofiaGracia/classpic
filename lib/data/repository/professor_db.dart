@@ -11,6 +11,10 @@ class RepositoryProfessorDB {
     required ProfessorDao professorDao,
   }) : _professorDao = professorDao;
 
+  Future<Professor?> carregaProfessorDB(int id) async{
+    return await _professorDao.findProfessorById(id);
+  }
+
   Future<List<Professor>> carregaProfessorsDB() async {
     final professors = await _professorDao.findAllProfessors();
     return professors;

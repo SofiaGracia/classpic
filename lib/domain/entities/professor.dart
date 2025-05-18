@@ -8,6 +8,9 @@ class Professor extends Usuari {
 
   String dni;
 
+  @override
+  String get usuId => dni;
+
   Professor({
     this.id,
     required this.dni,
@@ -16,13 +19,6 @@ class Professor extends Usuari {
     String? c2,
     String? fotoPath,
   }) : super(nom: nom, c1: c1, c2: c2, fotoPath: fotoPath);
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) || other is Professor && dni == other.dni;
-
-  @override
-  int get hashCode => dni.hashCode;
 
   Professor copyWith({
     int? id,
