@@ -7,6 +7,7 @@ import 'package:xml_fotos/presentation/providers/repository.dart';
 
 import '../../data/repository/alumne_db.dart';
 import '../../domain/entities/alumne.dart';
+import 'alumne_notifier.dart';
 
 // usuari_notifier.dart
 class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
@@ -39,7 +40,7 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
     state = AsyncData(actualitzat);
 
     //Actualitzar a la llista global
-    //ref.read(alumnesNotifierProvider.notifier).actualitza(actualitzat);
+    ref.read(alumnesNotifierProvider.notifier).actualitza(actualitzat);
   }
 }
 

@@ -1,14 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/domain/models/fotopathcacheext.dart';
 
 import '../../domain/entities/alumne.dart';
 import '../../shared/utils/dialog.dart';
 import '../providers/alumne_notifier.dart';
 import '../providers/curs_controller.dart';
 import '../providers/cursos_notifier.dart';
-import '../../application/services/storage_service.dart';
 import '../screens/llista_usuaris_riverpod.dart';
 import 'counter.dart';
 
@@ -34,8 +32,8 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
   @override
   void initState() {
     super.initState();
-    final nomCurs = ref.read(CursControllerProvider(widget.cursId).notifier);
-    _controller = TextEditingController(text: nomCurs.curs?.nom ?? '');
+    final cursController = ref.read(CursControllerProvider(widget.cursId).notifier);
+    _controller = TextEditingController(text: cursController.curs?.nom ?? '');
   }
 
   @override
@@ -60,19 +58,8 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
           context,
           MaterialPageRoute(
             builder: (context) => LlistaUsuarisR<Alumne>(
-              provider: alumnesPerCursFiltratProvider(widget.cursId),
-              onEditar: (a) async {
-                await ref
-                    .read(alumnesNotifierProvider.notifier)
-                    .editarAlumne(a);
-                await a.setFotoPathIfNeeded(ref.read(StorageServiceProvider));
-              },
-              onBorrar: (a) async => await ref
-                  .read(alumnesNotifierProvider.notifier)
-                  .eliminarAlumne(a),
-              onCreate: (a) async => await ref
-                  .read(alumnesNotifierProvider.notifier)
-                  .inserirAlumne(a),
+              cursId: widget.cursId,
+              isAlumne: true,
             ),
           ),
         );

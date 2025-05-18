@@ -72,14 +72,6 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     } catch (e, st) {
       state = AsyncError(e, st);
     }
-
-    /*state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final repo = await _repo;
-      await repo.inserirAlumnesDB(alumnes);
-      final actuals = state.requireValue; // Obtenim els alumnes actuals
-      return [...actuals, ...alumnes]; // Retornem els alumnes nous, afegint-los a l'estat actual
-    });*/
   }
 
   Future<void> inserirAlumne(Alumne alumne) async {
@@ -155,6 +147,12 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     final repo = await _repo;
     return repo.carregaAlumnesDB();
   }
+
+  Future<List<Alumne>> getAlumnesPerCurs(int id) async {
+    final repo = await _repo;
+    return repo.carregaAlumnesPerCursDB(id);
+  }
+  
   Future<void> actualitza(Alumne usuariActualitzat) async {
     try {
       final actuals = state.requireValue;
