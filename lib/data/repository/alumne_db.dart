@@ -10,6 +10,10 @@ class RepositoryAlumneDB {
     required AlumneDao alumneDao,
   }) : _alumneDao = alumneDao;
 
+  Future<Alumne?> carregaAlumneDB(int id) async {
+    return await _alumneDao.findAlumneById(id);
+  }
+
   Future<List<Alumne>> carregaAlumnesDB() async {
     final alumnes = await _alumneDao.findAllAlumnes();
     return alumnes;
