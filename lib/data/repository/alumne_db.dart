@@ -19,6 +19,11 @@ class RepositoryAlumneDB {
     return alumnes;
   }
 
+  Future<List<Alumne>> carregaAlumnesPerCursDB(int id) async {
+    final alumnes = await _alumneDao.obtenirAlumnesDelCurs(id);
+    return alumnes;
+  }
+
   Future<void> inserirAlumnesDB(List<Alumne> alumnesAInserir) async {
     await _alumneDao.insertAlumnes(alumnesAInserir);
   }

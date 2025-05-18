@@ -2,9 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../application/services/storage_service.dart';
 import '../../data/repository/curs_db.dart';
-import '../../domain/entities/alumne.dart';
 import '../../domain/entities/curs.dart';
-import '../providers/alumne_notifier.dart';
 import '../providers/cursos_notifier.dart';
 
 part 'curs_controller.g.dart';
@@ -23,23 +21,6 @@ class CursController extends _$CursController {
     curs = await ref.watch(cursPerIdProvider(cursId).future);
   }
 
-  /*Future<void> editarNom(String nouNom) async {
-    try {
-      if (curs == null) return;
-      final storageService = ref.read(StorageServiceProvider);
-      await storageService.renombraCarpetaCurs(curs!.nom, nouNom);
-      final nouCurs = curs!.copyWith(nom: nouNom);
-      //await ref.read(cursosNotifierProvider.notifier).editarCurs(nouCurs);
-      final repo = await _repo;
-      await repo.editarCursDB(nouCurs);
-      curs = nouCurs;
-
-      state = const AsyncData(null);
-    } catch (e, st) {
-      state = AsyncError(e, st);
-    }
-  }*/
-
   Future<void> editarNomNou(String nouNom) async {
     final repo = await _repo;
     final cursos = await repo.carregarCursDB();
@@ -53,8 +34,7 @@ class CursController extends _$CursController {
     }
 
     curs = curs!.copyWith(nom: nouNom);
-    final actualitzat = await repo.editarCursDB(curs!);
-    //curs = actualitzat;
+    await repo.editarCursDB(curs!);
     // Si vols notificar canvis al notifier:
     //await ref.read(cursosNotifierProvider.notifier).carregarCursos();
   }

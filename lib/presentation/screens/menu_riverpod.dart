@@ -20,7 +20,6 @@ class MenuScreenR extends ConsumerStatefulWidget {
 }
 
 class _MenuScreenRState extends ConsumerState<MenuScreenR> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,6 +75,7 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                           MaterialPageRoute(
                             builder: (context) => LlistaUsuarisR<Professor>(
                               isAlumne: false,
+                              cursId: null,
                             ),
                           ),
                         );

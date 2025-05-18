@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/presentation/providers/alumne_notifier.dart';
 import 'package:xml_fotos/presentation/widgets/new_user.dart';
 import 'package:xml_fotos/presentation/widgets/usuari_riverpod_ind.dart';
 
@@ -11,9 +12,11 @@ import '../providers/professor_notifier.dart';
 
 class LlistaUsuarisR<T extends Usuari> extends ConsumerStatefulWidget {
   final bool isAlumne;
+  final int? cursId;
 
   const LlistaUsuarisR({
     super.key,
+    required this.cursId,
     required this.isAlumne,
   });
 
@@ -31,14 +34,15 @@ class _LlistaUsuarisRState<T extends Usuari> extends ConsumerState<LlistaUsuaris
   }
 
   Future<void> _loadLlista() async {
+    final List<Usuari> usuaris;
     if (widget.isAlumne) {
-      // Carrega alumnes si ho implementes més endavant
+      usuaris = await ref.read(alumnesNotifierProvider.notifier).getAlumnesPerCurs(widget.cursId!);
     } else {
-      final professors = await ref.read(professorNotifierProvider.notifier).getProfessorsSenseModificarState();
-      setState(() {
-        _llista = professors as List<T>;
-      });
+      usuaris = await ref.read(professorNotifierProvider.notifier).getProfessorsSenseModificarState();
     }
+    setState(() {
+      _llista = usuaris as List<T>;
+    });
   }
 
   @override
@@ -52,7 +56,7 @@ class _LlistaUsuarisRState<T extends Usuari> extends ConsumerState<LlistaUsuaris
           return UsuariWidgetRInd(
             usuari: usuari,
             onDelete: (u) async {
-              await ref.read(professorNotifierProvider.notifier).eliminarProfessor(u as Professor);
+              u is Alumne? await ref.read(alumnesNotifierProvider.notifier).eliminarAlumne(u):await ref.read(professorNotifierProvider.notifier).eliminarProfessor(u as Professor);
               setState(() {
                 _loadLlista();
               });
@@ -62,7 +66,7 @@ class _LlistaUsuarisRState<T extends Usuari> extends ConsumerState<LlistaUsuaris
       ),
       floatingActionButton: NewUserR<Usuari>(
         onCreate: (u) async {
-          await ref.read(professorNotifierProvider.notifier).inserirProfessor(u as Professor);
+          u is Alumne? await ref.read(alumnesNotifierProvider.notifier).inserirAlumne(u):await ref.read(professorNotifierProvider.notifier).inserirProfessor(u as Professor);
           setState(() {
             _loadLlista();
           });
