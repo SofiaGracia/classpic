@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:xml_fotos/application/services/storage_service.dart';
 import 'package:xml_fotos/data/repository/curs_db.dart';
 import 'package:xml_fotos/data/datasources/db/database_service.dart';
 
@@ -57,18 +58,23 @@ class CursosNotifier extends _$CursosNotifier {
     return repo.carregarCursosDB();
   }
 
+  Future<bool> checkCurs(Curs curs) async {
+    final repo = await _repo;
+    final actuals = await repo.carregarCursosDB();
+    final nomNormalitzat = curs.nom.trim().toLowerCase();
+
+    return actuals.any((c) => c.nom.trim().toLowerCase() == nomNormalitzat);
+  }
+
   //Inserir nou curs
   Future<void> inserirCurs(Curs curs) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final repo = await _repo;
-      final actuals = await repo.carregarCursosDB();
-      final nomNormalitzat = curs.nom.trim().toLowerCase();
-
-      final jaExisteix = actuals.any((c) => c.nom.trim().toLowerCase() == nomNormalitzat);
-      if (jaExisteix) {
+      if (await checkCurs(curs)) {
         throw Exception('Ja existeix un curs amb el nom "${curs.nom}".');
       }
+      final repo = await _repo;
+      final actuals = await repo.carregarCursosDB();
       final nouCurs = await repo.insertarCursDB(curs);
       return [...actuals, nouCurs];
     });
@@ -90,13 +96,15 @@ class CursosNotifier extends _$CursosNotifier {
   }
 
   Future<void> eliminarCurs(Curs curs) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+
+    try{
       final repo = await _repo;
       await repo.eliminarCursDB(curs);
-      final actuals = state.requireValue;
-      return actuals.where((e) => e != curs).toList();
-    });
+      final actualitzats = await repo.carregarCursosDB();
+      state = AsyncData(actualitzats);
+    }catch (e, st){
+      state = AsyncError(e, st);
+    }
   }
 
   Future<void> eliminarCursos(List<Curs> cursos) async {
@@ -127,18 +135,28 @@ class CursosNotifier extends _$CursosNotifier {
     }
   }
 
-  Future<void> actualitza(Curs cursActualitzat) async {
-    try{
-      final actuals = state.requireValue;
-      state = const AsyncLoading();
+  Future<Curs?> actualitza(Curs cursActualitzat) async {
+    try {
+      //final actuals = state.requireValue; // <- ACCEDEIX abans de posar AsyncLoading
+      if (await checkCurs(cursActualitzat)) {
+        throw Exception('Ja existeix un curs amb el nom "${cursActualitzat.nom}".');
+      }
+
+      final actuals = await getCursosSenseModificarState();
+
+      state = const AsyncLoading(); // <- DESPRÉS
+
       final repo = await _repo;
       await repo.editarCursDB(cursActualitzat);
+
       final actualitzats = actuals.map((curs) {
         return curs.id == cursActualitzat.id ? cursActualitzat : curs;
       }).toList();
 
       state = AsyncValue.data(actualitzats);
-    }catch (e, st){
+
+      return cursActualitzat;
+    } catch (e, st) {
       state = AsyncError(e, st);
     }
   }

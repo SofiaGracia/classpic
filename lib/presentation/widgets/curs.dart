@@ -11,13 +11,13 @@ import '../screens/llista_usuaris_riverpod.dart';
 import 'counter.dart';
 
 class CursWidget extends ConsumerStatefulWidget {
-  final Curs curs;
+  final Curs cursPassat;
   final bool seleccionat;
   final VoidCallback? onLongPress;
   final Future<void> Function(Curs curs) onDelete;
 
   const CursWidget({
-    required this.curs,
+    required this.cursPassat,
     required this.onDelete,
     this.seleccionat = false,
     this.onLongPress,
@@ -35,16 +35,14 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
   @override
   void initState() {
     super.initState();
-    /*final cursActual = ref.read(cursosNotifierProvider).maybeWhen(
-      data: (llista) => llista.firstWhere((c) => c.id == widget.cursId),
-      orElse: () => null,
-    );*/
-    curs = widget.curs;
-    _controller = TextEditingController(text: curs.nom);
+    curs = widget.cursPassat;
+    _controller = TextEditingController(text: widget.cursPassat.nom);
   }
 
   @override
   Widget build(BuildContext context) {
+    _controller = TextEditingController(text: widget.cursPassat.nom);
+    final curs = widget.cursPassat; // ús directe
     final cursAsync = ref.watch(cursWidgetNotifierProvider(curs.id!));
     final cursNot = ref.read(cursWidgetNotifierProvider(curs.id!).notifier);
 
@@ -90,7 +88,7 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
                         );
                         if (confirmat == true) {
                           //await cursNot.eliminarCurs(curs);
-                          widget.onDelete(curs);
+                          await widget.onDelete(widget.cursPassat);
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Curs eliminat.')),
@@ -130,9 +128,11 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
       await _guardarNom(controller);
     }
 
-    setState(() {
-      isEditing = !isEditing;
-    });
+    if (mounted) {
+      setState(() {
+        isEditing = !isEditing;
+      });
+    }
   }
 
   Future<void> _guardarNom(CursWidgetNotifier controller) async {
@@ -140,7 +140,8 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
     if (nouNom.isEmpty || nouNom == curs.nom) return;
 
     try {
-      controller.actualitzaNom(nouNom);
+      //Comprovar que existeix el nom abans d'actualitzar-lo
+      await controller.actualitzaNom(nouNom);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -154,6 +155,7 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
           SnackBar(content: Text('Error al renombrar la carpeta: $e')),
         );
       }
+      _controller.text = curs.nom;
     }
   }
 

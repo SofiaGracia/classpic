@@ -111,7 +111,7 @@ class StorageService {
   }
 
 
-  /// Elimina totes les fotos (fitxers `.jpg`) dins d'una carpeta de curs
+  /// Elimina totes les fotos (fitxers `.jpg`) dins d'una carpeta de curs i borrar també la carpeta
   Future<void> eliminarFotosCarpetaCurs(String nomCurs) async {
     final baseDir = await _getBaseDirectory();
     final carpetaCurs = Directory('${baseDir.path}/$alumnesFolder/$nomCurs');
