@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/alumne_notifier.dart';
 import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
-import 'package:xml_fotos/presentation/screens/cursos_riverpod.dart';
+import 'package:xml_fotos/presentation/screens/llista_cursos.dart';
 import 'package:xml_fotos/presentation/widgets/counter.dart';
 import 'package:xml_fotos/presentation/widgets/status_button_riverpod.dart';
 

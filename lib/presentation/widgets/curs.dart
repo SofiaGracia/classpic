@@ -1,22 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/presentation/providers/curs_widget.dart';
 
 import '../../domain/entities/alumne.dart';
+import '../../domain/entities/curs.dart';
 import '../../shared/utils/dialog.dart';
 import '../providers/alumne_notifier.dart';
-import '../providers/curs_controller.dart';
-import '../providers/cursos_notifier.dart';
 import '../screens/llista_usuaris_riverpod.dart';
 import 'counter.dart';
 
 class CursWidget extends ConsumerStatefulWidget {
-  final int cursId;
+  final Curs curs;
   final bool seleccionat;
   final VoidCallback? onLongPress;
+  final Future<void> Function(Curs curs) onDelete;
 
   const CursWidget({
-    required this.cursId,
+    required this.curs,
+    required this.onDelete,
     this.seleccionat = false,
     this.onLongPress,
   });
@@ -28,85 +30,102 @@ class CursWidget extends ConsumerStatefulWidget {
 class _CursWidgetState extends ConsumerState<CursWidget> {
   bool isEditing = false;
   late TextEditingController _controller;
+  late Curs curs;
 
   @override
   void initState() {
     super.initState();
-    final cursController = ref.read(CursControllerProvider(widget.cursId).notifier);
-    _controller = TextEditingController(text: cursController.curs?.nom ?? '');
+    /*final cursActual = ref.read(cursosNotifierProvider).maybeWhen(
+      data: (llista) => llista.firstWhere((c) => c.id == widget.cursId),
+      orElse: () => null,
+    );*/
+    curs = widget.curs;
+    _controller = TextEditingController(text: curs.nom);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Nom del curs reactiu, només actualitza aquest widget quan canvia aquest valor
-    final nom = ref.watch(
-      cursosNotifierProvider.select((state) {
-        return state.when(
-          data: (llista) => llista.firstWhere((c) => c.id == widget.cursId).nom,
-          loading: () => 'Carregant...',
-          error: (_, __) => 'Error',
-        );
-      }),
-    );
+    final cursAsync = ref.watch(cursWidgetNotifierProvider(curs.id!));
+    final cursNot = ref.read(cursWidgetNotifierProvider(curs.id!).notifier);
 
-    //final estat = ref.watch(cursControllerProvider(widget.cursId));
-    final controller = ref.read(CursControllerProvider(widget.cursId).notifier);
-
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => LlistaUsuarisR<Alumne>(
-              cursId: widget.cursId,
-              isAlumne: true,
-            ),
-          ),
-        );
-      },
-      child: ListTile(
-        title: isEditing
-            ? TextField(
-                controller: _controller,
-                autofocus: true,
-                onSubmitted: (_) => _guardarNom(controller),
-              )
-            : Text(nom),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CounterWidget<Alumne>(
-              provider: alumnesPerCursFiltratProvider(widget.cursId),
-            ),
-            IconButton(
-              icon: Icon(isEditing ? Icons.check : Icons.edit),
-              onPressed: () => _onEditTap(controller),
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () async {
-                final confirmat = await showConfirmacioEliminacioDialog(
-                  context: context,
-                  titol: 'Eliminar curs',
-                  missatge: 'Estàs segur que vols eliminar aquest curs?',
+    return cursAsync.when(
+        data: (curs) => GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LlistaUsuarisR<Alumne>(
+                      cursId: curs.id,
+                      isAlumne: true,
+                    ),
+                  ),
                 );
-                if (confirmat == true) {
-                  await controller.eliminarCurs();
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Curs eliminat.')),
-                    );
-                  }
-                }
               },
+              child: ListTile(
+                title: isEditing
+                    ? TextField(
+                        controller: _controller,
+                        autofocus: true,
+                        onSubmitted: (_) => _guardarNom(cursNot),
+                      )
+                    : Text(curs.nom),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CounterWidget<Alumne>(
+                      provider: alumnesPerCursFiltratProvider(curs.id),
+                    ),
+                    IconButton(
+                      icon: Icon(isEditing ? Icons.check : Icons.edit),
+                      onPressed: () => _onEditTap(cursNot),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () async {
+                        final confirmat = await showConfirmacioEliminacioDialog(
+                          context: context,
+                          titol: 'Eliminar curs',
+                          missatge:
+                              'Estàs segur que vols eliminar aquest curs?',
+                        );
+                        if (confirmat == true) {
+                          //await cursNot.eliminarCurs(curs);
+                          widget.onDelete(curs);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Curs eliminat.')),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ],
-        ),
-      ),
-    );
+        error: (e, _) => Card(
+              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [Expanded(child: Text('Error $e'))],
+                ),
+              ),
+            ),
+        loading: () => Card(
+              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    CircularProgressIndicator(),
+                  ],
+                ),
+              ),
+            ));
   }
 
-  void _onEditTap(CursController controller) async {
+  void _onEditTap(CursWidgetNotifier controller) async {
     if (isEditing) {
       await _guardarNom(controller);
     }
@@ -116,18 +135,18 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
     });
   }
 
-  Future<void> _guardarNom(CursController controller) async {
+  Future<void> _guardarNom(CursWidgetNotifier controller) async {
     final nouNom = _controller.text.trim();
-    if (nouNom.isEmpty || nouNom == controller.curs?.nom) return;
+    if (nouNom.isEmpty || nouNom == curs.nom) return;
 
     try {
-      //await controller.editarNom(nouNom);
-      await controller.editarNomNou(nouNom);
+      controller.actualitzaNom(nouNom);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text('Nom del curs actualitzat correctament.')),
         );
+        _controller.text = nouNom;
       }
     } catch (e) {
       if (context.mounted) {

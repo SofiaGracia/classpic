@@ -1,4 +1,3 @@
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:xml_fotos/data/repository/curs_db.dart';
 import 'package:xml_fotos/data/datasources/db/database_service.dart';
@@ -40,17 +39,22 @@ class CursosNotifier extends _$CursosNotifier {
   @override
   Future<List<Curs>> build() async {
     final repo = await _repo;
-    return repo.carregarCursDB();
+    return repo.carregarCursosDB();
   }
 
   Future<void> carregarCursos() async {
     try{
       final repo = await _repo;
-      final actualitzats = await repo.carregarCursDB();
+      final actualitzats = await repo.carregarCursosDB();
       state = AsyncData(actualitzats);
     }catch (e, st) {
       state = AsyncError(e, st);
     }
+  }
+
+  Future<List<Curs>> getCursosSenseModificarState() async {
+    final repo = await _repo;
+    return repo.carregarCursosDB();
   }
 
   //Inserir nou curs
@@ -58,7 +62,7 @@ class CursosNotifier extends _$CursosNotifier {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repo = await _repo;
-      final actuals = await repo.carregarCursDB();
+      final actuals = await repo.carregarCursosDB();
       final nomNormalitzat = curs.nom.trim().toLowerCase();
 
       final jaExisteix = actuals.any((c) => c.nom.trim().toLowerCase() == nomNormalitzat);
@@ -71,25 +75,14 @@ class CursosNotifier extends _$CursosNotifier {
   }
 
   /*Quan fas state = await AsyncValue.guard(...), dins del bloc guard(...) estàs intentant accedir a state.requireValue,
-   mentre state encara no ha sigut actualitzat amb el nou valor.
-
-  ⚠️ En resum: estàs usant state mentre l'estàs actualitzant, i això pot trencar el futur.*/
-  /*Future<void> inserirCursos(List<Curs> cursos) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final repo = await _repo;
-      await repo.inserirCursosDB(cursos);
-      final actuals = state.requireValue; // Obtenim els alumnes actuals
-      return [...actuals, ...cursos]; // Retornem els alumnes nous, afegint-los a l'estat actual
-    });
-  }*/
+   mentre state encara no ha sigut actualitzat amb el nou valor.*/
 
   Future<void> inserirCursos(List<Curs> cursos) async {
     try {
       final repo = await _repo;
       await repo.inserirCursosDB(cursos);
       // Carrega real des de la base de dades per obtindre els IDs correctes
-      final actualitzats = await repo.carregarCursDB();
+      final actualitzats = await repo.carregarCursosDB();
       state = AsyncData(actualitzats);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -134,13 +127,19 @@ class CursosNotifier extends _$CursosNotifier {
     }
   }
 
-  /*Future<void> editarCurs(Curs curs) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final repo = await _repo;
-      await repo.editarCursDB(curs);
+  Future<void> actualitza(Curs cursActualitzat) async {
+    try{
       final actuals = state.requireValue;
-      return actuals.map((e) => e.id == curs.id ? curs : e).toList();
-    });
-  }*/
+      state = const AsyncLoading();
+      final repo = await _repo;
+      await repo.editarCursDB(cursActualitzat);
+      final actualitzats = actuals.map((curs) {
+        return curs.id == cursActualitzat.id ? cursActualitzat : curs;
+      }).toList();
+
+      state = AsyncValue.data(actualitzats);
+    }catch (e, st){
+      state = AsyncError(e, st);
+    }
+  }
 }

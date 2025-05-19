@@ -8,9 +8,9 @@ import '../../domain/entities/curs.dart';
 
 class NewCursR extends ConsumerWidget {
   final AutoDisposeAsyncNotifierProvider<dynamic, List<Curs>> provider;
-  //final Future<void> Function(Curs curs) onCreate;
+  final Future<void> Function(Curs curs) onCreate;
 
-  const NewCursR({required this.provider});
+  const NewCursR({required this.provider, required this.onCreate});
 
   String crearGrupSenseNom(Set<String> nomsCursos) {
     String nomBase = 'nou grup';
@@ -27,9 +27,8 @@ class NewCursR extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return FloatingActionButton(
       onPressed: () async {
-
         final controlador = TextEditingController();
-        final cursos = await ref.read(cursTotsProvider.future);
+        final cursos = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
         final nomsExistents = cursos.map((c) => c.nom.toLowerCase()).toSet();
 
         final nom = await showDialog<String>(
@@ -58,9 +57,11 @@ class NewCursR extends ConsumerWidget {
                 TextButton(
                   onPressed: () {
                     final nomIntrod = controlador.text.trim();
-                    if (nomIntrod.isEmpty || nomsExistents.contains(nomIntrod.toLowerCase())) {
+                    if (nomIntrod.isEmpty ||
+                        nomsExistents.contains(nomIntrod.toLowerCase())) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Nom no vàlid o ja existent')),
+                        const SnackBar(
+                            content: Text('Nom no vàlid o ja existent')),
                       );
                     } else {
                       Navigator.pop(context, nomIntrod); // Retorna el nom
@@ -75,9 +76,7 @@ class NewCursR extends ConsumerWidget {
 
         if (nom != null) {
           final nouCurs = Curs(nom: nom);
-          await ref.read(cursosNotifierProvider.notifier).inserirCurs(nouCurs);
-            final storage = ref.read(StorageServiceProvider);
-          await storage.creaCarpetaGrup(nouCurs.nom);
+          onCreate(nouCurs);
         }
       },
       child: const Icon(Icons.add),
