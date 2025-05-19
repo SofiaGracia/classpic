@@ -11,9 +11,13 @@ class RepositoryCursDB {
   }) : _cursDao = cursDao;
 
   //Potser carregar tots els cursos
-  Future<List<Curs>> carregarCursDB() async {
+  Future<List<Curs>> carregarCursosDB() async {
     final cursos = await _cursDao.findAllCursos();
     return cursos;
+  }
+
+  Future<Curs?> carregaCursDB(int id) async {
+    return await _cursDao.findCursById(id);
   }
 
   Future<Curs> insertarCursDB(Curs curs) async {
