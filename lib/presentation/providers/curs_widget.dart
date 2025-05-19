@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../application/services/storage_service.dart';
 import '../../data/repository/curs_db.dart';
 import '../../domain/entities/curs.dart';
 import 'cursos_notifier.dart';
@@ -23,16 +24,26 @@ class CursWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Curs, int> {
     return curs!;
   }
 
-  void actualitzaNom(String nouNom) {
+  Future<void> actualitzaNom(String nouNom) async {
+    try {
+      final curs = state.value as Curs;
+      final actualitzat = curs.copyWith(id: curs.id, nom: nouNom);
 
-    final curs = state.value as Curs;
-    final actualitzat = curs.copyWith(
-      id: curs.id,
-      nom: nouNom
-    );
 
-    state = AsyncData(actualitzat);
-    // també pots fer la persistència aquí
-    ref.read(cursosNotifierProvider.notifier).actualitza(actualitzat);
+      final cursActualitzat = await ref.read(cursosNotifierProvider.notifier)
+          .actualitza(actualitzat);
+
+      if (cursActualitzat == null) {
+        throw Exception('No s\'ha pogut actualitzar el nom del curs.');
+      }
+
+      //També ho podries fer en el provider però bueno...
+      final repoStorage = StorageService();
+      repoStorage.renombraCarpetaCurs(curs.nom, nouNom);
+
+      state = AsyncData(cursActualitzat);
+    } catch (e, st) {
+      rethrow; // re-llença perquè l’UI també el pugui gestionar
+    }
   }
 }
