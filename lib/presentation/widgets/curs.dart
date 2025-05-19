@@ -10,6 +10,10 @@ import '../providers/alumne_notifier.dart';
 import '../screens/llista_usuaris_riverpod.dart';
 import 'counter.dart';
 
+//Creació d'un StateProvider global que guarda l'id del curs en edició
+//La veritat és que és brutal que ho puga fer el provider
+final cursEnEdicioProvider = StateProvider<int?>((ref) => null);
+
 class CursWidget extends ConsumerStatefulWidget {
   final Curs cursPassat;
   final bool seleccionat;
@@ -124,8 +128,21 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
   }
 
   void _onEditTap(CursWidgetNotifier controller) async {
+    final idActualEnEdicio = ref.read(cursEnEdicioProvider);
+
+    if (!isEditing && idActualEnEdicio != null && idActualEnEdicio != curs.id) {
+      // Hi ha un altre curs en edició
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Primer acaba d’editar el curs actual.')),
+      );
+      return;
+    }
+
     if (isEditing) {
       await _guardarNom(controller);
+      ref.read(cursEnEdicioProvider.notifier).state = null;
+    } else {
+      ref.read(cursEnEdicioProvider.notifier).state = curs.id;
     }
 
     if (mounted) {
@@ -161,6 +178,9 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
 
   @override
   void dispose() {
+    if (ref.read(cursEnEdicioProvider) == curs.id) {
+      ref.read(cursEnEdicioProvider.notifier).state = null;
+    }
     _controller.dispose();
     super.dispose();
   }
