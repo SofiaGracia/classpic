@@ -112,4 +112,9 @@ class ProfessorNotifier extends _$ProfessorNotifier {
       state = AsyncError(e, st);
     }
   }
+
+  Future<bool> existeixDni(String codi) async {
+    final repo = await _repo;
+    return await repo.carregaProfessorDBbyDni(codi) != null;
+  }
 }

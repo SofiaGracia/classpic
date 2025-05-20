@@ -15,6 +15,10 @@ class RepositoryProfessorDB {
     return await _professorDao.findProfessorById(id);
   }
 
+  Future<Professor?> carregaProfessorDBbyDni(String dni) async{
+    return await _professorDao.findProfessorByDni(dni);
+  }
+
   Future<List<Professor>> carregaProfessorsDB() async {
     final professors = await _professorDao.findAllProfessors();
     return professors;

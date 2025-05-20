@@ -14,6 +14,11 @@ class RepositoryAlumneDB {
     return await _alumneDao.findAlumneById(id);
   }
 
+  //Carregar alumne per nia
+  Future<Alumne?> carregaAlumneDBbyNia(String nia) async {
+    return await _alumneDao.findAlumneByNia(nia);
+  }
+
   Future<List<Alumne>> carregaAlumnesDB() async {
     final alumnes = await _alumneDao.findAllAlumnes();
     return alumnes;
