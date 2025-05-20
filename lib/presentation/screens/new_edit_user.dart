@@ -4,10 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/curs.dart';
 import '../../domain/models/usuari.dart';
+import '../providers/alumne_notifier.dart';
 import '../providers/cursos_notifier.dart';
 import '../../application/services/storage_service.dart';
 import '../../shared/utils/constants.dart';
 import '../../shared/utils/validator.dart';
+import '../providers/professor_notifier.dart';
 import 'camera_camera.dart';
 
 class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
@@ -71,6 +73,35 @@ class _NewEditUserScreenState<T extends Usuari>
 
   Future<void> _guardarUsuari() async {
     if (_formKey.currentState!.validate()) {
+
+      final idNou = idController.text.trim();
+      final idAntic = widget.usuari?.usuId;
+
+      // Només fem la comprovació si és un usuari nou o si canvia l'id
+      final idHaCanviat = idAntic == null || idNou != idAntic;
+
+      if (idHaCanviat) {
+        final llistaExistents = widget.isAlumne
+            ? ref.read(alumnesNotifierProvider).maybeWhen(
+          data: (alumnes) => alumnes,
+          orElse: () => [],
+        )
+            : ref.read(professorNotifierProvider).maybeWhen(
+          data: (professors) => professors,
+          orElse: () => [],
+        );
+
+        final idJaExisteix =
+        llistaExistents.any((usuari) => usuari.usuId == idNou);
+
+        if (idJaExisteix) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Ja existeix un usuari amb aquest ID.')),
+          );
+          return; // Aturem la funció aquí
+        }
+      }
+
       int? idCursSeleccionat;
       String? nomCursSeleccionat;
 
@@ -96,7 +127,7 @@ class _NewEditUserScreenState<T extends Usuari>
       }
 
       final usuariNou = widget.constructor(
-        id: idController.text.trim(),
+        id: idNou,
         nom: nomController.text.trim(),
         c1: cognom1Controller.text.trim(),
         c2: cognom2Controller.text.trim(),
@@ -126,7 +157,6 @@ class _NewEditUserScreenState<T extends Usuari>
         nomController.text.trim().isEmpty ||
         cognom1Controller.text.trim().isEmpty ||
         cognom2Controller.text.trim().isEmpty) {
-      // Mostrem un avís a l'usuari si falta informació
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Has d’omplir ID, Nom, Primer i Segon Cognom')),
