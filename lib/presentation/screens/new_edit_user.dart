@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/application/services/codi_generator.dart';
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/curs.dart';
 import '../../domain/models/usuari.dart';
@@ -71,6 +72,26 @@ class _NewEditUserScreenState<T extends Usuari>
     }
   }
 
+  String _normalitzaId(String idInput) {
+
+    //Per al nia
+    if (idInput.length == numNia) {
+      return CodiGenerator.normalitzaIdentificador(idInput);
+    }
+
+    //Per al dni
+    if (idInput.length == numDni) {
+      return CodiGenerator.normalitzaIdentificador(idInput);
+    }
+
+    //Per si és l'id generat per defecte
+    if (idInput.length == 10) {
+      return idInput;
+    }
+
+    throw FormatException('L\'ID ha de tenir entre $numNia i 10 caràcters.');
+  }
+
   Future<void> _guardarUsuari() async {
     if (_formKey.currentState!.validate()) {
 
@@ -126,8 +147,19 @@ class _NewEditUserScreenState<T extends Usuari>
         }
       }
 
+      //Ací és on faria la comprovació de si id es de 9 o de 10 caràcters
+      final idNormalitzat;
+      try {
+        idNormalitzat = _normalitzaId(idNou);
+      } on FormatException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+        return;
+      }
+
       final usuariNou = widget.constructor(
-        id: idNou,
+        id: idNormalitzat,
         nom: nomController.text.trim(),
         c1: cognom1Controller.text.trim(),
         c2: cognom2Controller.text.trim(),

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
+import 'package:xml_fotos/application/services/codi_generator.dart';
 import 'package:xml_fotos/data/datasources/xml/xml.dart';
 
 import '../../../domain/entities/alumne.dart';
@@ -46,8 +47,11 @@ class RepositoryAlumneXml {
         cursosUnics.add(aluGrup);
 
         if (aluNia != null && aluNom != null && aluC1 != null) {
+
+          final idNia = CodiGenerator.normalitzaIdentificador(aluNia);
+
           alumnes.add(Alumne(
-            nia: aluNia,
+            nia: idNia,
             nom: aluNom,
             c1: aluC1,
             c2: aluC2,
