@@ -10,7 +10,7 @@ abstract class Usuari {
   // Afegim _fotoPathHash per a la lògica del cache
   String? fotoPathHash;
 
-  Usuari({required this.nom, required this.c1, this.c2, this.fotoPath});
+  Usuari({required this.nom, required this.c1, this.c2, this.fotoPath, this.fotoPathHash});
 
   @override
   bool operator ==(Object other) {
@@ -22,9 +22,10 @@ abstract class Usuari {
         other.c1 == c1 &&
         other.c2 == c2 &&
         other.fotoPath == fotoPath &&
+        other.fotoPathHash == fotoPathHash &&
         runtimeType == other.runtimeType;
   }
 
   @override
-  int get hashCode => Object.hash(usuId, nom, c1, c2, fotoPath, runtimeType);
+  int get hashCode => Object.hash(usuId, nom, c1, c2, fotoPath, fotoPathHash, runtimeType);
 }

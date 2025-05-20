@@ -34,6 +34,7 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
       c1: nou.c1,
       c2: nou.c2,
       fotoPath: nou.fotoPath,
+      fotoPathHash: nou.fotoPathHash,
       grup: nou.grup
     );
 

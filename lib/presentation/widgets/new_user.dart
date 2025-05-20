@@ -18,6 +18,7 @@ class NewUserR<T extends Usuari> extends ConsumerWidget {
       required String c1,
       required String c2,
       String? fotoPath,
+      String? fotoPathHash,
       String? grup}) constructor;
 
   //late String codiUsuari;

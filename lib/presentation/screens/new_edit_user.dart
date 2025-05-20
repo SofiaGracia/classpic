@@ -11,6 +11,7 @@ import '../../application/services/storage_service.dart';
 import '../../shared/utils/constants.dart';
 import '../../shared/utils/validator.dart';
 import '../providers/professor_notifier.dart';
+import '../widgets/foto_usuari.dart';
 import 'camera_camera.dart';
 
 class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
@@ -22,6 +23,7 @@ class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
       required String c1,
       required String c2,
       String? fotoPath,
+      String? fotoPathHash,
       String? grup}) constructor;
   final bool isAlumne;
   final int? cursId;
@@ -52,6 +54,7 @@ class _NewEditUserScreenState<T extends Usuari>
   late TextEditingController cognom2Controller;
 
   String? _imatge;
+  String? _fotoPathHash;
   String? grupSeleccionat;
   T? usuariActual;
 
@@ -61,6 +64,8 @@ class _NewEditUserScreenState<T extends Usuari>
 
     usuariActual = widget.usuari;
     _imatge = widget.usuari?.fotoPath;
+    _fotoPathHash = widget.usuari?.fotoPathHash ??
+        DateTime.now().millisecondsSinceEpoch.toString();
 
     final usuari = widget.usuari;
     idController = TextEditingController(text: widget.codiUsuari);
@@ -164,6 +169,7 @@ class _NewEditUserScreenState<T extends Usuari>
         c1: cognom1Controller.text.trim(),
         c2: cognom2Controller.text.trim(),
         fotoPath: _imatge,
+        fotoPathHash: _fotoPathHash,
         grup: nomCursSeleccionat,
       );
 
@@ -245,6 +251,7 @@ class _NewEditUserScreenState<T extends Usuari>
       if (novaFoto != null) {
         setState(() {
           _imatge = novaFoto.path;
+          _fotoPathHash = DateTime.now().millisecondsSinceEpoch.toString();
         });
       }
     }
@@ -338,13 +345,15 @@ class _NewEditUserScreenState<T extends Usuari>
                 onTap: _gestionaFoto,
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage:
-                      _imatge != null ? FileImage(File(_imatge!)) : null,
+                  backgroundColor: Colors.grey.shade200,
                   child: _imatge == null
                       ? const Icon(Icons.camera_alt,
                           size: 40, color: Colors.white70)
-                      : null,
-                  backgroundColor: Colors.grey[400],
+                      : FotoUsuariWidget(
+                    fotoPath: _imatge,
+                    fotoPathHash: _fotoPathHash!,
+                    radius: 30,
+                  ),
                 ),
               ),
               const SizedBox(height: 30),
