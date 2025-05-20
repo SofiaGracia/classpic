@@ -54,6 +54,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
               return professor;
             }
           }, isAlumne: usuari is Alumne?,
+            codiUsuari: usuari is Alumne ? usuari.nia : (usuari as Professor).dni,
         ),
       ),
     );

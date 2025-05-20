@@ -172,4 +172,8 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     }
   }
 
+  Future<bool> existeixNia(String codi) async {
+    final repo = await _repo;
+    return await repo.carregaAlumneDBbyNia(codi) != null;
+  }
 }

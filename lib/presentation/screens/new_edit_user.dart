@@ -1,14 +1,11 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/curs.dart';
 import '../../domain/models/usuari.dart';
 import '../providers/cursos_notifier.dart';
 import '../../application/services/storage_service.dart';
-import '../../shared/utils/camera.dart';
 import '../../shared/utils/constants.dart';
 import '../../shared/utils/validator.dart';
 import 'camera_camera.dart';
@@ -25,6 +22,7 @@ class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
       String? grup}) constructor;
   final bool isAlumne;
   final int? cursId;
+  final String codiUsuari;
 
   const NewEditUserScreen({
     super.key,
@@ -32,8 +30,8 @@ class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
     required this.getId,
     required this.constructor,
     required this.isAlumne,
+    required this.codiUsuari,
     this.cursId,
-    //required this.isAlumne,
   });
 
   @override
@@ -62,8 +60,7 @@ class _NewEditUserScreenState<T extends Usuari>
     _imatge = widget.usuari?.fotoPath;
 
     final usuari = widget.usuari;
-    idController =
-        TextEditingController(text: usuari != null ? widget.getId(usuari) : '');
+    idController = TextEditingController(text: widget.codiUsuari);
     nomController = TextEditingController(text: usuari?.nom ?? '');
     cognom1Controller = TextEditingController(text: usuari?.c1 ?? '');
     cognom2Controller = TextEditingController(text: usuari?.c2 ?? '');
@@ -136,8 +133,6 @@ class _NewEditUserScreenState<T extends Usuari>
       );
       return null;
     }
-
-    //int? idCursSeleccionat;
     String? nomCursSeleccionat;
 
     if (widget.isAlumne && grupSeleccionat != null) {
@@ -148,7 +143,6 @@ class _NewEditUserScreenState<T extends Usuari>
 
       final cursTrobat = _trobaCurs(cursos as List<Curs>);
       if (cursTrobat != null) {
-        //idCursSeleccionat = cursTrobat.id;
         nomCursSeleccionat = cursTrobat.nom;
       }
     }
@@ -212,9 +206,10 @@ class _NewEditUserScreenState<T extends Usuari>
           child: Column(
             children: [
               _buildTextField(
+                //Si l'usuari és nou m'agradaria que apareguera com a dins del textfield
+                //per defecte un codi generat
                 controller: idController,
                 label: "Identificador (NIA o DNI)",
-                //validator: Validator.validarDniONia,
                 icon: Icons.badge,
                 textCapitalization: TextCapitalization.characters,
               ),

@@ -24,6 +24,9 @@ abstract class ProfessorDao {
   @Query('SELECT * FROM professors WHERE id = :id')
   Future<Professor?> findProfessorById(int id);
 
+  @Query('SELECT * FROM professors WHERE dni = :dni')
+  Future<Professor?> findProfessorByDni(String dni);
+
   @insert
   Future<void> insertProfessor(Professor professor);
 
