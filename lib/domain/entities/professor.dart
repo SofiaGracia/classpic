@@ -18,7 +18,8 @@ class Professor extends Usuari {
     required String c1,
     String? c2,
     String? fotoPath,
-  }) : super(nom: nom, c1: c1, c2: c2, fotoPath: fotoPath);
+    String? fotoPathHash,
+  }) : super(nom: nom, c1: c1, c2: c2, fotoPath: fotoPath, fotoPathHash: fotoPathHash);
 
   Professor copyWith({
     int? id,
@@ -27,6 +28,7 @@ class Professor extends Usuari {
     String? c1,
     String? c2,
     String? fotoPath,
+    String? fotoPathHash,
   }) {
     return Professor(
       id: id ?? this.id,
@@ -34,7 +36,8 @@ class Professor extends Usuari {
       nom: nom ?? this.nom,
       c1: c1 ?? this.c1,
       c2: c2 ?? this.c2,
-      fotoPath: fotoPath ?? fotoPath
+      fotoPath: fotoPath ?? fotoPath,
+      fotoPathHash: fotoPathHash ?? this.fotoPathHash,
     );
   }
 }

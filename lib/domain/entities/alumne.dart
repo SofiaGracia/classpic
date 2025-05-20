@@ -41,8 +41,9 @@ class Alumne extends Usuari {
     String? c2,
     this.grup,
     String? fotoPath,
+    String? fotoPathHash,
     this.cursId,
-  }) : super(nom: nom, c1: c1, c2: c2, fotoPath: fotoPath);
+  }) : super(nom: nom, c1: c1, c2: c2, fotoPath: fotoPath, fotoPathHash: fotoPathHash);
 
   Alumne copyWith({
     int? id,
@@ -52,6 +53,7 @@ class Alumne extends Usuari {
     String? c2,
     String? grup,
     String? fotoPath,
+    String? fotoPathHash,
     int? cursId,
   }) {
     return Alumne(
@@ -62,6 +64,7 @@ class Alumne extends Usuari {
       c2: c2 ?? this.c2,
       grup: grup ?? this.grup,
       fotoPath: fotoPath ?? this.fotoPath,
+      fotoPathHash: fotoPathHash ?? this.fotoPathHash,
       cursId: cursId ?? this.cursId,
     );
   }

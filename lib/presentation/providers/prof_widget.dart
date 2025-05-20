@@ -34,6 +34,7 @@ class ProfWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Professor, int> 
       c1: nou.c1,
       c2: nou.c2,
       fotoPath: nou.fotoPath,
+       fotoPathHash: nou.fotoPathHash,
     );
 
     state = AsyncData(actualitzat);

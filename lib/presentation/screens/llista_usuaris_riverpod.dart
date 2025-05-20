@@ -79,6 +79,7 @@ class _LlistaUsuarisRState<T extends Usuari> extends ConsumerState<LlistaUsuaris
           required String c1,
           required String c2,
           String? fotoPath,
+          String? fotoPathHash,
           String? grup,
         }) {
           if (widget.isAlumne) {
