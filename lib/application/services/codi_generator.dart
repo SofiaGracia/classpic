@@ -10,4 +10,14 @@ class CodiGenerator {
     }
     throw Exception('No queden codis disponibles');
   }
+
+  static String normalitzaIdentificador(String valor) {
+    final trimmed = valor.trim();
+
+    // Si ja fa 10 caràcters o més, no modifiquem res
+    if (trimmed.length >= 10) return trimmed;
+
+    // Afegim tants zeros com calgui fins a arribar a 10 caràcters
+    return trimmed.padRight(10, '0');
+  }
 }

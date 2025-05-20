@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:xml/xml.dart';
 
+import '../../../application/services/codi_generator.dart';
 import '../../../domain/entities/professor.dart';
 
 class RepositoryProfessorXml {
@@ -24,8 +25,11 @@ class RepositoryProfessorXml {
         final profC2 = prof.getAttribute('apellido2');
 
         if (profDni != null && profNom != null && profC1 != null) {
+
+          final idDni = CodiGenerator.normalitzaIdentificador(profDni);
+
           Professor profAInsertar =
-              Professor(dni: profDni, nom: profNom, c1: profC1, c2: profC2);
+              Professor(dni: idDni, nom: profNom, c1: profC1, c2: profC2);
           llistaProfessors.add(profAInsertar);
         }
       }

@@ -25,7 +25,6 @@ class RepositoryXml {
     }
   }
 
-  @override
   Future<XmlDocument?> carregaInfo() async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
