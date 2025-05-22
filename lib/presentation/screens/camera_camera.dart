@@ -188,16 +188,18 @@ class _CameraPageState extends ConsumerState<CameraPage> {
   @override
   Widget build(BuildContext context) {
     final cameraState = ref.watch(cameraStateProvider);
+    final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+
+    if (cameraState.status == CameraStatus.processing ||
+        cameraState.status == CameraStatus.capturing) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text("Captura de Foto")),
       body: LayoutBuilder(builder: (context, constraints) {
-        final cameraState = ref.watch(cameraStateProvider);
-
-        if (cameraState.status == CameraStatus.processing ||
-            cameraState.status == CameraStatus.capturing) {
-          return const Center(child: CircularProgressIndicator());
-        }
 
         return FutureBuilder(
             future: _initializeControllerFuture,
@@ -206,137 +208,76 @@ class _CameraPageState extends ConsumerState<CameraPage> {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        if (_controller == null ||
-                            !_controller!.value.isInitialized) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
+              final preview = Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    if (_controller == null ||
+                        !_controller!.value.isInitialized) {
+                      return const Center(
+                          child: CircularProgressIndicator());
+                    }
 
-                        final size = constraints.biggest;
-                        final previewSize = _controller!.value.previewSize!;
-                        final screenAspectRatio = size.aspectRatio;
-                        final previewAspectRatio =
-                            previewSize.height / previewSize.width;
+                    final size = constraints.biggest;
+                    final previewSize = _controller!.value.previewSize!;
+                    final screenAspectRatio = size.aspectRatio;
+                    final previewAspectRatio =
+                        previewSize.height / previewSize.width;
 
-                        return Stack(
-                          children: [
-                            OverflowBox(
-                              maxWidth: screenAspectRatio > previewAspectRatio
-                                  ? size.width
-                                  : size.height / previewAspectRatio,
-                              maxHeight: screenAspectRatio > previewAspectRatio
-                                  ? size.width * previewAspectRatio
-                                  : size.height,
-                              child: CameraPreview(_controller!),
-                            ),
-                            Positioned.fill(
-                              child: CustomPaint(
-                                painter: GuideOvalPainter(),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: IconButton(
-                      icon: const Icon(Icons.camera_outlined,
-                          size: 50, color: Colors.grey),
-                      onPressed: _takeCompressedPicture,
-                      iconSize: 80,
-                    ),
-                  ),
-                ],
-              );
-            });
-      }),
-    );
-
-    /*return Scaffold(
-      appBar: AppBar(title: const Text("Captura de Foto")),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          if (cameraState.status == CameraStatus.processing ||
-              cameraState.status == CameraStatus.capturing) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          return (_initializeControllerFuture == null)
-              ? const Center(child: CircularProgressIndicator())
-              : Stack(
-            children: [
-              FutureBuilder(
-                future: _initializeControllerFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    return Stack(
                       children: [
-                        Container(
-                          width: double.infinity,
-                          height: constraints.maxHeight * 0.8,
-                          /*child: AspectRatio(
-                            aspectRatio: _controller!.value.aspectRatio,
-                            child: CameraPreview(_controller!),
-                          ),*/
-                          child: Stack(
-                            children: [
-                              AspectRatio(
-                                aspectRatio: _controller!.value.aspectRatio,
-                                child: CameraPreview(_controller!),
-                              ),
-                              Positioned.fill(
-                                child: CustomPaint(
-                                  painter: GuideOvalPainter(),
-                                ),
-                              ),
-                            ],
-                          ),
+                        OverflowBox(
+                          maxWidth: screenAspectRatio > previewAspectRatio
+                              ? size.width
+                              : size.height / previewAspectRatio,
+                          maxHeight: screenAspectRatio > previewAspectRatio
+                              ? size.width * previewAspectRatio
+                              : size.height,
+                          child: CameraPreview(_controller!),
                         ),
-                        const SizedBox(height: 20),
-                        Padding(
-                          padding:
-                          const EdgeInsets.symmetric(horizontal: 40),
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.camera_outlined,
-                              size: 50,
-                              color: Colors.grey,
-                            ),
-                            onPressed: _takeCompressedPicture,
-                            iconSize: 80,
+                        Positioned.fill(
+                          child: CustomPaint(
+                            painter: GuideOvalPainter(),
                           ),
                         ),
                       ],
                     );
-                  } else {
-                    return const Center(
-                        child: CircularProgressIndicator());
-                  }
-                },
-              ),
-              /*Positioned(
-                top: MediaQuery.of(context).size.height / 10,
-                bottom: MediaQuery.of(context).size.height / 10,
-                left: 0,
-                right: 0,
-                child: CustomPaint(
-                  painter: GuideOvalPainter(),
+                  },
                 ),
-              ),*/
-            ],
-          );
-        },
-      ),
-    );*/
+              );
+
+              final captureButton = IconButton(
+                icon: const Icon(Icons.camera_outlined,
+                    size: 50, color: Colors.grey),
+                onPressed: _takeCompressedPicture,
+                iconSize: 80,
+              );
+
+              if (isPortrait) {
+                return Column(
+                  children: [
+                    preview,
+                    const SizedBox(height: 20),
+                    captureButton,
+                    const SizedBox(height: 20),
+                  ],
+                );
+              } else {
+                return Row(
+                  children: [
+                    Expanded(child: preview),
+                    const SizedBox(width: 20),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        captureButton,
+                      ],
+                    ),
+                    const SizedBox(width: 20),
+                  ],
+                );
+              }
+            });
+      }),
+    );
   }
 }
