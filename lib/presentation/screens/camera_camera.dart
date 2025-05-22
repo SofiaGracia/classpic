@@ -33,8 +33,8 @@ class CameraStateNotifier extends StateNotifier<CameraState> {
 }
 
 final cameraStateProvider =
-StateNotifierProvider<CameraStateNotifier, CameraState>(
-      (ref) => CameraStateNotifier(),
+    StateNotifierProvider<CameraStateNotifier, CameraState>(
+  (ref) => CameraStateNotifier(),
 );
 
 // --- UI ---
@@ -104,7 +104,7 @@ class _CameraPageState extends ConsumerState<CameraPage> {
   Future<void> _initializeCamera() async {
     final cameras = await availableCameras();
     final backCamera =
-    cameras.firstWhere((c) => c.lensDirection == CameraLensDirection.back);
+        cameras.firstWhere((c) => c.lensDirection == CameraLensDirection.back);
 
     _controller = CameraController(
       backCamera,
@@ -158,14 +158,16 @@ class _CameraPageState extends ConsumerState<CameraPage> {
       final result = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => EditPhotoPage(imageBytes: Uint8List.fromList(jpg)),//Ací deuriem cridar a ImageCropper
+          builder: (_) => EditPhotoPage(
+              imageBytes:
+                  Uint8List.fromList(jpg)), //Ací deuriem cridar a ImageCropper
         ),
       );
 
       //Del paquet image_cropper: ^9.1.0
       //final result = await retallaImatge(tempFile);
 
-      if (result != null){
+      if (result != null) {
         final outputFile = File(widget.pathPhoto);
         await result.copy(outputFile.path);
         Navigator.pop(context, outputFile);
@@ -189,6 +191,78 @@ class _CameraPageState extends ConsumerState<CameraPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text("Captura de Foto")),
+      body: LayoutBuilder(builder: (context, constraints) {
+        final cameraState = ref.watch(cameraStateProvider);
+
+        if (cameraState.status == CameraStatus.processing ||
+            cameraState.status == CameraStatus.capturing) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return FutureBuilder(
+            future: _initializeControllerFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        if (_controller == null ||
+                            !_controller!.value.isInitialized) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+
+                        final size = constraints.biggest;
+                        final previewSize = _controller!.value.previewSize!;
+                        final screenAspectRatio = size.aspectRatio;
+                        final previewAspectRatio =
+                            previewSize.height / previewSize.width;
+
+                        return Stack(
+                          children: [
+                            OverflowBox(
+                              maxWidth: screenAspectRatio > previewAspectRatio
+                                  ? size.width
+                                  : size.height / previewAspectRatio,
+                              maxHeight: screenAspectRatio > previewAspectRatio
+                                  ? size.width * previewAspectRatio
+                                  : size.height,
+                              child: CameraPreview(_controller!),
+                            ),
+                            Positioned.fill(
+                              child: CustomPaint(
+                                painter: GuideOvalPainter(),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: IconButton(
+                      icon: const Icon(Icons.camera_outlined,
+                          size: 50, color: Colors.grey),
+                      onPressed: _takeCompressedPicture,
+                      iconSize: 80,
+                    ),
+                  ),
+                ],
+              );
+            });
+      }),
+    );
+
+    /*return Scaffold(
+      appBar: AppBar(title: const Text("Captura de Foto")),
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (cameraState.status == CameraStatus.processing ||
@@ -210,9 +284,22 @@ class _CameraPageState extends ConsumerState<CameraPage> {
                         Container(
                           width: double.infinity,
                           height: constraints.maxHeight * 0.8,
-                          child: AspectRatio(
+                          /*child: AspectRatio(
                             aspectRatio: _controller!.value.aspectRatio,
                             child: CameraPreview(_controller!),
+                          ),*/
+                          child: Stack(
+                            children: [
+                              AspectRatio(
+                                aspectRatio: _controller!.value.aspectRatio,
+                                child: CameraPreview(_controller!),
+                              ),
+                              Positioned.fill(
+                                child: CustomPaint(
+                                  painter: GuideOvalPainter(),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -237,7 +324,7 @@ class _CameraPageState extends ConsumerState<CameraPage> {
                   }
                 },
               ),
-              Positioned(
+              /*Positioned(
                 top: MediaQuery.of(context).size.height / 10,
                 bottom: MediaQuery.of(context).size.height / 10,
                 left: 0,
@@ -245,11 +332,11 @@ class _CameraPageState extends ConsumerState<CameraPage> {
                 child: CustomPaint(
                   painter: GuideOvalPainter(),
                 ),
-              ),
+              ),*/
             ],
           );
         },
       ),
-    );
+    );*/
   }
 }
