@@ -89,6 +89,7 @@ class _LlistaUsuarisRState<T extends Usuari> extends ConsumerState<LlistaUsuaris
               c1: c1,
               c2: c2,
               fotoPath: fotoPath,
+              fotoPathHash: fotoPathHash,
               grup: grup,
             );
           } else {
@@ -98,6 +99,7 @@ class _LlistaUsuarisRState<T extends Usuari> extends ConsumerState<LlistaUsuaris
               c1: c1,
               c2: c2,
               fotoPath: fotoPath,
+              fotoPathHash: fotoPathHash,
             );
           }
         },

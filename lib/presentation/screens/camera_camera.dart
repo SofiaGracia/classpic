@@ -1,11 +1,12 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
+import 'package:image_cropper/image_cropper.dart';
 
-import '../../shared/utils/guide_lines_painter.dart';
 import '../../shared/utils/guide_oval_painter.dart';
 import 'edit_photo_page.dart';
 
@@ -54,12 +55,51 @@ class CameraPage extends ConsumerStatefulWidget {
 class _CameraPageState extends ConsumerState<CameraPage> {
   CameraController? _controller;
   Future<void>? _initializeControllerFuture;
+  late File imageToSave;
 
   @override
   void initState() {
     super.initState();
     _initializeCamera();
   }
+
+  //Del paquet image_cropper: ^9.1.0
+  /*Future<File?> retallaImatge(File imatgeOriginal) async {
+    final croppedFile = await ImageCropper().cropImage(
+      sourcePath: imatgeOriginal.path,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Retalla la imatge',
+          toolbarColor: Colors.deepPurpleAccent,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.square,
+            CropAspectRatioPreset.ratio3x2,
+            CropAspectRatioPreset.ratio4x3,
+            CropAspectRatioPreset.ratio16x9,
+            //CropAspectRatioPresetCustom(),
+          ],
+          showCropGrid: true, // mostra graella per ajudar a retallar
+          hideBottomControls: false, // mostra les opcions (rotar, flip, aspect ratio...)
+          cropFrameStrokeWidth: 2,
+          cropFrameColor: Colors.orange,
+          cropGridColor: Colors.white,
+          cropGridRowCount: 3,
+          cropGridColumnCount: 3,
+          activeControlsWidgetColor: Colors.orangeAccent,
+        ),
+      ],
+    );
+
+    if (croppedFile != null) {
+      return File(croppedFile.path);
+    } else {
+      return null;
+    }
+  }*/
 
   Future<void> _initializeCamera() async {
     final cameras = await availableCameras();
@@ -105,29 +145,29 @@ class _CameraPageState extends ConsumerState<CameraPage> {
         height: 531,
       );
 
-      final jpg = img.encodeJpg(resized, quality: 30);
+      final jpg = img.encodeJpg(resized);
 
-      final tempDir = await getTemporaryDirectory();
+      //Ací ja estic escrivint la imatge temp abans de retallar-la, això té sentit?
+      /*final tempDir = await getTemporaryDirectory();
       final tempPath = '${tempDir.path}/temp_photo_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final tempFile = File(tempPath);
-      await tempFile.writeAsBytes(jpg);
-      //Acabar a que s'acabe de copiar
-      //I també acabar a que s'acabe d'eliminar l'anterior pq si no a EditPhotoPage m'apareix la captura de la foto anterior que supose que
-      //serà pq encara té eixe PhotoPath
+      await tempFile.writeAsBytes(jpg);*/
 
       ref.read(cameraStateProvider.notifier).setStatus(CameraStatus.editing);
 
       final result = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => EditPhotoPage(imageFile: tempFile),
+          builder: (_) => EditPhotoPage(imageBytes: Uint8List.fromList(jpg)),//Ací deuriem cridar a ImageCropper
         ),
       );
 
-      if (result == true) {
+      //Del paquet image_cropper: ^9.1.0
+      //final result = await retallaImatge(tempFile);
+
+      if (result != null){
         final outputFile = File(widget.pathPhoto);
-        await tempFile.copy(outputFile.path);
-        await tempFile.delete();
+        await result.copy(outputFile.path);
         Navigator.pop(context, outputFile);
       }
 
@@ -196,15 +236,6 @@ class _CameraPageState extends ConsumerState<CameraPage> {
                         child: CircularProgressIndicator());
                   }
                 },
-              ),
-              Positioned(
-                top: MediaQuery.of(context).size.height / 10,
-                bottom: MediaQuery.of(context).size.height / 10,
-                left: 0,
-                right: 0,
-                child: CustomPaint(
-                  painter: GuideLinesPainter(),
-                ),
               ),
               Positioned(
                 top: MediaQuery.of(context).size.height / 10,
