@@ -9,8 +9,11 @@ class GuideOvalPainter extends CustomPainter {
       ..strokeWidth = 1;
 
     // 1. Mides de l'òval
-    final double ovalWidth = size.width / 2;
-    final double ovalHeight = size.height / 3;
+    //final double ovalWidth = size.width / 2;
+    //final double ovalHeight = size.height / 3;
+    final shortestSide = size.shortestSide;
+    final ovalWidth = shortestSide * 0.6;
+    final ovalHeight = shortestSide * 0.8;
 
     // 2. Posició perquè quede centrat
     final double left = (size.width - ovalWidth) / 2;

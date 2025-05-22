@@ -8,6 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as image;
 
+import '../../shared/utils/guide_oval_painter.dart';
 import '../../shared/utils/quadrat_oval_painter.dart';
 
 class EditPhotoPage extends StatefulWidget {
@@ -65,14 +66,6 @@ class _EditPhotoPageState extends State<EditPhotoPage> {
       body: Stack(
         children: [
           Center(
-            /*child: InteractiveViewer(
-              minScale: 1,
-              maxScale: 4,
-              child: RepaintBoundary(
-                key: _imageKey,
-                child: Image.memory(widget.imageBytes),
-              ),
-            ),*/
             child: RepaintBoundary(
               key: _imageKey,
               child: InteractiveViewer(
@@ -89,7 +82,7 @@ class _EditPhotoPageState extends State<EditPhotoPage> {
             right: 0,
             child: IgnorePointer(
               child: CustomPaint(
-                painter: GuideOvalSquarePainter(),
+                painter: GuideOvalPainter(),
               ),
             )
           ),
