@@ -10,6 +10,17 @@ import '../../data/repository/alumne_db.dart';
 
 part 'alumne_notifier.g.dart';
 
+final alumnesIdsProvider = Provider.family<Set<int>, int>((ref, cursId) {
+  return ref.watch(alumnesNotifierProvider.select(
+        (async) => async.maybeWhen(
+      data: (list) => list
+          .where((a) => a.cursId == cursId)
+          .map((a) => a.id!)
+          .toSet(),
+      orElse: () => <int>{},
+    ),
+  ));
+});
 
 
 // Primer, canviem el provider de alumnes a un `FutureProvider.family`

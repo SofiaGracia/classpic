@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/alumne_notifier.dart';
+import 'package:xml_fotos/presentation/providers/professor_id_notifier.dart';
 import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
 import 'package:xml_fotos/presentation/screens/llista_cursos.dart';
 import 'package:xml_fotos/presentation/widgets/counter.dart';
@@ -10,6 +11,8 @@ import 'package:xml_fotos/presentation/widgets/status_button_riverpod.dart';
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/professor.dart';
 import 'configuration.dart';
+import 'llista_3.dart';
+import 'llista_usu_select.dart';
 import 'llista_usuaris_riverpod.dart';
 
 class MenuScreenR extends ConsumerStatefulWidget {
@@ -69,13 +72,20 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                 children: [
                   StatusButtonR(
                       text: 'Professors',
-                      onPressed: () {
+                      onPressed: () async {
+
+                        final llistaUsuaris = await ref
+                            .read(professorNotifierProvider.notifier)
+                            .getProfessorsSenseModificarState();
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => LlistaUsuarisR<Professor>(
                               isAlumne: false,
                               cursId: null,
+                              initialLlista: llistaUsuaris,
+                              //provider: professorsIdsProvider, cursId: null,
                             ),
                           ),
                         );

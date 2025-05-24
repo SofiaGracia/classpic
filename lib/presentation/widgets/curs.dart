@@ -7,6 +7,8 @@ import '../../domain/entities/alumne.dart';
 import '../../domain/entities/curs.dart';
 import '../../shared/utils/dialog.dart';
 import '../providers/alumne_notifier.dart';
+import '../screens/llista_3.dart';
+import '../screens/llista_usu_select.dart';
 import '../screens/llista_usuaris_riverpod.dart';
 import 'counter.dart';
 
@@ -53,15 +55,16 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
     return cursAsync.when(
         data: (curs) => GestureDetector(
               onTap: () {
-                Navigator.push(
+                /*Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => LlistaUsuarisR<Alumne>(
                       cursId: curs.id,
                       isAlumne: true,
+                      provider: alumnesIdsProvider
                     ),
                   ),
-                );
+                );*/
               },
               child: ListTile(
                 title: isEditing
