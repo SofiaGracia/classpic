@@ -9,7 +9,7 @@ import '../../domain/entities/alumne.dart';
 import '../../domain/entities/professor.dart';
 import '../../domain/models/usuari.dart';
 import '../providers/professor_notifier.dart';
-
+/*
 class LlistaUsuarisR<T extends Usuari> extends ConsumerStatefulWidget {
   final bool isAlumne;
   final int? cursId;
@@ -108,3 +108,4 @@ class _LlistaUsuarisRState<T extends Usuari> extends ConsumerState<LlistaUsuaris
     );
   }
 }
+*/
