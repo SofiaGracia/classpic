@@ -113,127 +113,133 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
     if (widget.usuari is Alumne) {
       usuariAsync = ref
           .watch(alumneWidgetNotifierProvider((widget.usuari as Alumne).id!));
+
       provider = ref.read(
-          alumneWidgetNotifierProvider((widget.usuari as Alumne).id!).notifier);
+          alumneWidgetNotifierProvider((widget.usuari as Alumne).id!)
+              .notifier);//Notifier individual per a alumne
+
     } else {
       usuariAsync = ref.watch(
           professorWidgetNotifierProvider((widget.usuari as Professor).id!));
+
       provider = ref.read(
           professorWidgetNotifierProvider((widget.usuari as Professor).id!)
-              .notifier);
+              .notifier);//Notifier individual per a professor
     }
 
     return usuariAsync.when(
-      data: (usuari) => Card(
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              // Foto de l'usuari
-              GestureDetector(
-                onTap: () async {
-                  String pathPhoto = '';
-                  String pathDir = '';
-                  if (usuari is Alumne) {
-                    pathPhoto = await ref
-                        .read(StorageServiceProvider)
-                        .getPathAlumne(usuari.grup!, usuari.nom);
-                    pathDir = '$baseFolderName/$alumnesFolder/${usuari.grup}';
-                  } else {
-                    pathPhoto = await ref
-                        .read(StorageServiceProvider)
-                        .getPathProfessor(usuari!.nom);
-                    pathDir = '$baseFolderName/$professorsFolder';
-                  }
-                  final File? novaFoto = await Navigator.push<File?>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CameraPage(
-                        pathPhoto: pathPhoto,
-                        pathDir: pathDir,
+      data: (usuari) {
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                // Foto de l'usuari
+                GestureDetector(
+                  onTap: () async {
+                    String pathPhoto = '';
+                    String pathDir = '';
+                    if (usuari is Alumne) {
+                      pathPhoto = await ref
+                          .read(StorageServiceProvider)
+                          .getPathAlumne(usuari.grup!, usuari.nom);
+                      pathDir = '$baseFolderName/$alumnesFolder/${usuari.grup}';
+                    } else {
+                      pathPhoto = await ref
+                          .read(StorageServiceProvider)
+                          .getPathProfessor(usuari!.nom);
+                      pathDir = '$baseFolderName/$professorsFolder';
+                    }
+                    final File? novaFoto = await Navigator.push<File?>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CameraPage(
+                          pathPhoto: pathPhoto,
+                          pathDir: pathDir,
+                        ),
                       ),
-                    ),
-                  );
-                  if (novaFoto != null) {
-                    final actualitzat = usuari is Alumne
-                        ? usuari.copyWith(
-                            fotoPath: novaFoto.path,
-                            fotoPathHash: DateTime.now()
-                                .millisecondsSinceEpoch
-                                .toString(),
-                          )
-                        : (usuari as Professor).copyWith(
-                            fotoPath: novaFoto.path,
-                            fotoPathHash: DateTime.now()
-                                .millisecondsSinceEpoch
-                                .toString(),
-                          );
-                    provider.actualitza(actualitzat);
-                  }
-                },
-                child: CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.grey.shade200,
-                  child: usuari.fotoPath != null
-                      ? FotoUsuariWidget(
-                          fotoPath: usuari.fotoPath,
-                          fotoPathHash: usuari
-                              .fotoPathHash!, //Pq en principi si la foto no és null el fotoPathHash tampoc
-                          radius: 30,
-                        )
-                      : const Icon(Icons.person),
-                ),
-              ),
-              const SizedBox(width: 12),
-              // Dades del usuari
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${usuari.c1} ${usuari.c2}',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    Text(
-                      '${usuari.nom}',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    Text(
-                      '${usuari is Alumne ? usuari.nia : (usuari as Professor).dni}',
-                      style: Theme.of(context).textTheme.labelSmall,
-                    ),
-                  ],
-                ),
-              ),
-
-              // Botons acció
-              IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () async {
-                    final actualitzat = await _editarUsuari(usuari);
-                    if (actualitzat != null) {
+                    );
+                    if (novaFoto != null) {
+                      final actualitzat = usuari is Alumne
+                          ? usuari.copyWith(
+                              fotoPath: novaFoto.path,
+                              fotoPathHash: DateTime.now()
+                                  .millisecondsSinceEpoch
+                                  .toString(),
+                            )
+                          : (usuari as Professor).copyWith(
+                              fotoPath: novaFoto.path,
+                              fotoPathHash: DateTime.now()
+                                  .millisecondsSinceEpoch
+                                  .toString(),
+                            );
                       provider.actualitza(actualitzat);
                     }
-                  }),
-              IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () async {
-                  final confirmat = await showConfirmacioEliminacioDialog(
-                    context: context,
-                    titol: 'Eliminar usuari',
-                    missatge: 'Estàs segur que vols eliminar aquest usuari?',
-                  );
+                  },
+                  child: CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.grey.shade200,
+                    child: usuari.fotoPath != null
+                        ? FotoUsuariWidget(
+                            fotoPath: usuari.fotoPath,
+                            fotoPathHash: usuari
+                                .fotoPathHash!, //Pq en principi si la foto no és null el fotoPathHash tampoc
+                            radius: 30,
+                          )
+                        : const Icon(Icons.person),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // Dades del usuari
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${usuari.c1} ${usuari.c2}',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Text(
+                        '${usuari.nom}',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      Text(
+                        '${usuari is Alumne ? usuari.nia : (usuari as Professor).dni}',
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ],
+                  ),
+                ),
 
-                  if (confirmat == true) {
-                    widget.onDelete(usuari);
-                  }
-                },
-              ),
-            ],
+                // Botons acció
+                IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.blue),
+                    onPressed: () async {
+                      final actualitzat = await _editarUsuari(usuari);
+                      if (actualitzat != null) {
+                        provider.actualitza(actualitzat);
+                      }
+                    }),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () async {
+                    final confirmat = await showConfirmacioEliminacioDialog(
+                      context: context,
+                      titol: 'Eliminar usuari',
+                      missatge: 'Estàs segur que vols eliminar aquest usuari?',
+                    );
+
+                    if (confirmat == true) {
+                      widget.onDelete(usuari);
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
       loading: () => Card(
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Padding(

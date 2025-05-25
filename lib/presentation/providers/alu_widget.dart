@@ -38,10 +38,15 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
       grup: nou.grup
     );
 
+    final repo = await _repo;
+    final alumneEditat = await repo.editarAlumneDB(actualitzat);
+
     state = AsyncData(actualitzat);
 
     //Actualitzar a la llista global
-    ref.read(alumnesNotifierProvider.notifier).actualitza(actualitzat);
+    //ref.read(alumnesNotifierProvider.notifier).actualitza(actualitzat);
+    //Actualitzar sols la db
+
   }
 }
 

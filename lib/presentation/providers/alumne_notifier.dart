@@ -10,29 +10,22 @@ import '../../data/repository/alumne_db.dart';
 
 part 'alumne_notifier.g.dart';
 
-final alumnesIdsProvider = Provider.family<Set<int>, int>((ref, cursId) {
-  return ref.watch(alumnesNotifierProvider.select(
-        (async) => async.maybeWhen(
-      data: (list) => list
-          .where((a) => a.cursId == cursId)
-          .map((a) => a.id!)
-          .toSet(),
-      orElse: () => <int>{},
-    ),
-  ));
-});
-
-
 // Primer, canviem el provider de alumnes a un `FutureProvider.family`
 // Així podrem passar el cursId i obtenir només els alumnes d'aquest curs.
 
 @riverpod
 Future<List<Alumne>> alumnesPerCursFiltrat(AlumnesPerCursFiltratRef ref, int? cursId) async {
-  final asyncAlumnes = await ref.watch(alumnesNotifierProvider.future);
-  if (cursId == null) return asyncAlumnes;
-  return asyncAlumnes.where((a) => a.cursId == cursId).toList();
-}
+  final asyncValue = ref.watch(alumnesNotifierProvider);
 
+  return asyncValue.when(
+    data: (alumnes) {
+      if (cursId == null) return alumnes;
+      return alumnes.where((a) => a.cursId == cursId).toList();
+    },
+    loading: () => [],
+    error: (err, stack) => throw err,
+  );
+}
 @riverpod
 Future<int> alumnesTotal(AlumnesTotalRef ref) async {
   final alumnes = await ref.watch(alumnesNotifierProvider.future);
@@ -86,13 +79,17 @@ class AlumnesNotifier extends _$AlumnesNotifier {
   }
 
   Future<void> inserirAlumne(Alumne alumne) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+
+    try{
       final repo = await _repo;
-      await repo.insertarAlumneDB(alumne);
-      final actuals = state.requireValue;
-      return [...actuals, alumne];
-    });
+      await repo.insertarAlumneDB(alumne);//void
+
+      final actualitzats = await repo.carregaAlumnesDB();
+      state = AsyncData(actualitzats);
+
+    } catch (e, st){
+      state = AsyncError(e, st);
+    }
   }
 
   Future<void> eliminarAlumne(Alumne alumne) async {
