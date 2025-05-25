@@ -54,17 +54,20 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
 
     return cursAsync.when(
         data: (curs) => GestureDetector(
-              onTap: () {
-                /*Navigator.push(
+              onTap: () async {
+
+                final llistaUsuaris = await ref.read(alumnesNotifierProvider.notifier).getAlumnesPerCurs(curs.id!);
+
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => LlistaUsuarisR<Alumne>(
                       cursId: curs.id,
                       isAlumne: true,
-                      provider: alumnesIdsProvider
+                      initialLlista: llistaUsuaris,
                     ),
                   ),
-                );*/
+                );
               },
               child: ListTile(
                 title: isEditing

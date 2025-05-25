@@ -8,12 +8,19 @@ import 'package:xml_fotos/presentation/widgets/usuari_riverpod_ind.dart';
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/professor.dart';
 import '../../domain/models/usuari.dart';
-import '../providers/professor_id_notifier.dart';
+import '../providers/provider_id.dart';
 import '../providers/professor_notifier.dart';
 
-final alumnesIdsProvider = Provider<Set<int>>((ref) {
-  final alumnes = ref.watch(alumnesNotifierProvider).value ?? [];
-  return alumnes.map((a) => a.id!).toSet();
+final alumnesIdsProvider = Provider.family<Set<int>, int>((ref, cursId) {
+  final asyncAlumnes = ref.watch(alumnesNotifierProvider);
+  return asyncAlumnes.when(
+    data: (alumnes) {
+      final alumnesFiltrats = alumnes.where((a) => a.cursId == cursId).toList();
+      return alumnesFiltrats.map((a) => a.id!).toSet();
+    },
+    loading: () => <int>{},
+    error: (err, stack) => <int>{},
+  );
 });
 
 class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
@@ -30,14 +37,13 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
     final ids = isAlumne
-        ? ref.watch(alumnesIdsProvider)
+        ? ref.watch(alumnesIdsProvider(cursId!))
         : ref.watch(professorsIdsProvider);
 
     // Llista actual que volem mostrar, o null si no tenim inicial
     List<T>? llista = initialLlista;
-
-    //final llistaIds = ids as Set<int>;
 
     // Si tenim llista passada però el tamany no coincideix amb ids, recarreguem
     if (llista == null || llista.length != ids.length) {

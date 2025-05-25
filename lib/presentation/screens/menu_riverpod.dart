@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/alumne_notifier.dart';
-import 'package:xml_fotos/presentation/providers/professor_id_notifier.dart';
+import 'package:xml_fotos/presentation/providers/provider_id.dart';
 import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
 import 'package:xml_fotos/presentation/screens/llista_cursos.dart';
 import 'package:xml_fotos/presentation/widgets/counter.dart';

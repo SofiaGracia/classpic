@@ -8,14 +8,10 @@ import 'package:xml_fotos/presentation/widgets/usuari_riverpod_ind.dart';
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/professor.dart';
 import '../../domain/models/usuari.dart';
-import '../providers/professor_id_notifier.dart';
+import '../providers/provider_id.dart';
 import '../providers/professor_notifier.dart';
 
-/*final alumnesIdsProvider = Provider<Set<int>>((ref) {
-  final alumnes = ref.watch(alumnesNotifierProvider).value ?? [];
-  return alumnes.map((a) => a.id!).toSet();
-});
-
+/*
 class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
   final bool isAlumne;
   final int? cursId;
