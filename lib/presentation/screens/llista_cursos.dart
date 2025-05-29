@@ -7,9 +7,7 @@ import 'package:xml_fotos/presentation/widgets/new_curs_riverpod.dart';
 
 import '../../application/services/storage_service.dart';
 import '../../domain/entities/curs.dart';
-import '../../shared/utils/dialog.dart';
 import '../providers/cursos_notifier.dart';
-import '../providers/selection.dart';
 
 class CursosScreen extends ConsumerStatefulWidget {
   const CursosScreen({Key? key}) : super(key: key);

@@ -21,8 +21,6 @@ class NewUserR<T extends Usuari> extends ConsumerWidget {
       String? fotoPathHash,
       String? grup}) constructor;
 
-  //late String codiUsuari;
-
   NewUserR({
     super.key,
     required this.isAlumne,

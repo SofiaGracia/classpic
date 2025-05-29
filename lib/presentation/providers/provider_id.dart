@@ -9,3 +9,14 @@ final professorsIdsProvider = Provider<Set<int>>((ref) {
 });
 
 
+final alumnesIdsProvider = Provider.family<Set<int>, int>((ref, cursId) {
+  final asyncAlumnes = ref.watch(alumnesNotifierProvider);
+  return asyncAlumnes.when(
+    data: (alumnes) {
+      final alumnesFiltrats = alumnes.where((a) => a.cursId == cursId).toList();
+      return alumnesFiltrats.map((a) => a.id!).toSet();
+    },
+    loading: () => <int>{},
+    error: (err, stack) => <int>{},
+  );
+});

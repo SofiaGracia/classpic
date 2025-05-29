@@ -31,7 +31,7 @@ abstract class AlumneDao {
   Future<List<Alumne>> obtenirAlumnesDelCurs(int cursId);
 
   @insert
-  Future<void> insertAlumne(Alumne alumne);
+  Future<int> insertAlumne(Alumne alumne);
 
   //@Insert(onConflict: OnConflictStrategy.ignore)
   @insert

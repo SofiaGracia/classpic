@@ -30,7 +30,7 @@ class UsuariWidgetRInd extends ConsumerStatefulWidget {
   ConsumerState<UsuariWidgetRInd> createState() => _UsuariWidgetRState();
 }
 
-class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
+  class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
   Future<Usuari?> _editarUsuari(Usuari usuari) async {
     final nouUsuari = await Navigator.push<Usuari>(
       context,
@@ -102,11 +102,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(
-        '🔁 Rebuild UsuariWidgetR: ${widget.usuari.nom} ${widget.usuari.c1}');
 
-    //final id = widget.usuari is Alumne? (widget.usuari as Alumne).id:(widget.usuari as Professor).id;
-    //final usuariAsync = ref.watch(usuariNotifierProvider(id!));
     late final AsyncValue<Usuari> usuariAsync;
     late final dynamic provider;
 

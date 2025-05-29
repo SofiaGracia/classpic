@@ -3,7 +3,6 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
 
-import '../../application/services/storage_service.dart';
 import '../../domain/entities/curs.dart';
 
 class NewCursR extends ConsumerWidget {
@@ -28,7 +27,8 @@ class NewCursR extends ConsumerWidget {
     return FloatingActionButton(
       onPressed: () async {
         final controlador = TextEditingController();
-        final cursos = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
+        //final cursos = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
+        final cursos = await ref.read(provider.notifier).getCursosSenseModificarState();
         final nomsExistents = cursos.map((c) => c.nom.toLowerCase()).toSet();
 
         final nom = await showDialog<String>(

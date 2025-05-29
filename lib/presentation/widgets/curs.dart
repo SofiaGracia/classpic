@@ -55,8 +55,9 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
     return cursAsync.when(
         data: (curs) => GestureDetector(
               onTap: () async {
-
-                final llistaUsuaris = await ref.read(alumnesNotifierProvider.notifier).getAlumnesPerCurs(curs.id!);
+                final llistaUsuaris = await ref
+                    .read(alumnesNotifierProvider.notifier)
+                    .getAlumnesPerCurs(curs.id!);
 
                 Navigator.push(
                   context,
