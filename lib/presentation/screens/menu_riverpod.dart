@@ -51,7 +51,6 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                   StatusButtonR(
                       text: 'Alumnes',
                       onPressed: () {
-                        debugPrint("Anem a LlistaCursosScreen");
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -85,11 +84,9 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                               isAlumne: false,
                               cursId: null,
                               initialLlista: llistaUsuaris,
-                              //provider: professorsIdsProvider, cursId: null,
                             ),
                           ),
                         );
-                        debugPrint("Anem a LlistaUsuarisScreen");
                       },
                       provider: professorNotifierProvider),
                   const SizedBox(width: 8),

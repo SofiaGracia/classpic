@@ -33,8 +33,9 @@ class RepositoryAlumneDB {
     await _alumneDao.insertAlumnes(alumnesAInserir);
   }
 
-  Future<void> insertarAlumneDB(Alumne alumne) async {
-    await _alumneDao.insertAlumne(alumne);
+  Future<int> insertarAlumneDB(Alumne alumne) async {
+    final id = await _alumneDao.insertAlumne(alumne);
+    return id;
   }
 
   Future<void> eliminarAlumneDB(Alumne alumne) async {

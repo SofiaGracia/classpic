@@ -10,7 +10,6 @@ import 'package:image_cropper/image_cropper.dart';
 import '../../shared/utils/guide_oval_painter.dart';
 import 'edit_photo_page.dart';
 
-// --- STATE ---
 enum CameraStatus {
   initializing,
   ready,
@@ -37,7 +36,6 @@ final cameraStateProvider =
   (ref) => CameraStateNotifier(),
 );
 
-// --- UI ---
 class CameraPage extends ConsumerStatefulWidget {
   final String pathPhoto;
   final String pathDir;
@@ -62,44 +60,6 @@ class _CameraPageState extends ConsumerState<CameraPage> {
     super.initState();
     _initializeCamera();
   }
-
-  //Del paquet image_cropper: ^9.1.0
-  /*Future<File?> retallaImatge(File imatgeOriginal) async {
-    final croppedFile = await ImageCropper().cropImage(
-      sourcePath: imatgeOriginal.path,
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Retalla la imatge',
-          toolbarColor: Colors.deepPurpleAccent,
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false,
-          aspectRatioPresets: [
-            CropAspectRatioPreset.original,
-            CropAspectRatioPreset.square,
-            CropAspectRatioPreset.ratio3x2,
-            CropAspectRatioPreset.ratio4x3,
-            CropAspectRatioPreset.ratio16x9,
-            //CropAspectRatioPresetCustom(),
-          ],
-          showCropGrid: true, // mostra graella per ajudar a retallar
-          hideBottomControls: false, // mostra les opcions (rotar, flip, aspect ratio...)
-          cropFrameStrokeWidth: 2,
-          cropFrameColor: Colors.orange,
-          cropGridColor: Colors.white,
-          cropGridRowCount: 3,
-          cropGridColumnCount: 3,
-          activeControlsWidgetColor: Colors.orangeAccent,
-        ),
-      ],
-    );
-
-    if (croppedFile != null) {
-      return File(croppedFile.path);
-    } else {
-      return null;
-    }
-  }*/
 
   Future<void> _initializeCamera() async {
     final cameras = await availableCameras();
@@ -147,12 +107,6 @@ class _CameraPageState extends ConsumerState<CameraPage> {
 
       final jpg = img.encodeJpg(resized);
 
-      //Ací ja estic escrivint la imatge temp abans de retallar-la, això té sentit?
-      /*final tempDir = await getTemporaryDirectory();
-      final tempPath = '${tempDir.path}/temp_photo_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final tempFile = File(tempPath);
-      await tempFile.writeAsBytes(jpg);*/
-
       ref.read(cameraStateProvider.notifier).setStatus(CameraStatus.editing);
 
       final result = await Navigator.push(
@@ -163,9 +117,6 @@ class _CameraPageState extends ConsumerState<CameraPage> {
                   Uint8List.fromList(jpg)), //Ací deuriem cridar a ImageCropper
         ),
       );
-
-      //Del paquet image_cropper: ^9.1.0
-      //final result = await retallaImatge(tempFile);
 
       if (result != null) {
         final outputFile = File(widget.pathPhoto);

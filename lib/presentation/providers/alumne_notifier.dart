@@ -7,6 +7,7 @@ import 'package:xml_fotos/presentation/providers/repository.dart';
 import '../../data/datasources/db/dao/alumne_dao.dart';
 import '../../domain/entities/alumne.dart';
 import '../../data/repository/alumne_db.dart';
+import 'alu_widget.dart';
 
 part 'alumne_notifier.g.dart';
 
@@ -78,16 +79,25 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     }
   }
 
-  Future<void> inserirAlumne(Alumne alumne) async {
+  Future<void>  inserirAlumne(Alumne alumne) async {
 
-    try{
+    try {
       final repo = await _repo;
-      await repo.insertarAlumneDB(alumne);//void
 
+      final idNou = await repo.insertarAlumneDB(alumne); // ara tens l’id
+      final alumneComplet = alumne.copyWith(id: idNou);
+
+      // Opcionalment actualitza l'estat global o el individual
       final actualitzats = await repo.carregaAlumnesDB();
       state = AsyncData(actualitzats);
 
-    } catch (e, st){
+      // Refresca el notifier individual
+      //ref.invalidate(alumneWidgetNotifierProvider(idNou));
+
+      // Espera a que el nou notifier es construïsca correctament
+      //await ref.read(alumneWidgetNotifierProvider(idNou).future);
+
+    } catch (e, st) {
       state = AsyncError(e, st);
     }
   }

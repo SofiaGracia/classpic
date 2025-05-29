@@ -8,7 +8,7 @@ class StatusButtonR extends ConsumerWidget {
   final String text;
   final VoidCallback onPressed;
   final AutoDisposeAsyncNotifierProvider<dynamic, dynamic> provider;
-  //final Widget? trailing;
+  //final Widget? trailing; 
 
   StatusButtonR({
     super.key,

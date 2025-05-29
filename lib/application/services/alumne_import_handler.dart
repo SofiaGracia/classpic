@@ -75,13 +75,12 @@ class AlumneImportHandler {
 
       //Esborrem i inserim
       await cursosNot.eliminarCursos(cursosPerEsborrar);
-      //Ací borrariem els directoris antics
       final nomsCursosABorrar = cursosPerEsborrar.map((c) => c.nom).toSet();
       //Encara no esborrem els cursos pq necessitem passar les fotos
 
       await cursosNot.inserirCursos(cursosPerAfegir);
-      //Ací creariem els directoris nous
       final nomsNousCursos = cursosPerAfegir.map((c) => c.nom).toSet();
+      //Ací creariem els directoris nous
       await storage.creaEstructuraAlumnes(nomsNousCursos);
 
       final cursosActualitzats = await ref.watch(cursTotsProvider.future);

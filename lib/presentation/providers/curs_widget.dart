@@ -26,6 +26,9 @@ class CursWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Curs, int> {
 
   Future<void> actualitzaNom(String nouNom) async {
     try {
+
+      //Ací també s'actualitza el nom del grup en els alumnes d'eixe grup.
+      //pq canviem el nom però no l'id del curs
       final curs = state.value as Curs;
       final actualitzat = curs.copyWith(id: curs.id, nom: nouNom);
 

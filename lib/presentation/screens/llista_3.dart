@@ -11,18 +11,6 @@ import '../../domain/models/usuari.dart';
 import '../providers/provider_id.dart';
 import '../providers/professor_notifier.dart';
 
-final alumnesIdsProvider = Provider.family<Set<int>, int>((ref, cursId) {
-  final asyncAlumnes = ref.watch(alumnesNotifierProvider);
-  return asyncAlumnes.when(
-    data: (alumnes) {
-      final alumnesFiltrats = alumnes.where((a) => a.cursId == cursId).toList();
-      return alumnesFiltrats.map((a) => a.id!).toSet();
-    },
-    loading: () => <int>{},
-    error: (err, stack) => <int>{},
-  );
-});
-
 class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
   final bool isAlumne;
   final int? cursId;
