@@ -37,6 +37,7 @@ class _LlistaUsuarisRState<T extends Usuari> extends ConsumerState<LlistaUsuaris
     final List<Usuari> usuaris;
     if (widget.isAlumne) {
       usuaris = await ref.read(alumnesNotifierProvider.notifier).getAlumnesPerCurs(widget.cursId!);
+      //usuaris = await ref.watch(alumnesPerCursFiltratProvider(widget.cursId!).future);
     } else {
       usuaris = await ref.read(professorNotifierProvider.notifier).getProfessorsSenseModificarState();
     }
@@ -61,6 +62,7 @@ class _LlistaUsuarisRState<T extends Usuari> extends ConsumerState<LlistaUsuaris
                 _loadLlista();
               });
             },
+            onCursChanged: widget.isAlumne? _loadLlista : () => Future.value(),
           );
         }).toList(),
       ),
@@ -107,5 +109,4 @@ class _LlistaUsuarisRState<T extends Usuari> extends ConsumerState<LlistaUsuaris
       ),
     );
   }
-}
-*/
+}*/

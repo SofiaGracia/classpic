@@ -18,7 +18,8 @@ class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
   final T? usuari;
   final String Function(T) getId;
   final T Function(
-      {required String id,
+      {
+      required String id,
       required String nom,
       required String c1,
       required String c2,

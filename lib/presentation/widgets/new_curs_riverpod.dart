@@ -28,7 +28,7 @@ class NewCursR extends ConsumerWidget {
       onPressed: () async {
         final controlador = TextEditingController();
         //final cursos = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
-        final cursos = await ref.read(provider.notifier).getCursosSenseModificarState();
+        final cursos = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
         final nomsExistents = cursos.map((c) => c.nom.toLowerCase()).toSet();
 
         final nom = await showDialog<String>(

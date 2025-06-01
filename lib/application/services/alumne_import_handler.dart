@@ -18,7 +18,8 @@ class AlumneImportHandler {
 
   Future<void> processa(XmlDocument doc) async {
     final alumneNot = ref.read(alumnesNotifierProvider.notifier);
-    final alumnesDB = await ref.watch(alumnesTotsProvider.future);
+    //final alumnesDB = await ref.watch(alumnesTotsProvider.future);
+    final alumnesDB = await ref.read(alumnesNotifierProvider.notifier).getAlumnesSenseModificarState();
     final repo = RepositoryAlumneXml(doc: doc);
     final parsed = repo.parseAlumnesFromXml(doc);
 
@@ -29,7 +30,7 @@ class AlumneImportHandler {
       final alumnes = await _importaPrimeraVegada(repo, alumnesXml, cursosXml);
       await alumneNot.inserirAlumnes(alumnes);
     } else {
-      final alumnes = await _actualitzaAlumnes(repo, alumnesXml, alumnesDB, cursosXml);
+      final alumnes = await actualitzaAlumnes(repo, alumnesXml, alumnesDB, cursosXml);
       if (alumnes != null) await alumneNot.inserirAlumnes(alumnes);
     }
   }
@@ -47,7 +48,8 @@ class AlumneImportHandler {
       final cursos = cursosXml.map((nom) => Curs(nom: nom)).toList();
       await cursosNot.inserirCursos(cursos);
 
-      final cursosDB = await ref.watch(cursTotsProvider.future);
+      //final cursosDB = await ref.watch(cursTotsProvider.future);
+      final cursosDB = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
 
       return await repo.assignaIdCursAlsAlumnes(alumnesXml, cursosDB);
     } catch (e) {
@@ -55,7 +57,7 @@ class AlumneImportHandler {
     }
   }
 
-  Future<List<Alumne>?> _actualitzaAlumnes(
+  Future<List<Alumne>?> actualitzaAlumnes(
       RepositoryAlumneXml repo,
       List<Alumne> alumnesXml,
       List<Alumne> alumnesDB,
@@ -65,7 +67,8 @@ class AlumneImportHandler {
 
       final cursosNot = ref.read(cursosNotifierProvider.notifier);
       final cursosNous = cursosXml.map((nom) => Curs(nom: nom)).toList();
-      final cursosActuals = await ref.watch(cursTotsProvider.future);
+      //final cursosActuals = await ref.watch(cursTotsProvider.future);
+      final cursosActuals = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
 
       final nomsActuals = cursosActuals.map((c) => c.nom).toSet();
       final cursosPerAfegir = cursosNous.where((nou) => !nomsActuals.contains(nou.nom)).toList();
@@ -83,7 +86,8 @@ class AlumneImportHandler {
       //Ací creariem els directoris nous
       await storage.creaEstructuraAlumnes(nomsNousCursos);
 
-      final cursosActualitzats = await ref.watch(cursTotsProvider.future);
+      //final cursosActualitzats = await ref.watch(cursTotsProvider.future);
+      final cursosActualitzats = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
       // Alumnes a inserir o editar
       final alumneNot = await ref.read(alumnesNotifierProvider.notifier);
       final alumnesDBMap = {for (final a in alumnesDB) a.nia: a};

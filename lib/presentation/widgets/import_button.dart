@@ -24,10 +24,10 @@ class ImportButton extends ConsumerWidget {
           error: (e, _) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error : $e')),
+                SnackBar(content: Text('Error en la importació de dades')),
               );
             });
-            debugPrint('Error : $e');
+            debugPrint('Error en la importació de dades');
           },
           data: (_) => ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text('Importació correcta.'))),
