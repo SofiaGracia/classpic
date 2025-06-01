@@ -35,18 +35,20 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
       c2: nou.c2,
       fotoPath: nou.fotoPath,
       fotoPathHash: nou.fotoPathHash,
-      grup: nou.grup
     );
 
-    final repo = await _repo;
-    final alumneEditat = await repo.editarAlumneDB(actualitzat);
+    //El que podem fer es comparar el cursId del nou i el cursId del vell i si canvia
+    //canviar també el grup i cridar a la llista global i si no ha canviat cridar a la del propi widget
+    if(alu.cursId != nou.cursId){
+      actualitzat.cursId = nou.cursId;
+      actualitzat.grup = nou.grup;
 
+      ref.read(alumnesNotifierProvider.notifier).actualitza(actualitzat);
+    }else{
+      final repo = await _repo;
+      final alumneEditat = await repo.editarAlumneDB(actualitzat);
+    }
     state = AsyncData(actualitzat);
-
-    //Actualitzar a la llista global
-    //ref.read(alumnesNotifierProvider.notifier).actualitza(actualitzat);
-    //Actualitzar sols la db
-
   }
 }
 

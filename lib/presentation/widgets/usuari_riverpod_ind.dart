@@ -30,7 +30,7 @@ class UsuariWidgetRInd extends ConsumerStatefulWidget {
   ConsumerState<UsuariWidgetRInd> createState() => _UsuariWidgetRState();
 }
 
-  class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
+class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
   Future<Usuari?> _editarUsuari(Usuari usuari) async {
     final nouUsuari = await Navigator.push<Usuari>(
       context,
@@ -40,7 +40,8 @@ class UsuariWidgetRInd extends ConsumerStatefulWidget {
           //isAlumne: widget.usuari is Alumne?,
           getId: (u) => u is Alumne ? u.nia : (u as Professor).dni,
           constructor: (
-              {required String id,
+              {
+                required String id,
               required String nom,
               required String c1,
               required String c2,
@@ -84,6 +85,7 @@ class UsuariWidgetRInd extends ConsumerStatefulWidget {
         fotoPath: alu.fotoPath,
         fotoPathHash: alu.fotoPathHash,
         grup: alu.grup,
+        cursId: alu.cursId,
       );
     } else {
       final prof = (nouUsuari as Professor);

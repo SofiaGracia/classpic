@@ -39,7 +39,7 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Què vols fer?',
+                'Accés a alumnes i professors',
                 style: Theme.of(context).textTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),

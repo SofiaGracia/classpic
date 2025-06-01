@@ -29,7 +29,7 @@ class Alumne extends Usuari {
   String get usuId => nia;
 
   //Ara en principi curs podria ser required i no null
-  final String? grup;
+  late String? grup;
 
   late int? cursId;
 
