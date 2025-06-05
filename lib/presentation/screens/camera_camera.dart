@@ -99,13 +99,13 @@ class _CameraPageState extends ConsumerState<CameraPage> {
 
       if (image == null) throw Exception("No s'ha pogut llegir la imatge");
 
-      final resized = img.copyResize(
+      /*final resized = img.copyResize(
         image,
         width: 413,
         height: 531,
-      );
+      );*/
 
-      final jpg = img.encodeJpg(resized);
+      final jpg = img.encodeJpg(image);
 
       ref.read(cameraStateProvider.notifier).setStatus(CameraStatus.editing);
 

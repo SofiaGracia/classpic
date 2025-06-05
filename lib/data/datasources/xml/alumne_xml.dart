@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
 import 'package:xml_fotos/application/services/codi_generator.dart';
 import 'package:xml_fotos/data/datasources/xml/xml.dart';
+import 'package:xml_fotos/shared/utils/constants.dart';
 
 import '../../../domain/entities/alumne.dart';
 import '../../../domain/entities/curs.dart';
@@ -42,7 +43,7 @@ class RepositoryAlumneXml {
         final aluC2 = alu.getAttribute('apellido2');
         var aluGrup  = alu.getAttribute('grupo');
         if (aluGrup == null || (aluGrup.trim()).isEmpty){
-          aluGrup = 'Sense grup';
+          aluGrup = grupSensenom;
         }
         cursosUnics.add(aluGrup);
 

@@ -49,9 +49,9 @@ class StorageService {
   }
 
   /// Obté el path de la carpeta d’un alumne concret
-  Future<String> getPathAlumne(String nomCurs, String nomAlumne) async {
+  Future<String> getPathAlumne(String nomCurs, String niaAlumne) async {
     final baseDir = await _getBaseDirectory();
-    return '${baseDir.path}/$alumnesFolder/$nomCurs/$nomAlumne.jpg';
+    return '${baseDir.path}/$alumnesFolder/$nomCurs/$niaAlumne.jpg';
   }
 
   /// Obté el path de la foto d’un professor concret
@@ -131,17 +131,17 @@ class StorageService {
     }
   }
 
-  Future<void> mouFotoAlumne(String nomCursVell, String nomCursNou, String nomAlumne) async {
+  Future<void> mouFotoAlumne(String nomCursVell, String nomCursNou, String niaAlumne) async {
     final baseDir = await _getBaseDirectory();
 
-    final origen = File('${baseDir.path}/$alumnesFolder/$nomCursVell/$nomAlumne.jpg');
+    final origen = File('${baseDir.path}/$alumnesFolder/$nomCursVell/$niaAlumne.jpg');
     final destiDir = Directory('${baseDir.path}/$alumnesFolder/$nomCursNou');
 
     if (!await destiDir.exists()) {
       await destiDir.create(recursive: true);
     }
 
-    final desti = File('${destiDir.path}/$nomAlumne.jpg');
+    final desti = File('${destiDir.path}/$niaAlumne.jpg');
 
     if (await origen.exists()) {
       await origen.rename(desti.path);

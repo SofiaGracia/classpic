@@ -28,24 +28,34 @@ class _EditPhotoPageState extends State<EditPhotoPage> {
 
   Future<File?> _captureAndCrop() async {
     try {
+      //El RepaintBoundary és com posar una "càmera" a un widget concret per a capturar només la seva visualització.
       RenderRepaintBoundary boundary =
-      _imageKey.currentContext!.findRenderObject() as RenderRepaintBoundary; //El RepaintBoundary és com posar una "càmera" a un widget concret per a capturar només la seva visualització.
-      final cut = await boundary.toImage(pixelRatio: 3.0);// Captura una imatge del widget que està dins del RepaintBoundary.
-      final byteData = await cut.toByteData(format: ui.ImageByteFormat.png);// Converteix la imatge en memòria (ui.Image) a bytes binaris en format PNG.
-      final pngBytes = byteData!.buffer.asUint8List();//A partir de ByteData, extreu els bytes en forma de llista (Uint8List). Representació directa de la imatge PNG que pots escriure en un fitxer o enviar per xarxa.
+      _imageKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+
+      // Captura una imatge del widget que està dins del RepaintBoundary.
+      final cut = await boundary.toImage(pixelRatio: 3.0);
+
+      // Converteix la imatge en memòria (ui.Image) a bytes binaris en format PNG.
+      final byteData = await cut.toByteData(format: ui.ImageByteFormat.png);
+
+      //A partir de ByteData, extreu els bytes en forma de llista (Uint8List).
+      // Representació directa de la imatge PNG que pots escriure en un fitxer o enviar per xarxa.
+      final pngBytes = byteData!.buffer.asUint8List();
 
 
       //Amb decode i encode passem de una llista de ints en format png a la imatge com a tal
       //fa falta fer decoded si volem editar la imatge i després encoded per a tornar a passar-la a
-      /*final decoded = image.decodePng(pngBytes);
-      final resized = image.copyResize(decoded!, width: 100, height: 100);
-      final encoded = image.encodePng(resized);
-      File(outputPath)..writeAsBytesSync(encoded);*/
 
       //Per tant si vull comprimir la foto:
       final decoded = image.decodePng(pngBytes);
-      final encoded = image.encodeJpg(decoded!, quality: 30);
 
+      final resized = image.copyResize(
+        decoded!,
+        width: 132,
+        height: 170,
+      );
+
+      final encoded = image.encodeJpg(resized, quality: 20000);
 
       // Guarda la imatge en fitxer temporal
       final directory = await getTemporaryDirectory();
@@ -66,14 +76,27 @@ class _EditPhotoPageState extends State<EditPhotoPage> {
       body: Stack(
         children: [
           Center(
-            child: RepaintBoundary(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child:RepaintBoundary(
+                key: _imageKey,
+                child: InteractiveViewer(
+                  minScale: 1,
+                  maxScale: 8,
+                  child: Image.memory(widget.imageBytes),
+                ),
+              ),
+            ),
+
+            /*child: RepaintBoundary(
               key: _imageKey,
               child: InteractiveViewer(
                 minScale: 1,
-                maxScale: 4,
+                maxScale: 8,
                 child: Image.memory(widget.imageBytes),
               ),
-            ),
+            ),*/
           ),
           Positioned(
             top: MediaQuery.of(context).size.height / 10,
@@ -109,11 +132,11 @@ class _EditPhotoPageState extends State<EditPhotoPage> {
                     // Aquí podries afegir més tractament si cal (retall, ajust, etc.)
                     final result = await _captureAndCrop();
                     debugPrint('${result?.path}');
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                    /*WidgetsBinding.instance.addPostFrameCallback((_) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('${result}')),
                       );
-                    });
+                    });*/
                     Navigator.pop(context, result); // Confirmem
                   },
                 ),

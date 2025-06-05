@@ -39,7 +39,12 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
         future: _carregaLlista<T>(ref, isAlumne, cursId),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return Scaffold(
+                appBar: AppBar(
+                  title: const Text('Llista d’usuaris'),
+                ),
+                body:const Center(child: CircularProgressIndicator()),
+            );
           }
           final novaLlista = snapshot.data!;
 

@@ -39,14 +39,20 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
 
     //El que podem fer es comparar el cursId del nou i el cursId del vell i si canvia
     //canviar també el grup i cridar a la llista global i si no ha canviat cridar a la del propi widget
+
+    //Problema amb la foto
+
     if(alu.cursId != nou.cursId){
+
       actualitzat.cursId = nou.cursId;
       actualitzat.grup = nou.grup;
 
       ref.read(alumnesNotifierProvider.notifier).actualitza(actualitzat);
     }else{
+
       final repo = await _repo;
       final alumneEditat = await repo.editarAlumneDB(actualitzat);
+      ref.read(alumnesNotifierProvider.notifier).actualitza(actualitzat);
     }
     state = AsyncData(actualitzat);
   }
