@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/usuari.dart';
 
 class CounterWidget<T extends Usuari> extends ConsumerWidget {
-  //final AutoDisposeAsyncNotifierProvider<dynamic, List<T>> provider;
   final ProviderListenable<AsyncValue<List<T>>> provider;
 
   const CounterWidget({

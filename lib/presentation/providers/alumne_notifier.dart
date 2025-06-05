@@ -6,6 +6,8 @@ import '../../data/repository/alumne_db.dart';
 
 part 'alumne_notifier.g.dart';
 
+
+//Contador d'alumnes de cada Curs
 @riverpod
 Future<List<Alumne>> alumnesFiltratsCurs(
     AlumnesFiltratsCursRef ref, int? cursId) async {
