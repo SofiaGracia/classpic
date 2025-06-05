@@ -82,7 +82,7 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     CounterWidget<Alumne>(
-                      provider: alumnesPerCursFiltratProvider(curs.id),
+                      provider: alumnesFiltratsCursProvider(curs.id),
                     ),
                     IconButton(
                       icon: Icon(isEditing ? Icons.check : Icons.edit),
