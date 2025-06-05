@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+/*import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SeleccioNotifier extends StateNotifier<Set<int>> {
   SeleccioNotifier() : super({});
@@ -18,3 +18,4 @@ class SeleccioNotifier extends StateNotifier<Set<int>> {
 
 final seleccioCursosProvider =
 StateNotifierProvider<SeleccioNotifier, Set<int>>((ref) => SeleccioNotifier());
+*/
