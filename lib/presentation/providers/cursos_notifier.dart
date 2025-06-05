@@ -40,7 +40,7 @@ class CursosNotifier extends _$CursosNotifier {
   @override
   Future<List<Curs>> build() async {
     final repo = await _repo;
-    return repo.carregarCursosDB();
+    return repo.carregarCursosDB();//Incicialitzem l'estat
   }
 
   Future<void> carregarCursos() async {

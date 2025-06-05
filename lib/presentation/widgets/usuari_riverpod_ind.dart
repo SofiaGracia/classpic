@@ -127,6 +127,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
 
     return usuariAsync.when(
       data: (usuari) {
+        final usuariNia = usuari.usuId;
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: Padding(
@@ -141,7 +142,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                     if (usuari is Alumne) {
                       pathPhoto = await ref
                           .read(StorageServiceProvider)
-                          .getPathAlumne(usuari.grup!, usuari.nom);
+                          .getPathAlumne(usuari.grup!, usuari.nia);
                       pathDir = '$baseFolderName/$alumnesFolder/${usuari.grup}';
                     } else {
                       pathPhoto = await ref
@@ -216,6 +217,9 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                     onPressed: () async {
                       final actualitzat = await _editarUsuari(usuari);
                       if (actualitzat != null) {
+                        if(usuari is Alumne){
+                          ref.read(StorageServiceProvider).mouFotoAlumne(usuari.grup!, (actualitzat as Alumne).grup!, actualitzat.nia);
+                        }
                         provider.actualitza(actualitzat);
                       }
                     }),

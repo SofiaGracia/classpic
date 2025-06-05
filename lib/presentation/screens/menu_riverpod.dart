@@ -74,7 +74,7 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                       onPressed: () async {
 
                         final llistaUsuaris = await ref
-                            .read(professorNotifierProvider.notifier)
+                            .read(professorNotifierProvider.notifier)//Utilitzem el read()
                             .getProfessorsSenseModificarState();
 
                         Navigator.push(

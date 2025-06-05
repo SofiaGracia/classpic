@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/codi_generator.dart';
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/curs.dart';
+import '../../domain/models/fotopathcacheext.dart';
 import '../../domain/models/usuari.dart';
 import '../providers/alumne_notifier.dart';
 import '../providers/cursos_notifier.dart';
@@ -75,6 +76,7 @@ class _NewEditUserScreenState<T extends Usuari>
     cognom2Controller = TextEditingController(text: usuari?.c2 ?? '');
     if (usuari is Alumne) {
       grupSeleccionat = usuari.grup;
+      grupSeleccionat ??= grupSensenom;
     }
   }
 
@@ -107,6 +109,17 @@ class _NewEditUserScreenState<T extends Usuari>
       // Només fem la comprovació si és un usuari nou o si canvia l'id
       final idHaCanviat = idAntic == null || idNou != idAntic;
 
+      //Ací és on faria la comprovació de si id es de 9 o de 10 caràcters
+      final idNormalitzat;
+      try {
+        idNormalitzat = _normalitzaId(idNou);
+      } on FormatException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+        return;
+      }
+
       if (idHaCanviat) {
         final llistaExistents = widget.isAlumne
             ? ref.read(alumnesNotifierProvider).maybeWhen(
@@ -119,7 +132,7 @@ class _NewEditUserScreenState<T extends Usuari>
         );
 
         final idJaExisteix =
-        llistaExistents.any((usuari) => usuari.usuId == idNou);
+        llistaExistents.any((usuari) => usuari.usuId == idNormalitzat);
 
         if (idJaExisteix) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -131,6 +144,8 @@ class _NewEditUserScreenState<T extends Usuari>
 
       int? idCursSeleccionat;
       String? nomCursSeleccionat;
+
+      grupSeleccionat ??= grupSensenom;
 
       if (widget.isAlumne && grupSeleccionat != null) {
         final cursos = ref.read(cursosNotifierProvider).maybeWhen(
@@ -148,20 +163,12 @@ class _NewEditUserScreenState<T extends Usuari>
             await ref.read(StorageServiceProvider).mouFotoAlumne(
                 (widget.usuari as Alumne).grup!,
                 nomCursSeleccionat,
-                widget.usuari!.nom);
+                widget.usuari!.usuId);
+
+            //TODO: Generar un nou fotoHashPath per a que sàpiguen que em canviat la foto
+            //_fotoPathHash = DateTime.now().millisecondsSinceEpoch.toString();
           }
         }
-      }
-
-      //Ací és on faria la comprovació de si id es de 9 o de 10 caràcters
-      final idNormalitzat;
-      try {
-        idNormalitzat = _normalitzaId(idNou);
-      } on FormatException catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message)),
-        );
-        return;
       }
 
       final usuariNou = widget.constructor(
@@ -176,6 +183,10 @@ class _NewEditUserScreenState<T extends Usuari>
 
       if (usuariNou is Alumne) {
         usuariNou.cursId = idCursSeleccionat;
+        if(widget.usuari!=null && _imatge != null){
+          usuariNou.fotoPath = await  ref.read(StorageServiceProvider).getPathAlumne(nomCursSeleccionat!, '$idNormalitzat');
+          usuariNou.fotoPathHash = DateTime.now().millisecondsSinceEpoch.toString();
+        }
       }
 
       Navigator.pop(context, usuariNou);
@@ -221,12 +232,12 @@ class _NewEditUserScreenState<T extends Usuari>
     if (widget.isAlumne) {
       pathPhoto = await ref
           .read(StorageServiceProvider)
-          .getPathAlumne(nomCursSeleccionat!, nomController.text);
+          .getPathAlumne(nomCursSeleccionat!, idController.text);
       pathDir = '$baseFolderName/$alumnesFolder/$nomCursSeleccionat';
     } else {
       pathPhoto = await ref
           .read(StorageServiceProvider)
-          .getPathProfessor(nomController.text);
+          .getPathProfessor(nomController.text);//Canviar a id
       pathDir = '$baseFolderName/$professorsFolder';
     }
     return {'foto': pathPhoto, 'dir': pathDir};
@@ -353,7 +364,7 @@ class _NewEditUserScreenState<T extends Usuari>
                       : FotoUsuariWidget(
                     fotoPath: _imatge,
                     fotoPathHash: _fotoPathHash!,
-                    radius: 30,
+                    radius: 50,
                   ),
                 ),
               ),

@@ -3,11 +3,11 @@
 class CanviDeCursAlumne {
   final String cursVell;
   final String cursNou;
-  final String nomAlumne;
+  final String niaAlumne;
 
   CanviDeCursAlumne({
     required this.cursVell,
     required this.cursNou,
-    required this.nomAlumne,
+    required this.niaAlumne,
   });
 }

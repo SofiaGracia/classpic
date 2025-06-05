@@ -171,7 +171,10 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
           const SnackBar(
               content: Text('Nom del curs actualitzat correctament.')),
         );
-        _controller.text = nouNom;
+        //_controller.text = nouNom;
+        setState(() {
+          _controller.text = nouNom;
+        });
       }
     } catch (e) {
       if (context.mounted) {

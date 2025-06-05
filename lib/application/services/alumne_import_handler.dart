@@ -102,13 +102,18 @@ class AlumneImportHandler {
         final existent = alumnesDBMap[alum.nia];
         if (existent == null) {
           alumnesAInserir.add(alum);
-        } else if (existent.cursId != alum.cursId) {
+        } else if ((existent.cursId != alum.cursId )) {
 
-          alumnesACanviar.add(CanviDeCursAlumne(cursVell: existent.grup!, cursNou: alum.grup!, nomAlumne: existent.nom));
-          final novaFotoPath = await storage.getPathAlumne(alum.grup!, existent.nom);
+          var alumneAmbCursCanviat;
+          alumneAmbCursCanviat = alum.copyWith(id: existent.id);
 
-          final alumneAmbCursCanviat = alum.copyWith(id: existent.id, fotoPath: novaFotoPath);
+          if(existent.fotoPath != null){
+            alumnesACanviar.add(CanviDeCursAlumne(cursVell: existent.grup!, cursNou: alum.grup!, niaAlumne: existent.nia));
+            //final novaFotoPath = await storage.getPathAlumne(alum.grup!, existent.nom);
+            final novaFotoPath = await storage.getPathAlumne(alum.grup!, existent.nia);
 
+            alumneAmbCursCanviat = alum.copyWith(id: existent.id, fotoPath: novaFotoPath, fotoPathHash: existent.fotoPath);
+          }
           alumnesAEditar.add(alumneAmbCursCanviat);
         }
       }
@@ -132,7 +137,7 @@ class AlumneImportHandler {
         return storage.mouFotoAlumne(
           alumne.cursVell,
           alumne.cursNou,
-          alumne.nomAlumne,
+          alumne.niaAlumne,
         );
       }));
 
