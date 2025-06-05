@@ -13,7 +13,7 @@ class ProfessorImportHandler{
 
   Future<void> processa(XmlDocument doc) async {
     final profNot = ref.read(professorNotifierProvider.notifier);
-    final professorsDB = await ref.watch(professorsTotsProvider.future);
+    final professorsDB = await ref.read(professorNotifierProvider.notifier).getProfessorsSenseModificarState();
     final professorsXml = await RepositoryProfessorXml(doc: doc).carregaLlistaProfessorsXml();
 
     if (professorsDB.isEmpty) {

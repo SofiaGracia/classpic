@@ -8,12 +8,6 @@ import '../../data/repository/professor_db.dart';
 part 'professor_notifier.g.dart';
 
 @riverpod
-Future<List<Professor>> professorsTots(ProfessorsTotsRef ref) async {
-  final professors = await ref.watch(professorNotifierProvider.future);
-  return professors;
-}
-
-@riverpod
 class ProfessorNotifier extends _$ProfessorNotifier {
 
   Future<RepositoryProfessorDB> get _repo async =>
@@ -93,7 +87,6 @@ class ProfessorNotifier extends _$ProfessorNotifier {
 
   //Exemple d’actualització de la llista global amb canvi d’un usuari:
   // Aquest mètode l’has d’executar des del UsuariNotifier quan fas un canvi local.
-
   Future<void> actualitza(Professor usuariActualitzat) async {
     try {
       final actuals = state.requireValue;
