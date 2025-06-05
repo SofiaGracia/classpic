@@ -20,19 +20,6 @@ final repositoryCursDBProvider = FutureProvider<RepositoryCursDB>((ref) async {
 });
 
 @riverpod
-Future<List<Curs>> cursTots(CursTotsRef ref) async {
-  final cursos = await ref.watch(cursosNotifierProvider.future);
-  return cursos;
-}
-
-@riverpod
-Future<Curs> cursPerId(CursPerIdRef ref, int cursId) async {
-  final cursos = await ref.watch(cursosNotifierProvider.future);
-  // Filtra i retorna el curs amb el cursId especificat
-  return cursos.firstWhere((curs) => curs.id == cursId);
-}
-
-@riverpod
 class CursosNotifier extends _$CursosNotifier {
 
   Future<RepositoryCursDB> get _repo async => await ref.watch(repositoryCursDBProvider.future);
@@ -79,9 +66,6 @@ class CursosNotifier extends _$CursosNotifier {
       return [...actuals, nouCurs];
     });
   }
-
-  /*Quan fas state = await AsyncValue.guard(...), dins del bloc guard(...) estàs intentant accedir a state.requireValue,
-   mentre state encara no ha sigut actualitzat amb el nou valor.*/
 
   Future<void> inserirCursos(List<Curs> cursos) async {
     try {
@@ -137,15 +121,13 @@ class CursosNotifier extends _$CursosNotifier {
 
   Future<Curs?> actualitza(Curs cursActualitzat) async {
     try {
-      //final actuals = state.requireValue; // <- ACCEDEIX abans de posar AsyncLoading
       if (await checkCurs(cursActualitzat)) {
         throw Exception('Ja existeix un curs amb el nom "${cursActualitzat.nom}".');
       }
 
       final actuals = await getCursosSenseModificarState();
 
-      state = const AsyncLoading(); // <- DESPRÉS
-
+      state = const AsyncLoading();
       final repo = await _repo;
       await repo.editarCursDB(cursActualitzat);
 
