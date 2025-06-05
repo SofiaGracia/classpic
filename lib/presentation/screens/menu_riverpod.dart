@@ -12,7 +12,6 @@ import '../../domain/entities/alumne.dart';
 import '../../domain/entities/professor.dart';
 import 'configuration.dart';
 import 'llista_3.dart';
-import 'llista_usu_select.dart';
 import 'llista_usuaris_riverpod.dart';
 
 class MenuScreenR extends ConsumerStatefulWidget {

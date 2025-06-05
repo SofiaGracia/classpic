@@ -15,21 +15,22 @@ import '../providers/professor_notifier.dart';
 import '../widgets/foto_usuari.dart';
 import 'camera_camera.dart';
 
+// Aquesta pantalla permet crear o editar un usuari (alumne o professor)
 class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
-  final T? usuari;
-  final String Function(T) getId;
+  final T? usuari; // Usuari a editar, null si és un nou usuari
+  final String Function(T) getId; // Funció per obtenir l'ID del tipus T
   final T Function(
-      {
-      required String id,
-      required String nom,
-      required String c1,
-      required String c2,
-      String? fotoPath,
-      String? fotoPathHash,
-      String? grup}) constructor;
-  final bool isAlumne;
-  final int? cursId;
-  final String codiUsuari;
+          {required String id,
+          required String nom,
+          required String c1,
+          required String c2,
+          String? fotoPath,
+          String? fotoPathHash,
+          String? grup})
+      constructor; // Constructor per crear una instància del tipus T
+  final bool isAlumne; // Indica si l'usuari és un alumne
+  final int? cursId; // ID del curs si s'està creant un alumne
+  final String codiUsuari; // Codi identificador (NIA, DNI o generat)
 
   const NewEditUserScreen({
     super.key,
@@ -50,15 +51,16 @@ class _NewEditUserScreenState<T extends Usuari>
     extends ConsumerState<NewEditUserScreen<T>> {
   final _formKey = GlobalKey<FormState>();
 
+  // Controladors pels camps del formulari
   late TextEditingController idController;
   late TextEditingController nomController;
   late TextEditingController cognom1Controller;
   late TextEditingController cognom2Controller;
 
-  String? _imatge;
-  String? _fotoPathHash;
-  String? grupSeleccionat;
-  T? usuariActual;
+  String? _imatge; // Ruta de la imatge de l'usuari
+  String? _fotoPathHash; // Hash de la foto per invalidació de caché
+  String? grupSeleccionat; // Grup seleccionat per a alumnes
+  T? usuariActual; // Referència a l'usuari actual
 
   @override
   void initState() {
@@ -80,8 +82,8 @@ class _NewEditUserScreenState<T extends Usuari>
     }
   }
 
+  // Funció per normalitzar l'identificador
   String _normalitzaId(String idInput) {
-
     //Per al nia
     if (idInput.length == numNia) {
       return CodiGenerator.normalitzaIdentificador(idInput);
@@ -100,9 +102,9 @@ class _NewEditUserScreenState<T extends Usuari>
     throw FormatException('L\'ID ha de tenir entre $numNia i 10 caràcters.');
   }
 
+  // Guarda l'usuari (crear o editar)
   Future<void> _guardarUsuari() async {
     if (_formKey.currentState!.validate()) {
-
       final idNou = idController.text.trim();
       final idAntic = widget.usuari?.usuId;
 
@@ -120,19 +122,20 @@ class _NewEditUserScreenState<T extends Usuari>
         return;
       }
 
+      // Comprovem si ja existeix aquest ID en la llista d'usuaris
       if (idHaCanviat) {
         final llistaExistents = widget.isAlumne
             ? ref.read(alumnesNotifierProvider).maybeWhen(
-          data: (alumnes) => alumnes,
-          orElse: () => [],
-        )
+                  data: (alumnes) => alumnes,
+                  orElse: () => [],
+                )
             : ref.read(professorNotifierProvider).maybeWhen(
-          data: (professors) => professors,
-          orElse: () => [],
-        );
+                  data: (professors) => professors,
+                  orElse: () => [],
+                );
 
         final idJaExisteix =
-        llistaExistents.any((usuari) => usuari.usuId == idNormalitzat);
+            llistaExistents.any((usuari) => usuari.usuId == idNormalitzat);
 
         if (idJaExisteix) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -147,6 +150,7 @@ class _NewEditUserScreenState<T extends Usuari>
 
       grupSeleccionat ??= grupSensenom;
 
+      // Si és alumne, busquem el curs associat al grup seleccionat
       if (widget.isAlumne && grupSeleccionat != null) {
         final cursos = ref.read(cursosNotifierProvider).maybeWhen(
               data: (cursos) => cursos,
@@ -159,18 +163,17 @@ class _NewEditUserScreenState<T extends Usuari>
           idCursSeleccionat = cursTrobat.id;
           nomCursSeleccionat = cursTrobat.nom;
 
+          // Si ha canviat de grup, movem la seva foto
           if (widget.usuari != null && grupSeleccionat != cursTrobat) {
             await ref.read(StorageServiceProvider).mouFotoAlumne(
                 (widget.usuari as Alumne).grup!,
                 nomCursSeleccionat,
                 widget.usuari!.usuId);
-
-            //TODO: Generar un nou fotoHashPath per a que sàpiguen que em canviat la foto
-            //_fotoPathHash = DateTime.now().millisecondsSinceEpoch.toString();
           }
         }
       }
 
+      // Creem la nova instància d'usuari
       final usuariNou = widget.constructor(
         id: idNormalitzat,
         nom: nomController.text.trim(),
@@ -181,18 +184,24 @@ class _NewEditUserScreenState<T extends Usuari>
         grup: nomCursSeleccionat,
       );
 
+      // Si és alumne, li assignem el curs i actualitzem la ruta de la foto
       if (usuariNou is Alumne) {
         usuariNou.cursId = idCursSeleccionat;
-        if(widget.usuari!=null && _imatge != null){
-          usuariNou.fotoPath = await  ref.read(StorageServiceProvider).getPathAlumne(nomCursSeleccionat!, '$idNormalitzat');
-          usuariNou.fotoPathHash = DateTime.now().millisecondsSinceEpoch.toString();
+        if (widget.usuari != null && _imatge != null) {
+          usuariNou.fotoPath = await ref
+              .read(StorageServiceProvider)
+              .getPathAlumne(nomCursSeleccionat!, '$idNormalitzat');
+          usuariNou.fotoPathHash =
+              DateTime.now().millisecondsSinceEpoch.toString();
         }
       }
 
+      // Tornem enrere amb el nou usuari
       Navigator.pop(context, usuariNou);
     }
   }
 
+  // Troba el curs segons el nom del grup seleccionat
   Curs? _trobaCurs(List<Curs> cursos) {
     for (Curs curs in cursos) {
       if (curs.nom == grupSeleccionat) {
@@ -202,6 +211,7 @@ class _NewEditUserScreenState<T extends Usuari>
     return null;
   }
 
+  // Obté les rutes per guardar la foto
   Future<Map<String, String>?> getPaths() async {
     if (idController.text.trim().isEmpty ||
         nomController.text.trim().isEmpty ||
@@ -237,12 +247,13 @@ class _NewEditUserScreenState<T extends Usuari>
     } else {
       pathPhoto = await ref
           .read(StorageServiceProvider)
-          .getPathProfessor(nomController.text);//Canviar a id
+          .getPathProfessor(nomController.text); //Canviar a id
       pathDir = '$baseFolderName/$professorsFolder';
     }
     return {'foto': pathPhoto, 'dir': pathDir};
   }
 
+  // Obre la pantalla de càmera i actualitza la imatge si es fa una foto nova
   Future<void> _gestionaFoto() async {
     final paths = await getPaths();
 
@@ -287,8 +298,6 @@ class _NewEditUserScreenState<T extends Usuari>
           child: Column(
             children: [
               _buildTextField(
-                //Si l'usuari és nou m'agradaria que apareguera com a dins del textfield
-                //per defecte un codi generat
                 controller: idController,
                 label: "Identificador (NIA o DNI)",
                 icon: Icons.badge,
@@ -362,10 +371,10 @@ class _NewEditUserScreenState<T extends Usuari>
                       ? const Icon(Icons.camera_alt,
                           size: 40, color: Colors.white70)
                       : FotoUsuariWidget(
-                    fotoPath: _imatge,
-                    fotoPathHash: _fotoPathHash!,
-                    radius: 50,
-                  ),
+                          fotoPath: _imatge,
+                          fotoPathHash: _fotoPathHash!,
+                          radius: 50,
+                        ),
                 ),
               ),
               const SizedBox(height: 30),

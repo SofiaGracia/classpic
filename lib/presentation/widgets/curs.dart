@@ -8,7 +8,6 @@ import '../../domain/entities/curs.dart';
 import '../../shared/utils/dialog.dart';
 import '../providers/alumne_notifier.dart';
 import '../screens/llista_3.dart';
-import '../screens/llista_usu_select.dart';
 import '../screens/llista_usuaris_riverpod.dart';
 import 'counter.dart';
 
