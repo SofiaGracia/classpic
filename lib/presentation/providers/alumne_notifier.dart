@@ -1,21 +1,14 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:xml_fotos/data/datasources/db/database_service.dart';
 import 'package:xml_fotos/presentation/providers/repository.dart';
 
-import '../../data/datasources/db/dao/alumne_dao.dart';
 import '../../domain/entities/alumne.dart';
 import '../../data/repository/alumne_db.dart';
-import 'alu_widget.dart';
 
 part 'alumne_notifier.g.dart';
 
-// Primer, canviem el provider de alumnes a un `FutureProvider.family`
-// Així podrem passar el cursId i obtenir només els alumnes d'aquest curs.
-
 @riverpod
-Future<List<Alumne>> alumnesPerCursFiltrat(AlumnesPerCursFiltratRef ref, int? cursId) async {
+Future<List<Alumne>> alumnesFiltratsCurs(
+    AlumnesFiltratsCursRef ref, int? cursId) async {
   final asyncValue = ref.watch(alumnesNotifierProvider);
 
   return asyncValue.when(
@@ -26,17 +19,6 @@ Future<List<Alumne>> alumnesPerCursFiltrat(AlumnesPerCursFiltratRef ref, int? cu
     loading: () => [],
     error: (err, stack) => throw err,
   );
-}
-@riverpod
-Future<int> alumnesTotal(AlumnesTotalRef ref) async {
-  final alumnes = await ref.watch(alumnesNotifierProvider.future);
-  return alumnes.length;
-}
-
-@riverpod
-Future<List<Alumne>> alumnesTots(AlumnesTotsRef ref) async {
-  final alumnes = await ref.watch(alumnesNotifierProvider.future);
-  return alumnes;
 }
 
 @riverpod
@@ -51,36 +33,31 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     return repo.carregaAlumnesDB();
   }
 
+  /// Recarrega tota la llista des de la base de dades
   Future<void> carregarAlumnes() async {
-
-    try{
+    try {
       final repo = await _repo;
       final actualitzats = await repo.carregaAlumnesDB();
 
       state = AsyncData(actualitzats);
-
     } catch (e, st) {
       state = AsyncError(e, st);
     }
   }
 
-  //Te falta inserirAlumnes
   Future<void> inserirAlumnes(List<Alumne> alumnes) async {
-
-    try{
+    try {
       final repo = await _repo;
       await repo.inserirAlumnesDB(alumnes);
 
       final actualitzats = await repo.carregaAlumnesDB();
       state = AsyncData(actualitzats);
-
     } catch (e, st) {
       state = AsyncError(e, st);
     }
   }
 
-  Future<void>  inserirAlumne(Alumne alumne) async {
-
+  Future<void> inserirAlumne(Alumne alumne) async {
     try {
       final repo = await _repo;
 
@@ -96,7 +73,6 @@ class AlumnesNotifier extends _$AlumnesNotifier {
 
       // Espera a que el nou notifier es construïsca correctament
       //await ref.read(alumneWidgetNotifierProvider(idNou).future);
-
     } catch (e, st) {
       state = AsyncError(e, st);
     }
@@ -130,7 +106,8 @@ class AlumnesNotifier extends _$AlumnesNotifier {
       final repo = await _repo;
       await repo.editarAlumneDB(alumne);
       final actuals = state.requireValue;
-      final nous = actuals.map((e) => e.nia == alumne.nia ? alumne : e).toList();
+      final nous =
+          actuals.map((e) => e.nia == alumne.nia ? alumne : e).toList();
       return nous;
     });
   }
@@ -149,7 +126,8 @@ class AlumnesNotifier extends _$AlumnesNotifier {
 
       for (final a in actuals) {
         if (idsEditats.contains(a.id)) {
-          final alumneEditat = alumnes.firstWhere((editat) => editat.id == a.id);
+          final alumneEditat =
+              alumnes.firstWhere((editat) => editat.id == a.id);
           actualitzats.add(alumneEditat);
         } else {
           actualitzats.add(a);
@@ -170,7 +148,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     final repo = await _repo;
     return repo.carregaAlumnesPerCursDB(id);
   }
-  
+
   Future<void> actualitza(Alumne usuariActualitzat) async {
     try {
       final actuals = state.requireValue;
