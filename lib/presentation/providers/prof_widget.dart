@@ -37,9 +37,9 @@ class ProfWidgetNotifier
       fotoPathHash: nou.fotoPathHash,
     );
 
-    if(prof.fotoPathHash != nou.fotoPathHash){
+    if (prof.fotoPathHash != nou.fotoPathHash) {
       ref.read(professorNotifierProvider.notifier).actualitza(actualitzat);
-    }else{
+    } else {
       final repo = await _repo;
       await repo.editarProfessorDB(actualitzat);
     }
