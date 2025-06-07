@@ -63,6 +63,5 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
     state = AsyncData(actualitzat);
   }
 }
-
 final alumneWidgetNotifierProvider = AsyncNotifierProvider.autoDispose
     .family<AluWidgetNotifier, Alumne, int>(AluWidgetNotifier.new);
