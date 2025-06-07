@@ -39,8 +39,9 @@ class ProfWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Professor, int> 
 
     state = AsyncData(actualitzat);
 
-    //Actualitzar a la llista global
-    ref.read(professorNotifierProvider.notifier).actualitza(actualitzat);
+    final repo = await _repo;
+    await repo.editarProfessorDB(actualitzat);
+
   }
 }
 

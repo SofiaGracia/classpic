@@ -1,4 +1,3 @@
-// usuari_notifier.dart
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +8,6 @@ import '../../data/repository/alumne_db.dart';
 import '../../domain/entities/alumne.dart';
 import 'alumne_notifier.dart';
 
-// usuari_notifier.dart
 class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
   late final int id;
 
@@ -26,6 +24,8 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
 
   Future<void> actualitza(Alumne nou) async {
 
+    var cridarGlobal = false;
+
     final alu = state.value as Alumne;
     final actualitzat = alu.copyWith(
       id: alu.id,
@@ -37,22 +37,28 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
       fotoPathHash: nou.fotoPathHash,
     );
 
-    //El que podem fer es comparar el cursId del nou i el cursId del vell i si canvia
-    //canviar també el grup i cridar a la llista global i si no ha canviat cridar a la del propi widget
+    //Si se li ha canviat el path de la foto
+    // (abans no tenia i ara sí també hem de cridar al mètode de la llista global)
+    // Hem de comparar-ho per fotoPathHash
 
-    //Problema amb la foto
+    //Comparem el cursId nou i el vell per si canvia
+    //si canvia és que ha canviat de grup i hem de cridar al mètode actualitza de la llista global
 
     if(alu.cursId != nou.cursId){
-
+      cridarGlobal = true;
       actualitzat.cursId = nou.cursId;
       actualitzat.grup = nou.grup;
+    }
 
+    if(alu.fotoPathHash != nou.fotoPathHash){
+      cridarGlobal = true;
+    }
+
+    if(cridarGlobal){
       ref.read(alumnesNotifierProvider.notifier).actualitza(actualitzat);
     }else{
-
       final repo = await _repo;
       final alumneEditat = await repo.editarAlumneDB(actualitzat);
-      ref.read(alumnesNotifierProvider.notifier).actualitza(actualitzat);
     }
     state = AsyncData(actualitzat);
   }

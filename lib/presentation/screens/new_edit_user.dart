@@ -26,7 +26,7 @@ class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
           required String c2,
           String? fotoPath,
           String? fotoPathHash,
-          String? grup})
+          })
       constructor; // Constructor per crear una instància del tipus T
   final bool isAlumne; // Indica si l'usuari és un alumne
   final int? cursId; // ID del curs si s'està creant un alumne
@@ -61,6 +61,7 @@ class _NewEditUserScreenState<T extends Usuari>
   String? _fotoPathHash; // Hash de la foto per invalidació de caché
   String? grupSeleccionat; // Grup seleccionat per a alumnes
   T? usuariActual; // Referència a l'usuari actual
+  String? _fotoPathHashAGuardar;
 
   @override
   void initState() {
@@ -68,8 +69,8 @@ class _NewEditUserScreenState<T extends Usuari>
 
     usuariActual = widget.usuari;
     _imatge = widget.usuari?.fotoPath;
-    _fotoPathHash = widget.usuari?.fotoPathHash ??
-        DateTime.now().millisecondsSinceEpoch.toString();
+    _fotoPathHash = widget.usuari?.fotoPathHash;
+    _fotoPathHashAGuardar = _fotoPathHash;
 
     final usuari = widget.usuari;
     idController = TextEditingController(text: widget.codiUsuari);
@@ -145,34 +146,6 @@ class _NewEditUserScreenState<T extends Usuari>
         }
       }
 
-      int? idCursSeleccionat;
-      String? nomCursSeleccionat;
-
-      grupSeleccionat ??= grupSensenom;
-
-      // Si és alumne, busquem el curs associat al grup seleccionat
-      if (widget.isAlumne && grupSeleccionat != null) {
-        final cursos = ref.read(cursosNotifierProvider).maybeWhen(
-              data: (cursos) => cursos,
-              orElse: () => [], //Ací tenim un orElse
-            );
-
-        final cursTrobat = _trobaCurs(cursos as List<Curs>);
-
-        if (cursTrobat != null) {
-          idCursSeleccionat = cursTrobat.id;
-          nomCursSeleccionat = cursTrobat.nom;
-
-          // Si ha canviat de grup, movem la seva foto
-          if (widget.usuari != null && grupSeleccionat != cursTrobat) {
-            await ref.read(StorageServiceProvider).mouFotoAlumne(
-                (widget.usuari as Alumne).grup!,
-                nomCursSeleccionat,
-                widget.usuari!.usuId);
-          }
-        }
-      }
-
       // Creem la nova instància d'usuari
       final usuariNou = widget.constructor(
         id: idNormalitzat,
@@ -180,21 +153,50 @@ class _NewEditUserScreenState<T extends Usuari>
         c1: cognom1Controller.text.trim(),
         c2: cognom2Controller.text.trim(),
         fotoPath: _imatge,
-        fotoPathHash: _fotoPathHash,
-        grup: nomCursSeleccionat,
+        fotoPathHash: _fotoPathHashAGuardar,
       );
 
-      // Si és alumne, li assignem el curs i actualitzem la ruta de la foto
+      // Si és alumne, busquem el curs associat al grup seleccionat
+      //En principi grupSeleccionat no pot ser mai null
       if (usuariNou is Alumne) {
+
+        int? idCursSeleccionat;
+        String? nomCursSeleccionat;
+
+        grupSeleccionat ??= grupSensenom;
+
+        final cursos = ref.read(cursosNotifierProvider).maybeWhen(
+              data: (cursos) => cursos,
+              orElse: () => [], //Ací tenim un orElse
+            );
+
+        final cursTrobat = _trobaCurs(cursos as List<Curs>);
+
+        idCursSeleccionat = cursTrobat!.id;
+        nomCursSeleccionat = cursTrobat.nom;
+
+        //Assignem a l'usuari nou el curs corresponent
+        usuariNou.grup = nomCursSeleccionat;
         usuariNou.cursId = idCursSeleccionat;
-        if (widget.usuari != null && _imatge != null) {
+
+        //Se ha canviat de curs
+        if (((widget.usuari) as Alumne).grup != grupSeleccionat) {
+
+          //Si canviem de lloc la foto...
+          await ref.read(StorageServiceProvider).mouFotoAlumne(
+              (widget.usuari as Alumne).grup!,
+              nomCursSeleccionat,
+              widget.usuari!.usuId);
+
+          //...hi ha que canviar-li el path
           usuariNou.fotoPath = await ref
               .read(StorageServiceProvider)
-              .getPathAlumne(nomCursSeleccionat!, '$idNormalitzat');
-          usuariNou.fotoPathHash =
-              DateTime.now().millisecondsSinceEpoch.toString();
+              .getPathAlumne(nomCursSeleccionat, '$idNormalitzat');
+
         }
       }
+
+      print(usuariNou.fotoPath);
 
       // Tornem enrere amb el nou usuari
       Navigator.pop(context, usuariNou);
@@ -213,13 +215,10 @@ class _NewEditUserScreenState<T extends Usuari>
 
   // Obté les rutes per guardar la foto
   Future<Map<String, String>?> getPaths() async {
-    if (idController.text.trim().isEmpty ||
-        nomController.text.trim().isEmpty ||
-        cognom1Controller.text.trim().isEmpty ||
-        cognom2Controller.text.trim().isEmpty) {
+    if (idController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Has d’omplir ID, Nom, Primer i Segon Cognom')),
+            content: Text('Has d’omplir ID')),
       );
       return null;
     }
@@ -273,8 +272,8 @@ class _NewEditUserScreenState<T extends Usuari>
 
       if (novaFoto != null) {
         setState(() {
-          _imatge = novaFoto.path;
-          _fotoPathHash = DateTime.now().millisecondsSinceEpoch.toString();
+          _fotoPathHashAGuardar = DateTime.now().millisecondsSinceEpoch.toString();
+           _imatge = novaFoto.path;
         });
       }
     }
@@ -372,7 +371,7 @@ class _NewEditUserScreenState<T extends Usuari>
                           size: 40, color: Colors.white70)
                       : FotoUsuariWidget(
                           fotoPath: _imatge,
-                          fotoPathHash: _fotoPathHash!,
+                          fotoPathHash: _fotoPathHashAGuardar!,
                           radius: 50,
                         ),
                 ),
