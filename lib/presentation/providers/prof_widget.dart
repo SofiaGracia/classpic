@@ -10,7 +10,8 @@ import '../../data/repository/professor_db.dart';
 import '../../domain/entities/professor.dart';
 
 // usuari_notifier.dart
-class ProfWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Professor, int> {
+class ProfWidgetNotifier
+    extends AutoDisposeFamilyAsyncNotifier<Professor, int> {
   late final int id;
 
   Future<RepositoryProfessorDB> get _repo async =>
@@ -25,23 +26,24 @@ class ProfWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Professor, int> 
   }
 
   Future<void> actualitza(Professor nou) async {
-
     final prof = state.value as Professor;
-     final actualitzat = prof.copyWith(
+    final actualitzat = prof.copyWith(
       id: prof.id,
       dni: nou.dni,
       nom: nou.nom,
       c1: nou.c1,
       c2: nou.c2,
       fotoPath: nou.fotoPath,
-       fotoPathHash: nou.fotoPathHash,
+      fotoPathHash: nou.fotoPathHash,
     );
 
+    if(prof.fotoPathHash != nou.fotoPathHash){
+      ref.read(professorNotifierProvider.notifier).actualitza(actualitzat);
+    }else{
+      final repo = await _repo;
+      await repo.editarProfessorDB(actualitzat);
+    }
     state = AsyncData(actualitzat);
-
-    final repo = await _repo;
-    await repo.editarProfessorDB(actualitzat);
-
   }
 }
 
