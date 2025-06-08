@@ -127,7 +127,6 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
 
     return usuariAsync.when(
       data: (usuari) {
-        final usuariNia = usuari.usuId;
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: Padding(
@@ -147,7 +146,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                     } else {
                       pathPhoto = await ref
                           .read(StorageServiceProvider)
-                          .getPathProfessor(usuari!.nom);
+                          .getPathProfessor(usuari.usuId);
                       pathDir = '$baseFolderName/$professorsFolder';
                     }
                     final File? novaFoto = await Navigator.push<File?>(

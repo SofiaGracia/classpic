@@ -21,8 +21,13 @@ class StorageService {
     return appDir;
   }
 
+  Future<void> creaEstructuraInicial() async {
+    await creaEstructuraProfessors();
+    await creaEstructuraAlumnes(null);
+  }
+
   /// Crea l’estructura inicial per als alumnes (un directori per curs)
-  Future<void> creaEstructuraAlumnes(Set<String> nomsCursos) async {
+  Future<void> creaEstructuraAlumnes(Set<String>? nomsCursos) async {
     final baseDir = await _getBaseDirectory();
     final alumnesDir = Directory('${baseDir.path}/$alumnesFolder');
 
@@ -30,10 +35,12 @@ class StorageService {
       await alumnesDir.create();
     }
 
-    for (final nomCurs in nomsCursos) {
-      final cursDir = Directory('${alumnesDir.path}/$nomCurs');
-      if (!await cursDir.exists()) {
-        await cursDir.create(recursive: true);
+    if (nomsCursos != null){
+      for (final nomCurs in nomsCursos) {
+        final cursDir = Directory('${alumnesDir.path}/$nomCurs');
+        if (!await cursDir.exists()) {
+          await cursDir.create(recursive: true);
+        }
       }
     }
   }

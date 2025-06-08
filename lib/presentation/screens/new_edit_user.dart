@@ -180,7 +180,7 @@ class _NewEditUserScreenState<T extends Usuari>
         usuariNou.cursId = idCursSeleccionat;
 
         //Se ha canviat de curs
-        if (((widget.usuari) as Alumne).grup != grupSeleccionat) {
+        if ((widget.usuari != null) && ((widget.usuari) as Alumne).grup != grupSeleccionat) {
 
           //Si canviem de lloc la foto...
           await ref.read(StorageServiceProvider).mouFotoAlumne(
@@ -246,7 +246,7 @@ class _NewEditUserScreenState<T extends Usuari>
     } else {
       pathPhoto = await ref
           .read(StorageServiceProvider)
-          .getPathProfessor(nomController.text); //Canviar a id
+          .getPathProfessor(idController.text);
       pathDir = '$baseFolderName/$professorsFolder';
     }
     return {'foto': pathPhoto, 'dir': pathDir};
