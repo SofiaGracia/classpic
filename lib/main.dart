@@ -20,7 +20,7 @@ class MyApp extends ConsumerWidget {
     final initAsync = ref.watch(inicialitzacioProvider);
 
     return initAsync.when(
-      loading: () => const MaterialApp(home: SplashScreen()),
+      loading: () => const MaterialApp(home: SplashScreen(),debugShowCheckedModeBanner: false),
       error: (e, st) => MaterialApp(home: ErrorScreen()),
       data: (_) => MaterialApp(
         title: 'Flutter Demo',

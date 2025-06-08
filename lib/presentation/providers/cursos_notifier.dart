@@ -50,6 +50,11 @@ class CursosNotifier extends _$CursosNotifier {
     return repo.carregaCursDB(cursId);
   }
 
+  Future<Curs?> getCursPerNom(String nom) async {
+    final repo = await _repo;
+    return repo.findCursNom(nom);
+  }
+
   Future<bool> checkCurs(Curs curs) async {
     final repo = await _repo;
     final actuals = await repo.carregarCursosDB();

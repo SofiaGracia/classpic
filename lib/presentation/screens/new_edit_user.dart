@@ -165,12 +165,8 @@ class _NewEditUserScreenState<T extends Usuari>
 
         grupSeleccionat ??= grupSensenom;
 
-        final cursos = ref.read(cursosNotifierProvider).maybeWhen(
-              data: (cursos) => cursos,
-              orElse: () => [], //Ací tenim un orElse
-            );
-
-        final cursTrobat = _trobaCurs(cursos as List<Curs>);
+        //final cursTrobat = _trobaCurs(cursos as List<Curs>);
+        final cursTrobat = await ref.read(cursosNotifierProvider.notifier).getCursPerNom(grupSeleccionat!);
 
         idCursSeleccionat = cursTrobat!.id;
         nomCursSeleccionat = cursTrobat.nom;
@@ -202,17 +198,6 @@ class _NewEditUserScreenState<T extends Usuari>
       Navigator.pop(context, usuariNou);
     }
   }
-
-  // Troba el curs segons el nom del grup seleccionat
-  Curs? _trobaCurs(List<Curs> cursos) {
-    for (Curs curs in cursos) {
-      if (curs.nom == grupSeleccionat) {
-        return curs;
-      }
-    }
-    return null;
-  }
-
   // Obté les rutes per guardar la foto
   Future<Map<String, String>?> getPaths() async {
     if (idController.text.trim().isEmpty) {
@@ -225,12 +210,8 @@ class _NewEditUserScreenState<T extends Usuari>
     String? nomCursSeleccionat;
 
     if (widget.isAlumne && grupSeleccionat != null) {
-      final cursos = ref.read(cursosNotifierProvider).maybeWhen(
-            data: (cursos) => cursos,
-            orElse: () => [],
-          );
+      final cursTrobat = await ref.read(cursosNotifierProvider.notifier).getCursPerNom(grupSeleccionat!);
 
-      final cursTrobat = _trobaCurs(cursos as List<Curs>);
       if (cursTrobat != null) {
         nomCursSeleccionat = cursTrobat.nom;
       }
@@ -330,19 +311,33 @@ class _NewEditUserScreenState<T extends Usuari>
               if (widget.isAlumne) ...[
                 cursosAsync.when(
                   data: (cursos) {
-                    final curs = _trobaCurs(cursos as List<Curs>);
-                    final valorInicial = curs != null
-                        ? curs.id.toString()
-                        : cursos.first.id.toString();
+                    String? valorInicial;
+                    if (widget.cursId != null) {
+                      // Comprova que el id estiga a la llista
+                      if (cursos.any((c) => c.id == widget.cursId)) {
+                        valorInicial = widget.cursId.toString();
+                      }
+                    }
+
+                    // Si no està en l allista gasta el primer o a null
+                    valorInicial ??= cursos.isNotEmpty ? cursos.first.id.toString() : null;
+
+                    // Actualitza grupSeleccionat
+                    if (valorInicial != null && grupSeleccionat == null) {
+                      grupSeleccionat = cursos.firstWhere((c) => c.id.toString() == valorInicial).nom;
+                    }
+
                     return DropdownButtonFormField<String>(
-                      value: grupSeleccionat == null ? null : valorInicial,
+                      value: valorInicial,
                       onChanged: (nouId) {
-                        final nomDelGrup = cursos
-                            .firstWhere((c) => c.id.toString() == nouId)
-                            .nom;
-                        setState(() {
-                          grupSeleccionat = nomDelGrup;
-                        });
+                        if (nouId != null) {
+                          final nomDelGrup = cursos
+                              .firstWhere((c) => c.id.toString() == nouId)
+                              .nom;
+                          setState(() {
+                            grupSeleccionat = nomDelGrup;
+                          });
+                        }
                       },
                       decoration: const InputDecoration(
                         labelText: "Curs",

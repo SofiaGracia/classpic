@@ -16,6 +16,9 @@ abstract class CursDao {
   @Query('SELECT * FROM cursos WHERE id = :id')
   Future<Curs?> findCursById(int id);
 
+  @Query('SELECT * FROM cursos WHERE nom = :nom')
+  Future<Curs?> findCursByNom(String nom);
+
   @Insert(onConflict: OnConflictStrategy.ignore)
   Future<int> insertCurs(Curs curs);
 

@@ -11,6 +11,7 @@ import '../screens/new_edit_user.dart';
 class NewUserR<T extends Usuari> extends ConsumerWidget {
   final bool isAlumne;
   final Future<void> Function(Usuari usuari) onCreate;
+  final int? cursId;
   final String Function(T usuari) getId;
   final T Function(
       {
@@ -26,6 +27,7 @@ class NewUserR<T extends Usuari> extends ConsumerWidget {
     super.key,
     required this.isAlumne,
     required this.onCreate,
+    required this.cursId,
     required this.getId,
     required this.constructor,
   });
@@ -54,6 +56,7 @@ class NewUserR<T extends Usuari> extends ConsumerWidget {
               getId: getId,
               constructor: constructor,
               isAlumne: isAlumne,
+              cursId: isAlumne? cursId: null,
               codiUsuari: codiUsuari,
             ),
           ),

@@ -92,6 +92,7 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
             await ref.read(professorNotifierProvider.notifier).inserirProfessor(u as Professor);
           }
         },
+        cursId: isAlumne? curs!.id! : null,
         getId: (u) => isAlumne ? (u as Alumne).nia : (u as Professor).dni,
         constructor: ({
           required String id,

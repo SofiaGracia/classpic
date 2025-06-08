@@ -20,6 +20,10 @@ class RepositoryCursDB {
     return await _cursDao.findCursById(id);
   }
 
+  Future<Curs?> findCursNom(String nom) async {
+    return await _cursDao.findCursByNom(nom);
+  }
+
   Future<Curs> insertarCursDB(Curs curs) async {
     final id = await _cursDao.insertCurs(curs);
     return curs.copyWith(id: id);
