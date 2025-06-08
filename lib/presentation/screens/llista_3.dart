@@ -44,7 +44,7 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
     // Si tenim llista passada però el tamany no coincideix amb ids, recarreguem
     if (llista == null || llista.length != ids.length) {
       return FutureBuilder<List<T>>(
-        future: _carregaLlista<T>(ref, isAlumne, curs!.id!),
+        future: _carregaLlista<T>(ref, isAlumne, curs?.id),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Scaffold(
