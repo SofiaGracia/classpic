@@ -37,7 +37,6 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
       MaterialPageRoute(
         builder: (_) => NewEditUserScreen(
           usuari: usuari,
-          //isAlumne: widget.usuari is Alumne?,
           getId: (u) => u is Alumne ? u.nia : (u as Professor).dni,
           constructor: (
               {
@@ -69,6 +68,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
             }
           },
           isAlumne: usuari is Alumne?,
+          cursId: usuari is Alumne? usuari.cursId: null,
           codiUsuari: usuari is Alumne ? usuari.nia : (usuari as Professor).dni,
         ),
       ),
