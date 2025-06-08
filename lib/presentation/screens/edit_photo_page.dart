@@ -9,7 +9,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as image;
 
 import '../../shared/utils/guide_oval_painter.dart';
-import '../../shared/utils/quadrat_oval_painter.dart';
 
 class EditPhotoPage extends StatefulWidget {
   //final File imageFile;

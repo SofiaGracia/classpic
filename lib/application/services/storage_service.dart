@@ -1,8 +1,16 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../shared/utils/constants.dart';
+
+enum DirectoriFotos {
+  intern, // Android/data/...
+  pictures, // /Pictures/ClassPic
+  dcim, // /DCIM/ClassPic
+}
 
 final StorageServiceProvider = Provider<StorageService>((ref) {
   return StorageService();
@@ -10,15 +18,60 @@ final StorageServiceProvider = Provider<StorageService>((ref) {
 
 class StorageService {
 
+  //Guardar la configuració a SharedPreferences
+  Future<void> guardaDirectoriSeleccionat(DirectoriFotos directori) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('directori_fotos', directori.name);
+  }
+
+  Future<DirectoriFotos> carregaDirectoriSeleccionat() async {
+    final prefs = await SharedPreferences.getInstance();
+    final valor = prefs.getString('directori_fotos') ?? 'intern';
+    return DirectoriFotos.values.firstWhere((e) => e.name == valor);
+  }
+
   /// Obté el directori base de l’aplicació a l’emmagatzematge extern
   Future<Directory> _getBaseDirectory() async {
-    final extDir = await getExternalStorageDirectory();
-    final appDir = Directory('${extDir?.path}/$baseFolderName');
+    final directori = await carregaDirectoriSeleccionat();
+    Directory base;
 
+    switch (directori) {
+      case DirectoriFotos.pictures:
+        base = Directory('/storage/emulated/0/Pictures');
+        break;
+      case DirectoriFotos.dcim:
+        base = Directory('/storage/emulated/0/DCIM');
+        break;
+      default:
+        final extDir = await getExternalStorageDirectory(); // Android/data/...
+        base = Directory('${extDir?.path}');
+        break;
+    }
+    final appDir = Directory('${base.path}/$baseFolderName');
     if (!await appDir.exists()) {
       await appDir.create(recursive: true);
     }
     return appDir;
+  }
+
+  /// Obté el directori base de l’aplicació a l’emmagatzematge extern
+  Future<Directory?> _getDirPictures() async {
+    try {
+      final extDir = Directory('/storage/emulated/0/DCIM');
+      if (!await extDir.exists()) {
+        await extDir.create(recursive: true);
+      }
+      final appDir = Directory('${extDir.path}/$baseFolderName');
+
+      if (!await appDir.exists()) {
+        await appDir.create(recursive: true);
+      }
+
+      return appDir;
+    } catch (e, st) {
+      debugPrintStack(label: '$e  $st');
+    }
+    return null;
   }
 
   Future<void> creaEstructuraInicial() async {
@@ -35,7 +88,7 @@ class StorageService {
       await alumnesDir.create();
     }
 
-    if (nomsCursos != null){
+    if (nomsCursos != null) {
       for (final nomCurs in nomsCursos) {
         final cursDir = Directory('${alumnesDir.path}/$nomCurs');
         if (!await cursDir.exists()) {
@@ -100,11 +153,12 @@ class StorageService {
   }
 
   Future<void> renombraCarpetaCurs(String nomActual, String nouNom) async {
-    final baseDir = await getExternalStorageDirectory();
-    if (baseDir == null) throw Exception("No s'ha pogut accedir a l'emmagatzematge.");
+    final baseDir = await _getBaseDirectory();
 
-    final origen = Directory('${baseDir.path}/$baseFolderName/$alumnesFolder/$nomActual');
-    final desti = Directory('${baseDir.path}/$baseFolderName/$alumnesFolder/$nouNom');
+    final origen =
+        Directory('${baseDir.path}/$baseFolderName/$alumnesFolder/$nomActual');
+    final desti =
+        Directory('${baseDir.path}/$baseFolderName/$alumnesFolder/$nouNom');
 
     if (await desti.exists()) {
       throw Exception("Ja existeix una carpeta amb el nom '$nouNom'.");
@@ -116,7 +170,6 @@ class StorageService {
 
     await origen.rename(desti.path);
   }
-
 
   /// Elimina totes les fotos (fitxers `.jpg`) dins d'una carpeta de curs i borrar també la carpeta
   Future<void> eliminarFotosCarpetaCurs(String nomCurs) async {
@@ -138,10 +191,12 @@ class StorageService {
     }
   }
 
-  Future<void> mouFotoAlumne(String nomCursVell, String nomCursNou, String niaAlumne) async {
+  Future<void> mouFotoAlumne(
+      String nomCursVell, String nomCursNou, String niaAlumne) async {
     final baseDir = await _getBaseDirectory();
 
-    final origen = File('${baseDir.path}/$alumnesFolder/$nomCursVell/$niaAlumne.jpg');
+    final origen =
+        File('${baseDir.path}/$alumnesFolder/$nomCursVell/$niaAlumne.jpg');
     final destiDir = Directory('${baseDir.path}/$alumnesFolder/$nomCursNou');
 
     if (!await destiDir.exists()) {

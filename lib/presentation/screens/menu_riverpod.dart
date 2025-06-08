@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/application/services/storage_service.dart';
 import 'package:xml_fotos/presentation/providers/alumne_notifier.dart';
 import 'package:xml_fotos/presentation/providers/provider_id.dart';
 import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
@@ -96,11 +97,14 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                 ],
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+
+                  final seleccioActual = await ref.read(StorageServiceProvider).carregaDirectoriSeleccionat();
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const ConfigurationScreen(),
+                      builder: (context) => ConfigurationScreen(seleccio: seleccioActual,),
                     ),
                   );
                 },
