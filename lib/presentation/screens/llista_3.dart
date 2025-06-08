@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/alumne_notifier.dart';
+import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
 import 'package:xml_fotos/presentation/widgets/new_user.dart';
 import 'package:xml_fotos/presentation/widgets/usuari_riverpod_ind.dart';
 
 import '../../domain/entities/alumne.dart';
+import '../../domain/entities/curs.dart';
 import '../../domain/entities/professor.dart';
 import '../../domain/models/usuari.dart';
 import '../providers/provider_id.dart';
@@ -13,35 +15,41 @@ import '../providers/professor_notifier.dart';
 
 class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
   final bool isAlumne;
-  final int? cursId;
+  final Curs? curs;
   final List<T>? initialLlista; // llista passada opcionalment
 
   const LlistaUsuarisR({
     super.key,
-    required this.cursId,
+    required this.curs,
     required this.isAlumne,
     this.initialLlista,
   });
+
+  String _getTitol(){
+    return isAlumne? 'Alumnes de ${curs!.nom}': 'Professors';
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
     final ids = isAlumne
-        ? ref.watch(alumnesIdsProvider(cursId!))
+        ? ref.watch(alumnesIdsProvider(curs!.id!))
         : ref.watch(professorsIdsProvider);
 
     // Llista actual que volem mostrar, o null si no tenim inicial
     List<T>? llista = initialLlista;
 
+    final titol = _getTitol();
+
     // Si tenim llista passada però el tamany no coincideix amb ids, recarreguem
     if (llista == null || llista.length != ids.length) {
       return FutureBuilder<List<T>>(
-        future: _carregaLlista<T>(ref, isAlumne, cursId),
+        future: _carregaLlista<T>(ref, isAlumne, curs!.id!),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Scaffold(
                 appBar: AppBar(
-                  title: const Text('Llista d’usuaris'),
+                  title: Text(titol),
                 ),
                 body:const Center(child: CircularProgressIndicator()),
             );
@@ -60,7 +68,7 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
   Widget _buildScaffold(BuildContext context, WidgetRef ref, List<T> llista) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Llista d’usuaris'),
+        title: Text(_getTitol()),
       ),
       body: ListView(
         children: llista.map((usuari) {
