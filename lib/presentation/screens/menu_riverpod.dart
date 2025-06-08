@@ -82,7 +82,7 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                           MaterialPageRoute(
                             builder: (context) => LlistaUsuarisR<Professor>(
                               isAlumne: false,
-                              cursId: null,
+                              curs: null,
                               initialLlista: llistaUsuaris,
                             ),
                           ),

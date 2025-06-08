@@ -62,7 +62,7 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => LlistaUsuarisR<Alumne>(
-                      cursId: curs.id,
+                      curs: curs,
                       isAlumne: true,
                       initialLlista: llistaUsuaris,
                     ),
