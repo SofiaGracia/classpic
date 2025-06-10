@@ -54,26 +54,6 @@ class StorageService {
     return appDir;
   }
 
-  /// Obté el directori base de l’aplicació a l’emmagatzematge extern
-  Future<Directory?> _getDirPictures() async {
-    try {
-      final extDir = Directory('/storage/emulated/0/DCIM');
-      if (!await extDir.exists()) {
-        await extDir.create(recursive: true);
-      }
-      final appDir = Directory('${extDir.path}/$baseFolderName');
-
-      if (!await appDir.exists()) {
-        await appDir.create(recursive: true);
-      }
-
-      return appDir;
-    } catch (e, st) {
-      debugPrintStack(label: '$e  $st');
-    }
-    return null;
-  }
-
   Future<void> creaEstructuraInicial() async {
     await creaEstructuraProfessors();
     await creaEstructuraAlumnes(null);

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/presentation/widgets/image_configuration.dart';
 import 'package:xml_fotos/presentation/widgets/import_button.dart';
 
 import '../../application/services/storage_service.dart';
@@ -83,6 +84,8 @@ class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
                     await storage.guardaDirectoriSeleccionat(value!);
                   },
                 ),
+                const SizedBox(height: 16),
+                ImageConfigurationWidget()
               ],
             ),
           ),
