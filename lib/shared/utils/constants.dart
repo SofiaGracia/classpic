@@ -5,3 +5,5 @@ const numNia = 8;
 const numDni = 9;
 const grupSensenom = 'Sense grup';
 const maxSizeKB = 90;
+const cropCoverageRatio = 0.9;
+const qualitatImatge = 90;

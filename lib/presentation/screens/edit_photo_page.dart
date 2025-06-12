@@ -1,20 +1,15 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:image/image.dart' as image;
 import 'package:xml_fotos/application/services/image_editing.dart';
-import 'package:xml_fotos/shared/utils/frame.dart';
 
 import '../../domain/models/qualitat_foto.dart';
 import '../../domain/models/resolucio.dart';
-import '../../shared/utils/constants.dart';
 import '../../shared/utils/guide_oval_painter.dart';
 import '../../shared/utils/guide_square.dart';
 import '../providers/configuration_foto.dart';
@@ -34,7 +29,7 @@ class EditPhotoPageState extends ConsumerState<EditPhotoPage> {
   // Aquí pots afegir controladors d'edició, si cal
   final GlobalKey _imageKey = GlobalKey();
 
-  Future<File?> _captureAndCrop() async {
+  Future<File?> _captureAndCrop(double maxWidth, double maxHeight, double widthSq, double heightSq) async {
     try {
       //El RepaintBoundary és com posar una "càmera" a un widget concret per a capturar només la seva visualització.
       RenderRepaintBoundary boundary =
@@ -43,26 +38,17 @@ class EditPhotoPageState extends ConsumerState<EditPhotoPage> {
       // Captura una imatge del widget que està dins del RepaintBoundary.
       final cut = await boundary.toImage(pixelRatio: 3.0);
 
-      // Converteix la imatge en memòria (ui.Image) a bytes binaris en format PNG.
-      final byteData = await cut.toByteData(format: ui.ImageByteFormat.png);
-      if (byteData == null) return null;
-
-      //A partir de ByteData, extreu els bytes en forma de llista (Uint8List).
-      // Representació directa de la imatge PNG que pots escriure en un fitxer o enviar per xarxa.
-      final pngBytes = byteData.buffer.asUint8List();
+      final croppedFile = await ImageEditingService.retalla(sizeMax: Size(maxWidth, maxHeight), sizeSq: Size(widthSq, heightSq), cut: cut);
+      if(croppedFile == null) return null;
 
       //Obtenim la resolució
       final qualitat =
           ref.read(qualitatFotoProvider).value ?? QualitatFoto.mitjana;
       final resolucio = qualitat.resolucio;
 
-      //Classe encarregada de processar la imatge
-      final originalFile = await ImageEditingService.processImageWithResolution(pngBytes: pngBytes, targetWidth: resolucio.amplada, targetHeight: resolucio.alcada);
-      if (originalFile == null) return null;
-
       // Redimensiona i comprimeix
       final compressedBytes = await ImageEditingService.redimensionaIComprimeix(
-        original: originalFile,
+        original: croppedFile,
         resolucio: resolucio,
       );
       if (compressedBytes == null) return null;
@@ -178,7 +164,7 @@ class EditPhotoPageState extends ConsumerState<EditPhotoPage> {
                       child: const Icon(Icons.check),
                       onPressed: () async {
                         // Aquí podries afegir més tractament si cal (retall, ajust, etc.)
-                        final result = await _captureAndCrop();
+                        final result = await _captureAndCrop(maxWidth, maxHeight, widthSq, heightSq);
                         debugPrint('${result?.path}');
                         Navigator.pop(context, result); // Confirmem
                       },
