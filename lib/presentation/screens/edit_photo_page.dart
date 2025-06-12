@@ -9,10 +9,12 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as image;
+import 'package:xml_fotos/application/services/image_editing.dart';
 import 'package:xml_fotos/shared/utils/frame.dart';
 
 import '../../domain/models/qualitat_foto.dart';
 import '../../domain/models/resolucio.dart';
+import '../../shared/utils/constants.dart';
 import '../../shared/utils/guide_oval_painter.dart';
 import '../../shared/utils/guide_square.dart';
 import '../providers/configuration_foto.dart';
@@ -32,30 +34,6 @@ class EditPhotoPageState extends ConsumerState<EditPhotoPage> {
   // Aquí pots afegir controladors d'edició, si cal
   final GlobalKey _imageKey = GlobalKey();
 
-  Future<Uint8List?> redimensionaIComprimeix({
-    required File original,
-    required Resolucio resolucio,
-    int maxSizeKB = 90,
-  }) async {
-    int qualitat = 90;
-    Uint8List? result;
-
-    do {
-      result = await FlutterImageCompress.compressWithFile(
-        original.path,
-        minWidth: resolucio.amplada,
-        minHeight: resolucio.alcada,
-        quality: qualitat,
-        format: CompressFormat.jpeg,
-      );
-
-      if (result == null) return null;
-      qualitat -= 10;
-    } while (result.lengthInBytes > maxSizeKB * 1024 && qualitat > 20);
-
-    return result;
-  }
-
   Future<File?> _captureAndCrop() async {
     try {
       //El RepaintBoundary és com posar una "càmera" a un widget concret per a capturar només la seva visualització.
@@ -67,69 +45,30 @@ class EditPhotoPageState extends ConsumerState<EditPhotoPage> {
 
       // Converteix la imatge en memòria (ui.Image) a bytes binaris en format PNG.
       final byteData = await cut.toByteData(format: ui.ImageByteFormat.png);
-
       if (byteData == null) return null;
 
       //A partir de ByteData, extreu els bytes en forma de llista (Uint8List).
       // Representació directa de la imatge PNG que pots escriure en un fitxer o enviar per xarxa.
       final pngBytes = byteData.buffer.asUint8List();
 
-      //Convertim ui.Image a image.Image
-      final decodedImage = image.decodeImage(pngBytes);
-      if (decodedImage == null) return null;
-
       //Obtenim la resolució
       final qualitat =
           ref.read(qualitatFotoProvider).value ?? QualitatFoto.mitjana;
       final resolucio = qualitat.resolucio;
 
-      //Mesures de la imatge presa
-      final maxWidth = decodedImage.width;
-      final maxHeight = decodedImage.height;
-
-      //Calcular aspect ratio i mida de retall
-      final aspectRatio = resolucio.amplada / resolucio.alcada;
-
-      double widthCrop, heightCrop;
-
-      if (maxWidth / maxHeight > aspectRatio) {
-        // limita per alçada
-        heightCrop = maxHeight * 0.9;
-        widthCrop = heightCrop * aspectRatio;
-      } else {
-        widthCrop = maxWidth * 0.9;
-        heightCrop = widthCrop / aspectRatio;
-      }
-
-      final x = ((maxWidth - widthCrop) / 2).round();
-      final y = ((maxHeight - heightCrop) / 2).round();
-      final cropWidth = widthCrop.round();
-      final cropHeight = heightCrop.round();
-
-      final cropped = image.copyCrop(
-        decodedImage,
-        width: cropWidth,
-        height: cropHeight,
-        x: x,
-        y: y,
-      );
-
-      final jpgBytes = image.encodeJpg(cropped);
-
-      // Guarda la imatge en fitxer temporal
-      final directory = await getTemporaryDirectory();
-      final originalPath = '${directory.path}/original.png';
-      final originalFile = File(originalPath)..writeAsBytesSync(jpgBytes);
+      //Classe encarregada de processar la imatge
+      final originalFile = await ImageEditingService.processImageWithResolution(pngBytes: pngBytes, targetWidth: resolucio.amplada, targetHeight: resolucio.alcada);
+      if (originalFile == null) return null;
 
       // Redimensiona i comprimeix
-      final compressedBytes = await redimensionaIComprimeix(
+      final compressedBytes = await ImageEditingService.redimensionaIComprimeix(
         original: originalFile,
         resolucio: resolucio,
       );
-
       if (compressedBytes == null) return null;
 
       // Guarda la versió comprimida en un altre fitxer
+      final directory = await getTemporaryDirectory();
       final outputPath = '${directory.path}/foto_retallada.jpg';
       final compressedFile = File(outputPath)
         ..writeAsBytesSync(compressedBytes);
