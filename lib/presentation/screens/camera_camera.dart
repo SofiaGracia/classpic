@@ -2,10 +2,12 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:xml_fotos/presentation/providers/configuration_foto.dart';
 
 import '../../shared/utils/guide_oval_painter.dart';
 import 'edit_photo_page.dart';
@@ -95,24 +97,44 @@ class _CameraPageState extends ConsumerState<CameraPage> {
       ref.read(cameraStateProvider.notifier).setStatus(CameraStatus.processing);
 
       final bytes = await rawFile.readAsBytes();
+
       img.Image? image = img.decodeImage(bytes);
 
       if (image == null) throw Exception("No s'ha pogut llegir la imatge");
 
-      /*final resized = img.copyResize(
-        image,
-        width: 413,
-        height: 531,
-      );*/
+
+      // 🔁 Detectar orientació de la càmera
+      final orientation = _controller!.value.deviceOrientation;
+
+      switch (orientation) {
+        case DeviceOrientation.landscapeLeft:
+          image = img.copyRotate(image, angle:  -90);
+          break;
+        case DeviceOrientation.landscapeRight:
+          image = img.copyRotate(image,angle:  90);
+          break;
+        case DeviceOrientation.portraitDown:
+          //image = img.copyRotate(image, angle:  180);
+          break;
+        case DeviceOrientation.portraitUp:
+        default:
+        // No fem res
+          break;
+      }
 
       final jpg = img.encodeJpg(image);
 
       ref.read(cameraStateProvider.notifier).setStatus(CameraStatus.editing);
 
+      //Obtindre la resolució
+      final servei = ref.read(configuracioFotoServiceProvider);
+      final qualitat = await servei.carregaQualitat();
+
       final result = await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => EditPhotoPage(
+            qualitat: qualitat,
               imageBytes:
                   Uint8List.fromList(jpg)), //Ací deuriem cridar a ImageCropper
         ),
