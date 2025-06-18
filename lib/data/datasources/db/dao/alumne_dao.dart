@@ -18,6 +18,9 @@ abstract class AlumneDao {
   @Query('SELECT nom FROM alumnes')
   Stream<List<String>> findAllAlumnesNom();
 
+  @Query('SELECT fotoPath FROM alumnes WHERE fotoPath IS NOT NULL')
+  Future<List<String>> getAlumnesWithPhoto();
+
   //@Query('SELECT * FROM Alumne WHERE nia = :nia')
   //Stream<Alumne?> findAlumneByNia(int id);
 

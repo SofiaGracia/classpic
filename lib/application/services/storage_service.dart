@@ -19,8 +19,16 @@ final StorageServiceProvider = Provider<StorageService>((ref) {
 class StorageService {
 
   //Guardar la configuració a SharedPreferences
+  //Ací deuriem comprovar que el directori seleccionat és el mateix que s'ha guardat
   Future<void> guardaDirectoriSeleccionat(DirectoriFotos directori) async {
     final prefs = await SharedPreferences.getInstance();
+    final directoriAnterior = prefs.getString('directori_fotos') ?? 'intern';
+
+    if (directoriAnterior != directori.name){
+      //Comprovem si existeixen dades en el directoriAnterior i si existeixen preguntem si guardar-les en el nou directori o no
+
+    }
+
     await prefs.setString('directori_fotos', directori.name);
   }
 
@@ -30,9 +38,7 @@ class StorageService {
     return DirectoriFotos.values.firstWhere((e) => e.name == valor);
   }
 
-  /// Obté el directori base de l’aplicació a l’emmagatzematge extern
-  Future<Directory> _getBaseDirectory() async {
-    final directori = await carregaDirectoriSeleccionat();
+  Future<Directory> getDirectoryPath(DirectoriFotos directori) async {
     Directory base;
 
     switch (directori) {
@@ -52,6 +58,12 @@ class StorageService {
       await appDir.create(recursive: true);
     }
     return appDir;
+  }
+
+  /// Obté el directori base de l’aplicació a l’emmagatzematge extern
+  Future<Directory> _getBaseDirectory() async {
+    final directori = await carregaDirectoriSeleccionat();
+    return getDirectoryPath(directori);
   }
 
   Future<void> creaEstructuraInicial() async {

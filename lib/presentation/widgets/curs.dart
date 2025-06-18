@@ -93,6 +93,7 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
                         final confirmat = await showConfirmacioEliminacioDialog(
                           context: context,
                           titol: 'Eliminar curs',
+                          botoConfirmar: 'Si, eliminar',
                           missatge:
                               'Estàs segur que vols eliminar aquest curs?',
                         );
