@@ -41,7 +41,7 @@ class ProfessorImportHandler{
       // Convertim la llista de professors de la base de dades a un conjunt de DNIs
       final profDBSet = professorsDB.map((e) => e.dni).toSet();
 
-      // Professors nous que s'han d'afegir: estan al XML però no a la base de dades
+      // Professors nous que s'han d'a  fegir: estan al XML però no a la base de dades
       final pAfegir = professorsXml.where((p) => !profDBSet.contains(p.dni)).toList();
 
       // Professors que s'han d'eliminar: estan a la base de dades però no al XML

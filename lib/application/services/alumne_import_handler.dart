@@ -130,7 +130,7 @@ class AlumneImportHandler {
             alumnesACanviar.add(CanviDeCursAlumne(cursVell: existent.grup!, cursNou: alum.grup!, niaAlumne: existent.nia));
             //final novaFotoPath = await storage.getPathAlumne(alum.grup!, existent.nom);
             //final novaFotoPath = await storage.getPathAlumne(alum.grup!, existent.nia);
-            final novaFotoFileName = storage.getPathAlumne(alum.grup!, existent.nom);
+            final novaFotoFileName = storage.getPathAlumne(alum.grup!, existent.usuId);
 
             alumneAmbCursCanviat = alum.copyWith(id: existent.id, fotoFilename: novaFotoFileName, fotoPathHash: existent.fotoPathHash);
           }
