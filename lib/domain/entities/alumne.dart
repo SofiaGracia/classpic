@@ -1,7 +1,6 @@
 import 'package:floor/floor.dart';
 import 'package:xml_fotos/domain/models/usuari.dart';
 
-import '../models/foto_info.dart';
 import 'curs.dart';
 
 @Entity(
@@ -30,19 +29,6 @@ class Alumne extends Usuari {
 
   late int? cursId;
 
-  // Mapeig manual: 2 columnes separades
-  @ColumnInfo(name: 'foto_folder')
-  final String? fotoFolder;
-
-  @ColumnInfo(name: 'foto_filename')
-  final String? fotoFilename;
-
-  /// Getter opcional per reconstruir FotoInfo al vol
-  FotoInfo? get fotoInfo =>
-      (fotoFolder != null && fotoFilename != null)
-          ? FotoInfo(folder: fotoFolder!, filename: fotoFilename!)
-          : null;
-
   Alumne({
     this.id,
     required this.nia,
@@ -52,9 +38,9 @@ class Alumne extends Usuari {
     this.grup,
     String? fotoPathHash,
     this.cursId,
-    this.fotoFolder,
-    this.fotoFilename,
-  }) : super(nom: nom, c1: c1, c2: c2, fotoPathHash: fotoPathHash);
+    required String fotoFolder,
+    String? fotoFilename
+  }) : super(nom: nom, c1: c1, c2: c2, fotoPathHash: fotoPathHash, fotoFolder: fotoFolder, fotoFilename: fotoFilename);
 
   Alumne copyWith({
     int? id,

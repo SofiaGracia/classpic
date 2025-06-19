@@ -56,8 +56,8 @@ class ProfessorImportHandler{
 
         // Recollim els camins de les fotos dels professors a eliminar
         for(final p in pEliminar){
-          if(p.fotoPath != null){
-            fotoPaths.add(p.fotoPath!);
+          if(p.fotoFilename != null){
+            fotoPaths.add(p.fotoFilename!);
           }
         }
 

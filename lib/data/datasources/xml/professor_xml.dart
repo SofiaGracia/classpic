@@ -3,6 +3,7 @@ import 'package:xml/xml.dart';
 
 import '../../../application/services/codi_generator.dart';
 import '../../../domain/entities/professor.dart';
+import '../../../shared/utils/constants.dart';
 
 class RepositoryProfessorXml {
 
@@ -29,7 +30,7 @@ class RepositoryProfessorXml {
           final idDni = CodiGenerator.normalitzaIdentificador(profDni);
 
           Professor profAInsertar =
-              Professor(dni: idDni, nom: profNom, c1: profC1, c2: profC2);
+              Professor(dni: idDni, nom: profNom, c1: profC1, c2: profC2, fotoFolder: professorsFolder);
           llistaProfessors.add(profAInsertar);
         }
       }

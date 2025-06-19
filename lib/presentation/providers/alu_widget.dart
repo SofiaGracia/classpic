@@ -33,8 +33,9 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
       nom: nou.nom,
       c1: nou.c1,
       c2: nou.c2,
-      fotoPath: nou.fotoPath,
       fotoPathHash: nou.fotoPathHash,
+      fotoFolder: nou.fotoFolder,
+      fotoFilename: nou.fotoFilename
     );
 
     //Si se li ha canviat el path de la foto

@@ -39,12 +39,11 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
           usuari: usuari,
           getId: (u) => u is Alumne ? u.nia : (u as Professor).dni,
           constructor: (
-              {
-                required String id,
+              {required String id,
               required String nom,
               required String c1,
               required String c2,
-              String? fotoPath,
+              String? fotoFilename,
               String? fotoPathHash,
               String? grup}) {
             if (usuari is Alumne) {
@@ -54,21 +53,23 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                   c1: c1,
                   c2: c2,
                   grup: grup,
-                  fotoPath: fotoPath,
-                  fotoPathHash: fotoPathHash);
+                  fotoFilename: fotoFilename,
+                  fotoPathHash: fotoPathHash,
+                  fotoFolder: alumnesFolder);
             } else {
               final professor = Professor(
                   dni: id,
                   nom: nom,
                   c1: c1,
                   c2: c2,
-                  fotoPath: fotoPath,
-                  fotoPathHash: fotoPathHash);
+                  fotoFilename: fotoFilename,
+                  fotoPathHash: fotoPathHash,
+                  fotoFolder: professorsFolder);
               return professor;
             }
           },
           isAlumne: usuari is Alumne?,
-          cursId: usuari is Alumne? usuari.cursId: null,
+          cursId: usuari is Alumne ? usuari.cursId : null,
           codiUsuari: usuari is Alumne ? usuari.nia : (usuari as Professor).dni,
         ),
       ),
@@ -82,7 +83,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
         nom: alu.nom,
         c1: alu.c1,
         c2: alu.c2,
-        fotoPath: alu.fotoPath,
+        fotoFilename: alu.fotoFilename,
         fotoPathHash: alu.fotoPathHash,
         grup: alu.grup,
         cursId: alu.cursId,
@@ -95,7 +96,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
         nom: prof.nom,
         c1: prof.c1,
         c2: prof.c2,
-        fotoPath: prof.fotoPath,
+        fotoFilename: prof.fotoFilename,
         fotoPathHash: prof.fotoPathHash,
       );
     }
@@ -104,7 +105,6 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
 
   @override
   Widget build(BuildContext context) {
-
     late final AsyncValue<Usuari> usuariAsync;
     late final dynamic provider;
 
@@ -114,15 +114,14 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
 
       provider = ref.read(
           alumneWidgetNotifierProvider((widget.usuari as Alumne).id!)
-              .notifier);//Notifier individual per a alumne
-
+              .notifier); //Notifier individual per a alumne
     } else {
       usuariAsync = ref.watch(
           professorWidgetNotifierProvider((widget.usuari as Professor).id!));
 
       provider = ref.read(
           professorWidgetNotifierProvider((widget.usuari as Professor).id!)
-              .notifier);//Notifier individual per a professor
+              .notifier); //Notifier individual per a professor
     }
 
     return usuariAsync.when(
@@ -136,24 +135,26 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                 // Foto de l'usuari
                 GestureDetector(
                   onTap: () async {
-                    String pathPhoto = '';
-                    String pathDir = '';
+                    String newPathFoto = '';
+                    String pathDir = (await ref.read(StorageServiceProvider).getBaseDirectory()).path;
                     if (usuari is Alumne) {
-                      pathPhoto = await ref
+                      /*pathDir = '$baseFolderName/$alumnesFolder/${usuari.grup}';
+                      newPathFoto = await ref
                           .read(StorageServiceProvider)
-                          .getPathAlumne(usuari.grup!, usuari.nia);
-                      pathDir = '$baseFolderName/$alumnesFolder/${usuari.grup}';
+                          .getPathAlumne(usuari.grup!, usuari.nia);*/
+                      newPathFoto = ref.read(StorageServiceProvider).getPathAlumne(usuari.grup!, usuari.nia);
                     } else {
-                      pathPhoto = await ref
+                      /*pathDir = '$baseFolderName/$professorsFolder';
+                      newPathFoto = await ref
                           .read(StorageServiceProvider)
-                          .getPathProfessor(usuari.usuId);
-                      pathDir = '$baseFolderName/$professorsFolder';
+                          .getPathProfessor(usuari.usuId);*/
+                      newPathFoto = ref.read(StorageServiceProvider).getPathProfessor(usuari.usuId);
                     }
                     final File? novaFoto = await Navigator.push<File?>(
                       context,
                       MaterialPageRoute(
                         builder: (context) => CameraPage(
-                          pathPhoto: pathPhoto,
+                          pathPhoto: newPathFoto,
                           pathDir: pathDir,
                         ),
                       ),
@@ -161,13 +162,13 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                     if (novaFoto != null) {
                       final actualitzat = usuari is Alumne
                           ? usuari.copyWith(
-                              fotoPath: novaFoto.path,
+                              fotoFilename: ref.read(StorageServiceProvider).getPathAlumne(usuari.grup!, usuari.nia),
                               fotoPathHash: DateTime.now()
                                   .millisecondsSinceEpoch
                                   .toString(),
                             )
                           : (usuari as Professor).copyWith(
-                              fotoPath: novaFoto.path,
+                              fotoFilename: ref.read(StorageServiceProvider).getPathProfessor(usuari.usuId),
                               fotoPathHash: DateTime.now()
                                   .millisecondsSinceEpoch
                                   .toString(),
@@ -176,17 +177,34 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                     }
                   },
                   child: CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.grey.shade200,
-                    child: usuari.fotoPath != null
-                        ? FotoUsuariWidget(
-                            fotoPath: usuari.fotoPath,
-                            fotoPathHash: usuari
-                                .fotoPathHash!, //Pq en principi si la foto no és null el fotoPathHash tampoc
+                      radius: 30,
+                      backgroundColor: Colors.grey.shade200,
+                      child: FutureBuilder<String?>(
+                        future: ref
+                            .read(StorageServiceProvider)
+                            .getPathUsuari(usuari),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          }
+                          if (snapshot.hasError) {
+                            return const Icon(Icons.error);
+                          }
+
+                          final path = snapshot.data;
+
+                          if (path == null) {
+                            return const Icon(Icons.person);
+                          }
+
+                          return FotoUsuariWidget(
+                            fotoPath: path,
+                            fotoPathHash: usuari.fotoPathHash!,
                             radius: 30,
-                          )
-                        : const Icon(Icons.person),
-                  ),
+                          );
+                        },
+                      )),
                 ),
                 const SizedBox(width: 12),
                 // Dades del usuari
@@ -216,8 +234,11 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                     onPressed: () async {
                       final actualitzat = await _editarUsuari(usuari);
                       if (actualitzat != null) {
-                        if(usuari is Alumne){
-                          ref.read(StorageServiceProvider).mouFotoAlumne(usuari.grup!, (actualitzat as Alumne).grup!, actualitzat.nia);
+                        if (usuari is Alumne) {
+                          ref.read(StorageServiceProvider).mouFotoAlumne(
+                              usuari.grup!,
+                              (actualitzat as Alumne).grup!,
+                              actualitzat.nia);
                         }
                         provider.actualitza(actualitzat);
                       }

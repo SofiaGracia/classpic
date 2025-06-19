@@ -10,6 +10,7 @@ import '../../domain/entities/alumne.dart';
 import '../../domain/entities/curs.dart';
 import '../../domain/entities/professor.dart';
 import '../../domain/models/usuari.dart';
+import '../../shared/utils/constants.dart';
 import '../providers/provider_id.dart';
 import '../providers/professor_notifier.dart';
 
@@ -99,7 +100,7 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
           required String nom,
           required String c1,
           required String c2,
-          String? fotoPath,
+          String? fotoFilename,
           String? fotoPathHash,
           String? grup,
         }) {
@@ -109,8 +110,9 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
               nom: nom,
               c1: c1,
               c2: c2,
-              fotoPath: fotoPath,
               fotoPathHash: fotoPathHash,
+              fotoFilename: fotoFilename,
+              fotoFolder: alumnesFolder,
               grup: grup,
             );
           } else {
@@ -119,8 +121,9 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
               nom: nom,
               c1: c1,
               c2: c2,
-              fotoPath: fotoPath,
               fotoPathHash: fotoPathHash,
+              fotoFilename: fotoFilename,
+              fotoFolder: professorsFolder
             );
           }
         },

@@ -126,12 +126,13 @@ class AlumneImportHandler {
           var alumneAmbCursCanviat;
           alumneAmbCursCanviat = alum.copyWith(id: existent.id);
 
-          if(existent.fotoPath != null){
+          if(existent.fotoFilename != null){
             alumnesACanviar.add(CanviDeCursAlumne(cursVell: existent.grup!, cursNou: alum.grup!, niaAlumne: existent.nia));
             //final novaFotoPath = await storage.getPathAlumne(alum.grup!, existent.nom);
-            final novaFotoPath = await storage.getPathAlumne(alum.grup!, existent.nia);
+            //final novaFotoPath = await storage.getPathAlumne(alum.grup!, existent.nia);
+            final novaFotoFileName = storage.getPathAlumne(alum.grup!, existent.nom);
 
-            alumneAmbCursCanviat = alum.copyWith(id: existent.id, fotoPath: novaFotoPath, fotoPathHash: existent.fotoPath);
+            alumneAmbCursCanviat = alum.copyWith(id: existent.id, fotoFilename: novaFotoFileName, fotoPathHash: existent.fotoPathHash);
           }
           alumnesAEditar.add(alumneAmbCursCanviat);
         }
@@ -142,8 +143,8 @@ class AlumneImportHandler {
       if (alumnesAEliminar.isNotEmpty){
         List<String> fotoPaths = [];
         for(final a in alumnesAEliminar){
-          if(a.fotoPath != null){
-            fotoPaths.add(a.fotoPath!);
+          if(a.fotoFilename != null){
+            fotoPaths.add(a.fotoFilename!);
           }
         }
         await storage.eliminaFotos(fotoPaths);

@@ -141,7 +141,11 @@ class _CameraPageState extends ConsumerState<CameraPage> {
       );
 
       if (result != null) {
-        final outputFile = File(widget.pathPhoto);
+        //Ací obtenim la ruta de la foto
+        final pathFoto = '${widget.pathDir}/${widget.pathPhoto}';
+
+
+        final outputFile = File(pathFoto);
         await result.copy(outputFile.path);
         Navigator.pop(context, outputFile);
       }

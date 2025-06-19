@@ -16,7 +16,7 @@ part 'database.g.dart'; // the generated code will be there
 
 //Defineix l’esquema de la base de dades SQLite de l’app,
 // amb les entitats i DAOs que utilitzarà Floor per generar automàticament el codi d’accés a dades.
-@Database(version: 14, entities: [Alumne, Professor, Curs])
+@Database(version: 16, entities: [Alumne, Professor, Curs])
 abstract class AppDatabase extends FloorDatabase {
   AlumneDao get alumneDao;
   ProfessorDao get professorDao;

@@ -15,23 +15,21 @@ extension FotoPathCacheExt on Usuari {
     throw Exception('Tipus d\'usuari no suportat');
   }
 
-  Future<void> setFotoPathIfNeeded(StorageService storage) async {
+  /*Future<void> setFotoPathIfNeeded(StorageService storage) async {
     final nouHash = _generateFotoPathHash();
-    if (fotoPath == null || fotoPathHash != nouHash) {
+    if (fotoFilename == null || fotoPathHash != nouHash) {
       if (this is Alumne) {
         final alumne = this as Alumne;
         if (alumne.grup == null) {
           throw Exception('El grup de l\'alumne no està definit');
         }
-        fotoPath = await storage.getPathAlumne(alumne.grup!, alumne.nom);
-      } else if (this is Professor) {
-        fotoPath = await storage.getPathProfessor(nom);
       }
+      fotoFilename = await storage.getPathUsuari(this);
       // Actualitza el hash amb el nou valor generat
       fotoPathHash = nouHash;
     }
-  }
+  }*/
 
-  String? get fotoPathOrNull => fotoPath;
+  String? get fotoFileNameOrNull => fotoFilename;
 }
 

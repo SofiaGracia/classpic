@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/codi_generator.dart';
 import '../../domain/entities/alumne.dart';
-import '../../domain/entities/curs.dart';
-import '../../domain/models/fotopathcacheext.dart';
 import '../../domain/models/usuari.dart';
 import '../providers/alumne_notifier.dart';
 import '../providers/cursos_notifier.dart';
@@ -24,7 +22,7 @@ class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
           required String nom,
           required String c1,
           required String c2,
-          String? fotoPath,
+          String? fotoFilename,
           String? fotoPathHash,
           })
       constructor; // Constructor per crear una instància del tipus T
@@ -68,7 +66,7 @@ class _NewEditUserScreenState<T extends Usuari>
     super.initState();
 
     usuariActual = widget.usuari;
-    _imatge = widget.usuari?.fotoPath;
+    _imatge = widget.usuari?.fotoFilename;
     _fotoPathHash = widget.usuari?.fotoPathHash;
     _fotoPathHashAGuardar = _fotoPathHash;
 
@@ -152,8 +150,8 @@ class _NewEditUserScreenState<T extends Usuari>
         nom: nomController.text.trim(),
         c1: cognom1Controller.text.trim(),
         c2: cognom2Controller.text.trim(),
-        fotoPath: _imatge,
         fotoPathHash: _fotoPathHashAGuardar,
+        fotoFilename: widget.isAlumne? ref.read(StorageServiceProvider).getPathAlumne(grupSeleccionat ??= grupSensenom, idNormalitzat) : ref.read(StorageServiceProvider).getPathProfessor(idNormalitzat) ,
       );
 
       // Si és alumne, busquem el curs associat al grup seleccionat
@@ -185,14 +183,15 @@ class _NewEditUserScreenState<T extends Usuari>
               widget.usuari!.usuId);
 
           //...hi ha que canviar-li el path
-          usuariNou.fotoPath = await ref
+          /*usuariNou.fotoFilename = await ref
               .read(StorageServiceProvider)
-              .getPathAlumne(nomCursSeleccionat, '$idNormalitzat');
+              .getPathAlumne(nomCursSeleccionat, '$idNormalitzat');*/
+          usuariNou.fotoFilename = ref.read(StorageServiceProvider).getPathAlumne(nomCursSeleccionat, idNormalitzat);
 
         }
       }
 
-      print(usuariNou.fotoPath);
+      print(usuariNou.fotoFilename);
 
       // Tornem enrere amb el nou usuari
       Navigator.pop(context, usuariNou);
@@ -218,17 +217,11 @@ class _NewEditUserScreenState<T extends Usuari>
     }
 
     String pathPhoto = '';
-    String pathDir = '';
+    String pathDir = (await ref.read(StorageServiceProvider).getBaseDirectory()).path;
     if (widget.isAlumne) {
-      pathPhoto = await ref
-          .read(StorageServiceProvider)
-          .getPathAlumne(nomCursSeleccionat!, idController.text);
-      pathDir = '$baseFolderName/$alumnesFolder/$nomCursSeleccionat';
+      pathPhoto = ref.read(StorageServiceProvider).getPathAlumne(nomCursSeleccionat!, idController.text);
     } else {
-      pathPhoto = await ref
-          .read(StorageServiceProvider)
-          .getPathProfessor(idController.text);
-      pathDir = '$baseFolderName/$professorsFolder';
+      pathPhoto = ref.read(StorageServiceProvider).getPathProfessor(idController.text);
     }
     return {'foto': pathPhoto, 'dir': pathDir};
   }
@@ -361,14 +354,41 @@ class _NewEditUserScreenState<T extends Usuari>
                 child: CircleAvatar(
                   radius: 50,
                   backgroundColor: Colors.grey.shade200,
-                  child: _imatge == null
-                      ? const Icon(Icons.camera_alt,
-                          size: 40, color: Colors.white70)
-                      : FotoUsuariWidget(
-                          fotoPath: _imatge,
-                          fotoPathHash: _fotoPathHashAGuardar!,
-                          radius: 50,
-                        ),
+                  child: widget.usuari == null?
+                  const Icon(Icons.person)
+                  : _imatge == null ? const Icon(Icons.person)
+                      : FutureBuilder<Directory>(
+                    future: ref
+                        .read(StorageServiceProvider)
+                        .getBaseDirectory(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+                      if (snapshot.hasError) {
+                        return const Icon(Icons.error);
+                      }
+
+                      final dir = snapshot.data;
+
+                      var pathPhoto = '';
+
+                      if (widget.isAlumne) {
+                        pathPhoto = ref.read(StorageServiceProvider).getPathAlumne(grupSeleccionat!, idController.text);
+                      } else {
+                        pathPhoto = ref.read(StorageServiceProvider).getPathProfessor(idController.text);
+                      }
+
+                      final fotoPath = '${dir!.path}/$pathPhoto';
+
+                      return FotoUsuariWidget(
+                        fotoPath: fotoPath,
+                        fotoPathHash: (widget.usuari as Usuari).fotoPathHash!,
+                        radius: 30,
+                      );
+                    },
+                  )
                 ),
               ),
               const SizedBox(height: 30),
