@@ -18,11 +18,8 @@ abstract class ProfessorDao {
   @Query('SELECT nom FROM professors')
   Stream<List<String>> findAllProfessorsNom();
 
-  @Query('SELECT fotoPath FROM professors WHERE fotoPath IS NOT NULL')
-  Future<List<String>> getProfessorsWithPhoto();
-
-  //@Query('SELECT * FROM Professor WHERE dni = :dni')
-  //Stream<Professor?> findProfessorByDni(int dni);
+  @Query('SELECT * FROM professors WHERE fotoFilename IS NOT NULL')
+  Future<List<Professor>> findProfessorsWithFoto();
 
   @Query('SELECT * FROM professors WHERE id = :id')
   Future<Professor?> findProfessorById(int id);

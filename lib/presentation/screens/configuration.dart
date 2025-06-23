@@ -56,7 +56,7 @@ class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
                 //ImportButton per a Professors
                 ImportButton(isAlumne: false),
                 const SizedBox(height: 16),
-                RadioStorage(seleccio: seleccioActual),
+                //RadioStorage(seleccio: seleccioActual),
                 const SizedBox(height: 16),
                 ImageConfigurationWidget()
               ],

@@ -7,3 +7,4 @@ const grupSensenom = 'Sense grup';
 const maxSizeKB = 90;
 const cropCoverageRatio = 0.9;
 const qualitatImatge = 90;
+const keyFolder = 'folderUri';

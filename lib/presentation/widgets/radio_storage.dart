@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/services/storage_service.dart';
 import '../providers/storage_migration_controller.dart';
-
+/*
 class RadioStorage extends ConsumerStatefulWidget {
   final DirectoriFotos seleccio;
 
@@ -23,15 +23,29 @@ class _RadioStorageState extends ConsumerState<RadioStorage> {
     seleccioActual = widget.seleccio;
   }
 
+  Future<void> _onChanged(DirectoriFotos nouDirectori) async {
+    final storageController = ref.read(storageMigrationControllerProvider.notifier);
+    final resposta = await storageController.changeDirectory(context, nouDirectori);
+    if (resposta) {
+      setState(() => seleccioActual = nouDirectori);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(storageMigrationControllerProvider);
 
+    //Sols controlem que el loading
     if (state.status == StorageMigrationStatus.loading) {
-      return Center(child: CircularProgressIndicator());
-    }
+      return Column(
+        children: [
+          Center(
+            child: CircularProgressIndicator(),
+          )
 
-    final storage = ref.read(StorageServiceProvider);
+        ],
+      );
+    }
 
     return Column(
       children: [
@@ -39,32 +53,21 @@ class _RadioStorageState extends ConsumerState<RadioStorage> {
           title: Text('Carpeta interna de l\'aplicació'),
           value: DirectoriFotos.intern,
           groupValue: seleccioActual,
-          onChanged: (value) async {
-
-            //Cridar primer a changeDirectory i segons el procés fer state o no
-            setState(() => seleccioActual = value!);
-            await storage.guardaDirectoriSeleccionat(value!);
-          },
+          onChanged: (_) => _onChanged(DirectoriFotos.intern),
         ),
         RadioListTile(
           title: Text('Pictures/ClassPic'),
           value: DirectoriFotos.pictures,
           groupValue: seleccioActual,
-          onChanged: (value) async {
-            setState(() => seleccioActual = value!);
-            await storage.guardaDirectoriSeleccionat(value!);
-          },
+          onChanged: (_) => _onChanged(DirectoriFotos.pictures),
         ),
         RadioListTile(
           title: Text('DCIM/ClassPic'),
           value: DirectoriFotos.dcim,
           groupValue: seleccioActual,
-          onChanged: (value) async {
-            setState(() => seleccioActual = value!);
-            await storage.guardaDirectoriSeleccionat(value!);
-          },
+          onChanged: (_) => _onChanged(DirectoriFotos.dcim),
         ),
       ],
     );
   }
-}
+}*/

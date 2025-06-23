@@ -246,7 +246,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () async {
-                    final confirmat = await showConfirmacioEliminacioDialog(
+                    final confirmat = await showConfirmacioDialog(
                       context: context,
                       titol: 'Eliminar usuari',
                       missatge: 'Estàs segur que vols eliminar aquest usuari?',

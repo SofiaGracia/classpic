@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../domain/entities/alumne.dart';
+import '../../domain/entities/professor.dart';
 import '../../presentation/providers/repository.dart';
 import '../datasources/db/dao/alumne_dao.dart';
 import '../datasources/db/dao/professor_dao.dart';
@@ -28,14 +30,14 @@ class UserRepository {
     required this.professorDao,
   });
 
-  Future<List<String>> getAlumnesWithPhoto() async {
-    final llistaAlumnes = await alumneDao.getAlumnesWithPhoto();
+  Future<List<Alumne>> getAlumnesWithPhoto() async {
+    final llistaAlumnes = await alumneDao.findAlumnesWithFoto();
     return llistaAlumnes;
   }
 
-  Future<List<String>> getProfessorsWithPhoto() async {
+  Future<List<Professor>> getProfessorsWithPhoto() async {
 
-    final llistaProfessors = await professorDao.getProfessorsWithPhoto();
+    final llistaProfessors = await professorDao.findProfessorsWithFoto();
     return llistaProfessors;
   }
 }

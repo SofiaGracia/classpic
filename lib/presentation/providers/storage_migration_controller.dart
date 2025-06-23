@@ -3,13 +3,12 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
-
 import '../../application/services/storage_service.dart';
 import '../../data/repository/user.dart';
+import '../../domain/models/usuari.dart';
 import '../../shared/utils/dialog.dart';
-
+/*
 enum StorageMigrationStatus {
   idle,
   loading,
@@ -46,23 +45,28 @@ class StorageMigrationController extends Notifier<StorageMigrationState> {
   @override
   StorageMigrationState build() => const StorageMigrationState();
 
-  Future<void> changeDirectory(
+  Future<bool> changeDirectory(
       BuildContext context, DirectoriFotos? directori) async {
     state = state.copyWith(status: StorageMigrationStatus.loading);
 
     try {
+      //Comprovem si tenim dades a la base de dades
       final hasPhotos = await hasUsersWithPhoto();
       final storage = ref.read(StorageServiceProvider);
 
+      //Si no tenim fotos a la base de dades sols tenim que actualitzar la configuració del nou directori
       if (!hasPhotos) {
         await storage.guardaDirectoriSeleccionat(directori!);
         state = state.copyWith(status: StorageMigrationStatus.success);
-        return;
+        return true;
       }
 
+      //Si sí que té fotos
+      //Comprovem primer que el nou directori tinga dades
       final hasFiles = await newStorageHasFiles(directori!);
       if (!hasFiles) {
-        final moure = await showConfirmacioEliminacioDialog(
+        //Si la nova carpeta no té dades preguntar de moure les fotos de la carpeta vella a la nova
+        final moure = await showConfirmacioDialog(
           context: context,
           titol: 'Moure fotos',
           missatge:
@@ -72,57 +76,110 @@ class StorageMigrationController extends Notifier<StorageMigrationState> {
 
         if (moure == true) {
           // 👇 Pots fer una funció `mouFotosAlNouDirectori()`
-          await mouFotosAlNouDirectori(directori);
+          try{
+            await mouFotosAlNouDirectori(directori);
+            await storage.guardaDirectoriSeleccionat(directori);
+            state = state.copyWith(status: StorageMigrationStatus.success);
+            return true;
+          }catch (e){
+            state = state.copyWith(status: StorageMigrationStatus.error);
+            return false;
+          }
+        }
+        await storage.guardaDirectoriSeleccionat(directori);
+        state = state.copyWith(status: StorageMigrationStatus.success);
+        return false;
+      } else {
+        final usarIgualment = await showConfirmacioDialog(
+          context: context,
+          titol: 'Atenció',
+          missatge: '''
+La carpeta de destí que has seleccionat ja conté fotos.
+
+- Si la utilitzes igualment, NO es mouran les fotos antigues.
+- Això pot provocar conflictes si hi ha fotos amb el mateix nom o fotos que no corresponen als usuaris actuals.
+
+Què vols fer?
+''',
+          botoConfirmar: 'Sí, usar igualment',
+          botoCancel: 'Cancel·lar',
+        );
+
+        if (usarIgualment == true) {
+          await storage.guardaDirectoriSeleccionat(directori);
+          state = state.copyWith(status: StorageMigrationStatus.success);
+          return true;
+        } else {
+          state = state.copyWith(status: StorageMigrationStatus.idle);
+          return false;
         }
       }
-
-      // Marca com a èxit quan acabe tot
-      state = state.copyWith(status: StorageMigrationStatus.success);
     } catch (e) {
       state = state.copyWith(
         status: StorageMigrationStatus.error,
         message: e.toString(),
       );
+      return false;
     }
   }
 
   Future<void> mouFotosAlNouDirectori(DirectoriFotos directori) async {
-    final totesLesFotos = await getPhotoList();
+    final usuarisAmbFotos = await getPhotoList();
     final storage = ref.read(StorageServiceProvider);
+    final directoriActual = await storage.getBaseDirectory();
+    final dirActualPath = directoriActual.path;
     final nouDirectoriBase = await storage.getDirectoryPath(directori);
+    final nouDirBasePath = nouDirectoriBase.path;
 
-    for (final fotoPath in totesLesFotos) {
-      final foto = File(fotoPath);
+    for (final usuari in usuarisAmbFotos) {
+      final fotoFilename = usuari.fotoFilename;
+      final pathAntic = '$dirActualPath/$fotoFilename';
+      final fitxerAntic = File(pathAntic);
+      final pathNou = '$nouDirBasePath/$fotoFilename';
+      final fitxerNou = File(pathNou);
 
-      if (!await foto.exists()) continue;
+      try {
+        final arxiuOriginal = File(pathAntic);
 
-      //Ostras clar he de canviar també el String fotoPath de cada alumne i Professor
-      //per a que l'aplicació després trobe la foto.
+        if (!(await arxiuOriginal.exists())) {
+          print('El fitxer original NO existeix!');
+        }
 
-      //si canvien el nom de baseFolderName no podré moure les fotos
+        /*final carpetaDest = Directory('/storage/emulated/0/Pictures/ClassPic/Alumnes/4ESOC');
 
-      //Envoltar cada rename amb try/catch
+        if (!(await carpetaDest.exists())) {
+          print('La carpeta destí NO existeix!');
+        }*/
+        final destDir = fitxerNou.parent;
 
-      // Busca l'índex on comença "/ClassPic"
-      final index = fotoPath.indexOf('$baseFolderName');
-      if (index == -1) continue; // per seguretat
+        if (!(await destDir.exists())) {
+          await destDir.create(recursive: true);
+        }
 
-      // Obtén el subpath, per exemple: "/ClassPic/Professors/111111110.jpg"
-      final subPath = fotoPath.substring(index);
-
-      // Concatena el nou directori base amb el subPath
-      final nouPath = '${nouDirectoriBase.path}$subPath';
-
-      // Crea la carpeta de destí si no existeix
-      final nouFitxer = File(nouPath);
-      await nouFitxer.parent.create(recursive: true);
-
-      // Mou la foto
-      await foto.rename(nouFitxer.path);
+        //await fitxerAntic.rename(pathNou);
+        await fitxerAntic.copy(pathNou);
+        await fitxerAntic.delete(recursive: true);
+      } catch (e) {
+        // Pla B: copy + delete
+        await fitxerAntic.copy(pathNou);
+        await fitxerAntic.delete();
+      }
     }
   }
 
-  Future<List<String>> getPhotoList() async {
+
+
+  Future<void> triaICreaDirectori() async {
+    final uri = await StorageAccessFramework.openDocumentTree();
+    if (uri != null) {
+      print('Carpeta triada: $uri');
+      // Desa aquest uri a SharedPreferences o Hive:
+      // await preferences.setString('directoriTriat', uri);
+    }
+  }
+
+
+  Future<List<Usuari>> getPhotoList() async {
     final repository = await ref.read(userRepositoryProvider.future);
     final alumnesList = await repository.getAlumnesWithPhoto();
     final professorsList = await repository.getProfessorsWithPhoto();
@@ -142,3 +199,4 @@ class StorageMigrationController extends Notifier<StorageMigrationState> {
     return entities.any((e) => e is File);
   }
 }
+*/
