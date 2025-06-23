@@ -12,6 +12,7 @@ import 'package:xml_fotos/presentation/widgets/status_button_riverpod.dart';
 
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/professor.dart';
+import '../widgets/uri_widget.dart';
 import 'configuration.dart';
 import 'llista_3.dart';
 import 'llista_usuaris_riverpod.dart';
@@ -111,7 +112,7 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                 },
                 child: const Text('Configuració'),
               ),
-              ProvaMethodChannel()
+              UriWidget()
             ],
           ),
         ),
