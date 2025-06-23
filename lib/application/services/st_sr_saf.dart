@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../shared/utils/constants.dart';
 
 class ProvaMethodChannel extends StatefulWidget {
   const ProvaMethodChannel({super.key});
@@ -12,13 +15,19 @@ class ProvaMethodChannel extends StatefulWidget {
 class _ProvaMethodChannelState extends State<ProvaMethodChannel> {
   static const platform = MethodChannel('classpic/saf_picker');
 
-  String _uri = 'unkwon uri';
+  String? _uri = 'unkwon uri';
 
   Future<void> _getUri() async {
-    String uri;
+    String? uri;
     try {
       final result = await platform.invokeMethod<String?>('getUri');
-      uri = result ?? 'null';
+      uri = result;
+
+      if (uri != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(keyFolder, uri);
+      }
+
     } on PlatformException catch (e) {
       uri = 'failed to get uri';
     }
@@ -38,7 +47,7 @@ class _ProvaMethodChannelState extends State<ProvaMethodChannel> {
             onPressed: _getUri,
             child: const Text('Get and display uri'),
           ),
-          Text(_uri),
+          Text(_uri??'uri is null'),
         ],
       ),
     );
