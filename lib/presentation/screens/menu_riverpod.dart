@@ -15,7 +15,6 @@ import '../../domain/entities/professor.dart';
 import '../widgets/uri_widget.dart';
 import 'configuration.dart';
 import 'llista_3.dart';
-import 'llista_usuaris_riverpod.dart';
 
 class MenuScreenR extends ConsumerStatefulWidget {
   const MenuScreenR({super.key});
@@ -100,13 +99,10 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
               ),
               ElevatedButton(
                 onPressed: () async {
-
-                  final seleccioActual = await ref.read(StorageServiceProvider).carregaDirectoriSeleccionat();
-
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ConfigurationScreen(seleccio: seleccioActual,),
+                      builder: (context) => ConfigurationScreen(),
                     ),
                   );
                 },

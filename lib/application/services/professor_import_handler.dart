@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
+import 'package:xml_fotos/application/services/dir_structure.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
 
 import '../../presentation/providers/professor_notifier.dart';
@@ -30,7 +31,9 @@ class ProfessorImportHandler{
     if (professorsDB.isEmpty) {
 
       // Creem l'estructura de carpetes al sistema per guardar les fotos dels professors
-      await storage.creaEstructuraProfessors();
+      //await storage.creaEstructuraProfessors();
+      final baseDir = await ref.read(StorageServiceProvider).getBaseDirectory();
+      await DirStrucService.creaEstructuraProfessors(baseDir);
 
       // Inserim tots els professors parsejats
       await profNot.inserirProfessors(professorsXml);

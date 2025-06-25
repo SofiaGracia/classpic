@@ -997,6 +997,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.3"
+  saf:
+    dependency: "direct main"
+    description:
+      path: saf_local
+      relative: true
+    source: path
+    version: "1.0.3+4"
   shared_preferences:
     dependency: "direct main"
     description:

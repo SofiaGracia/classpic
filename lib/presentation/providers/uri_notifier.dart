@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
 
+import '../../application/services/dir_structure.dart';
+
 class UriNotifier extends AsyncNotifier<String?> {
   static const _methodGetUri = 'getUri';
   static const _channelName = 'classpic/saf_picker';
@@ -24,6 +26,9 @@ class UriNotifier extends AsyncNotifier<String?> {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString(keyFolder, uri);
         state = AsyncData(uri);
+
+        //Ací cridarem al mètode per a crear l'estructura de carpetes
+        await DirStrucService.creaEstructuraInicial(uri);
       } else {
         // Si la uri és null, considerem que no hi ha URI i actualitzem l'estat
         state = const AsyncData(null);
@@ -31,6 +36,13 @@ class UriNotifier extends AsyncNotifier<String?> {
     } on PlatformException catch (e, st) {
       state = AsyncError(e, st);
     }
+  }
+
+  Future<String?> getUri() async {
+    //final prefs = await SharedPreferences.getInstance();
+    //return prefs.getString(keyFolder);
+
+    return state.requireValue;
   }
 }
 

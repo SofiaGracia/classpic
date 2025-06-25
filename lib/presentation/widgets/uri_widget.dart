@@ -13,26 +13,32 @@ class UriWidget extends ConsumerStatefulWidget {
 
 class _UriWidgetState extends ConsumerState<UriWidget>{
 
+  Widget mostrarUriWidget(String? uri){
+    return ListTile(
+      title: Text('Carpeta seleccionada'),
+      subtitle: Text(uri ?? 'Cap carpeta seleccionada'),
+      trailing: IconButton(
+        icon: Icon(Icons.folder_open),
+        tooltip: 'Canviar carpeta',
+        onPressed: () {
+          ref.read(uriProvider.notifier).updateUri();
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final uriAsync = ref.watch(uriProvider);
 
     return uriAsync.when(
       data: (uri) {
-        return ListTile(
-          title: Text('Carpeta seleccionada'),
-          subtitle: Text(uri ?? 'Cap carpeta seleccionada'),
-          trailing: IconButton(
-            icon: Icon(Icons.folder_open),
-            tooltip: 'Canviar carpeta',
-            onPressed: () {
-              ref.read(uriProvider.notifier).updateUri();
-            },
-          ),
-        );
+        return mostrarUriWidget(uri);
       },
       loading: () => const CircularProgressIndicator(),
-      error: (error, stack) => Text('Error: $error'),
+      error: (error, stack) {
+        return mostrarUriWidget(null);
+      },
     );
   }
 }

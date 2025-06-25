@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
+import 'package:xml_fotos/application/services/dir_structure.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
 
 import '../../domain/entities/alumne.dart';
@@ -59,7 +60,9 @@ class AlumneImportHandler {
       await cursosNot.buidarCursos();
 
       // Crea l'estructura de carpetes per als cursos nous
-      await storage.creaEstructuraAlumnes(cursosXml);
+      //await storage.creaEstructuraAlumnes(cursosXml);
+      final baseDir = await ref.read(StorageServiceProvider).getBaseDirectory();
+      await DirStrucService.creaEstructuraAlumnes(baseDir, cursosXml);
 
       // Insereix els cursos a la base de dades
       final cursos = cursosXml.map((nom) => Curs(nom: nom)).toList();
@@ -102,7 +105,9 @@ class AlumneImportHandler {
       await cursosNot.inserirCursos(cursosPerAfegir);
       final nomsNousCursos = cursosPerAfegir.map((c) => c.nom).toSet();
       //Ací creariem els directoris nous
-      await storage.creaEstructuraAlumnes(nomsNousCursos);
+      //await storage.creaEstructuraAlumnes(nomsNousCursos);
+      final baseDir = await ref.read(StorageServiceProvider).getBaseDirectory();
+      await DirStrucService.creaEstructuraAlumnes(baseDir, nomsNousCursos);
 
       // Torna a carregar cursos actualitzats
       final cursosActualitzats = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
@@ -130,7 +135,7 @@ class AlumneImportHandler {
             alumnesACanviar.add(CanviDeCursAlumne(cursVell: existent.grup!, cursNou: alum.grup!, niaAlumne: existent.nia));
             //final novaFotoPath = await storage.getPathAlumne(alum.grup!, existent.nom);
             //final novaFotoPath = await storage.getPathAlumne(alum.grup!, existent.nia);
-            final novaFotoFileName = storage.getPathAlumne(alum.grup!, existent.usuId);
+            final novaFotoFileName = await storage.getPathAlumne(alum.grup!, existent.usuId);
 
             alumneAmbCursCanviat = alum.copyWith(id: existent.id, fotoFilename: novaFotoFileName, fotoPathHash: existent.fotoPathHash);
           }
@@ -154,16 +159,16 @@ class AlumneImportHandler {
       if (alumnesAEditar.isNotEmpty) await alumneNot.editarAlumnes(alumnesAEditar);
 
       // Mou les fotos d’alumnes que han canviat de curs
-      await Future.wait(alumnesACanviar.map((alumne) {
+      /*await Future.wait(alumnesACanviar.map((alumne) {
         return storage.mouFotoAlumne(
           alumne.cursVell,
           alumne.cursNou,
           alumne.niaAlumne,
         );
-      }));
+      }));*/
 
       // Esborra carpetes que ja no són necessàries
-      await storage.eliminaCarpetesAlumnes(nomsCursosABorrar);
+      //await storage.eliminaCarpetesAlumnes(nomsCursosABorrar);
 
       return alumnesAInserir;
 

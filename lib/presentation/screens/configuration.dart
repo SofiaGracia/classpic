@@ -8,9 +8,9 @@ import 'package:xml_fotos/presentation/widgets/radio_storage.dart';
 import '../../application/services/storage_service.dart';
 
 class ConfigurationScreen extends ConsumerStatefulWidget {
-  final DirectoriFotos seleccio;
+  //final DirectoriFotos seleccio;
 
-  const ConfigurationScreen({super.key, required this.seleccio});
+  const ConfigurationScreen({super.key});
 
   @override
   ConsumerState<ConfigurationScreen> createState() =>
@@ -19,12 +19,12 @@ class ConfigurationScreen extends ConsumerStatefulWidget {
 
 /// Pantalla amb opcions per importar dades d'alumnes o professors.
 class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
-  late DirectoriFotos seleccioActual;
+  //late DirectoriFotos seleccioActual;
 
   @override
   void initState() {
     super.initState();
-    seleccioActual = widget.seleccio;
+    //seleccioActual = widget.seleccio;
   }
 
   @override

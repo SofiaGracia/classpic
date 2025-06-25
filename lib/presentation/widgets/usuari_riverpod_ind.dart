@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/alu_widget.dart';
+import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/professor.dart';
@@ -135,26 +136,19 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                 // Foto de l'usuari
                 GestureDetector(
                   onTap: () async {
-                    String newPathFoto = '';
-                    String pathDir = (await ref.read(StorageServiceProvider).getBaseDirectory()).path;
+
+                    String pathFoto = '';
+                    String pathDir = '';
                     if (usuari is Alumne) {
-                      /*pathDir = '$baseFolderName/$alumnesFolder/${usuari.grup}';
-                      newPathFoto = await ref
-                          .read(StorageServiceProvider)
-                          .getPathAlumne(usuari.grup!, usuari.nia);*/
-                      newPathFoto = ref.read(StorageServiceProvider).getPathAlumne(usuari.grup!, usuari.nia);
+                      pathFoto = await ref.read(StorageServiceProvider).getPathAlumne(usuari.grup!, usuari.nia);
                     } else {
-                      /*pathDir = '$baseFolderName/$professorsFolder';
-                      newPathFoto = await ref
-                          .read(StorageServiceProvider)
-                          .getPathProfessor(usuari.usuId);*/
-                      newPathFoto = ref.read(StorageServiceProvider).getPathProfessor(usuari.usuId);
+                      pathFoto = await ref.read(StorageServiceProvider).getPathProfessor(usuari.usuId);
                     }
                     final File? novaFoto = await Navigator.push<File?>(
                       context,
                       MaterialPageRoute(
                         builder: (context) => CameraPage(
-                          pathPhoto: newPathFoto,
+                          pathPhoto: pathFoto,
                           pathDir: pathDir,
                         ),
                       ),
@@ -162,13 +156,13 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                     if (novaFoto != null) {
                       final actualitzat = usuari is Alumne
                           ? usuari.copyWith(
-                              fotoFilename: ref.read(StorageServiceProvider).getPathAlumne(usuari.grup!, usuari.nia),
+                              fotoFilename: await ref.read(StorageServiceProvider).getPathAlumne(usuari.grup!, usuari.nia),
                               fotoPathHash: DateTime.now()
                                   .millisecondsSinceEpoch
                                   .toString(),
                             )
                           : (usuari as Professor).copyWith(
-                              fotoFilename: ref.read(StorageServiceProvider).getPathProfessor(usuari.usuId),
+                              fotoFilename: await ref.read(StorageServiceProvider).getPathProfessor(usuari.usuId),
                               fotoPathHash: DateTime.now()
                                   .millisecondsSinceEpoch
                                   .toString(),
@@ -176,7 +170,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                       provider.actualitza(actualitzat);
                     }
                   },
-                  child: CircleAvatar(
+                  /*child: CircleAvatar(
                       radius: 30,
                       backgroundColor: Colors.grey.shade200,
                       child: FutureBuilder<String?>(
@@ -204,7 +198,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                             radius: 30,
                           );
                         },
-                      )),
+                      )),*/
                 ),
                 const SizedBox(width: 12),
                 // Dades del usuari
@@ -235,10 +229,10 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                       final actualitzat = await _editarUsuari(usuari);
                       if (actualitzat != null) {
                         if (usuari is Alumne) {
-                          ref.read(StorageServiceProvider).mouFotoAlumne(
+                          /*ref.read(StorageServiceProvider).mouFotoAlumne(
                               usuari.grup!,
                               (actualitzat as Alumne).grup!,
-                              actualitzat.nia);
+                              actualitzat.nia);*/
                         }
                         provider.actualitza(actualitzat);
                       }

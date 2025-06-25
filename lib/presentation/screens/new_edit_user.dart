@@ -151,7 +151,7 @@ class _NewEditUserScreenState<T extends Usuari>
         c1: cognom1Controller.text.trim(),
         c2: cognom2Controller.text.trim(),
         fotoPathHash: _fotoPathHashAGuardar,
-        fotoFilename: widget.isAlumne? ref.read(StorageServiceProvider).getPathAlumne(grupSeleccionat ??= grupSensenom, idNormalitzat) : ref.read(StorageServiceProvider).getPathProfessor(idNormalitzat) ,
+        fotoFilename: widget.isAlumne? await ref.read(StorageServiceProvider).getPathAlumne(grupSeleccionat ??= grupSensenom, idNormalitzat) : await ref.read(StorageServiceProvider).getPathProfessor(idNormalitzat) ,
       );
 
       // Si és alumne, busquem el curs associat al grup seleccionat
@@ -177,16 +177,16 @@ class _NewEditUserScreenState<T extends Usuari>
         if ((widget.usuari != null) && ((widget.usuari) as Alumne).grup != grupSeleccionat) {
 
           //Si canviem de lloc la foto...
-          await ref.read(StorageServiceProvider).mouFotoAlumne(
+          /*await ref.read(StorageServiceProvider).mouFotoAlumne(
               (widget.usuari as Alumne).grup!,
               nomCursSeleccionat,
-              widget.usuari!.usuId);
+              widget.usuari!.usuId);*/
 
           //...hi ha que canviar-li el path
           /*usuariNou.fotoFilename = await ref
               .read(StorageServiceProvider)
               .getPathAlumne(nomCursSeleccionat, '$idNormalitzat');*/
-          usuariNou.fotoFilename = ref.read(StorageServiceProvider).getPathAlumne(nomCursSeleccionat, idNormalitzat);
+          usuariNou.fotoFilename = await ref.read(StorageServiceProvider).getPathAlumne(nomCursSeleccionat, idNormalitzat);
 
         }
       }
@@ -217,11 +217,13 @@ class _NewEditUserScreenState<T extends Usuari>
     }
 
     String pathPhoto = '';
-    String pathDir = (await ref.read(StorageServiceProvider).getBaseDirectory()).path;
+    String pathDir = '';
     if (widget.isAlumne) {
-      pathPhoto = ref.read(StorageServiceProvider).getPathAlumne(nomCursSeleccionat!, idController.text);
+      //pathPhoto = ref.read(StorageServiceProvider).getPathAlumne(nomCursSeleccionat!, idController.text);
+      pathPhoto = await ref.read(StorageServiceProvider).getPathAlumne(nomCursSeleccionat!, idController.text);
     } else {
-      pathPhoto = ref.read(StorageServiceProvider).getPathProfessor(idController.text);
+      //pathPhoto = ref.read(StorageServiceProvider).getPathProfessor(idController.text);
+      pathPhoto = await ref.read(StorageServiceProvider).getPathProfessor(idController.text);
     }
     return {'foto': pathPhoto, 'dir': pathDir};
   }
@@ -357,8 +359,8 @@ class _NewEditUserScreenState<T extends Usuari>
                   child: widget.usuari == null?
                   const Icon(Icons.person)
                   : _imatge == null ? const Icon(Icons.person)
-                      : FutureBuilder<Directory>(
-                    future: ref
+                      : FutureBuilder<String>(
+                    future:  ref
                         .read(StorageServiceProvider)
                         .getBaseDirectory(),
                     builder: (context, snapshot) {
@@ -375,12 +377,12 @@ class _NewEditUserScreenState<T extends Usuari>
                       var pathPhoto = '';
 
                       if (widget.isAlumne) {
-                        pathPhoto = ref.read(StorageServiceProvider).getPathAlumne(grupSeleccionat!, idController.text);
+                        //pathPhoto = ref.read(StorageServiceProvider).getPathAlumne(grupSeleccionat!, idController.text);
                       } else {
-                        pathPhoto = ref.read(StorageServiceProvider).getPathProfessor(idController.text);
+                        //pathPhoto = ref.read(StorageServiceProvider).getPathProfessor(idController.text);
                       }
 
-                      final fotoPath = '${dir!.path}/$pathPhoto';
+                      final fotoPath = '$dir/$pathPhoto';
 
                       return FotoUsuariWidget(
                         fotoPath: fotoPath,
