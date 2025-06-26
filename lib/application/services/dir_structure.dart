@@ -7,7 +7,7 @@ import '../../shared/utils/constants.dart';
 class DirStrucService {
   static Future<void> creaEstructuraInicial(String uri) async {
 
-    final newDirUri = await createSubdirectory(uri, baseFolderName);
+    final newDirUri = await PlatformChannel.createSubdirectory(uri, baseFolderName);
 
     await creaEstructuraProfessors(newDirUri!);
     await creaEstructuraAlumnes(newDirUri, null);
@@ -15,7 +15,7 @@ class DirStrucService {
 
   /// Crea la carpeta base de professors si no existeix
   static Future<void> creaEstructuraProfessors(String uri) async {
-    await createSubdirectory(uri, professorsFolder);
+    await PlatformChannel.createSubdirectory(uri, professorsFolder);
   }
 
   /// Crea l’estructura inicial per als alumnes (un directori per curs)
@@ -23,10 +23,10 @@ class DirStrucService {
 
     if(nomsCursos != null){
       for (final nomCurs in nomsCursos) {
-        await createSubdirectory(uri, '$baseFolderName/$alumnesFolder/$nomCurs');
+        await PlatformChannel.createSubdirectory(uri, '$baseFolderName/$alumnesFolder/$nomCurs');
       }
     }else{
-      await createSubdirectory(uri, alumnesFolder);
+      await PlatformChannel.createSubdirectory(uri, alumnesFolder);
     }
   }
 }

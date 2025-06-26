@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/alu_widget.dart';
-import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/professor.dart';
@@ -15,7 +14,6 @@ import '../../shared/utils/dialog.dart';
 import '../providers/prof_widget.dart';
 import '../screens/camera_camera.dart';
 import '../screens/new_edit_user.dart';
-import 'foto_usuari.dart';
 
 class UsuariWidgetRInd extends ConsumerStatefulWidget {
   final Usuari usuari;
@@ -170,6 +168,10 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                       provider.actualitza(actualitzat);
                     }
                   },
+                  child: CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.deepOrange,
+                  ),
                   /*child: CircleAvatar(
                       radius: 30,
                       backgroundColor: Colors.grey.shade200,

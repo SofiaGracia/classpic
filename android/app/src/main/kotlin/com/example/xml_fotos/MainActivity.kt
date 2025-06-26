@@ -56,6 +56,21 @@ class MainActivity: FlutterActivity() {
                     }
                 }
 
+                "esborraFitxer" -> {
+                    val path = call.argument<String>("path")
+                    if (path != null) {
+                        val file = File(path)
+                        if (file.exists()) {
+                            val deleted = file.delete()
+                            result.success(deleted)
+                        } else {
+                            result.success(false)
+                        }
+                    } else {
+                        result.error("ARGUMENT_MISSING", "Path no proporcionat", null)
+                    }
+                }
+
                 else -> result.notImplemented()
             }
         }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/application/services/saf_methods.dart';
 
 import '../../presentation/providers/uri_notifier.dart';
 import '../../shared/utils/constants.dart';
@@ -46,10 +47,7 @@ class StorageService {
   }
 
   Future<void> eliminaFoto(String fotoPath) async {
-    final foto = File(fotoPath);
-    if (await foto.exists()) {
-      await foto.delete();
-    }
+    await PlatformChannel.esborraFitxer(fotoPath);
   }
 
   Future<void> eliminaFotos(List<String> paths) async {
