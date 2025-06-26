@@ -31,9 +31,9 @@ class MainActivity: FlutterActivity() {
 
                 "createDirectory" -> {
                     val baseUriStr = call.argument<String>("baseUri")
-                    val dirName = call.argument<String>("name")
+                    val dirPath = call.argument<String>("name")
 
-                    if (baseUriStr == null || dirName == null) {
+                    if (baseUriStr == null || dirPath == null) {
                         result.error("INVALID_ARGUMENTS", "baseUri and name are required", null)
                         return@setMethodCallHandler
                     }
@@ -44,12 +44,11 @@ class MainActivity: FlutterActivity() {
                         if (pickedDir == null || !pickedDir.isDirectory) {
                             result.error("INVALID_URI", "Base URI is not a directory", null)
                         } else {
-                            val existing = pickedDir.findFile(dirName)
-                            val newDir = existing ?: pickedDir.createDirectory(dirName)
-                            if (newDir != null && newDir.isDirectory) {
-                                result.success(newDir.uri.toString())
+                            val finalDir = createDirectoryRecursively(pickedDir, dirPath)
+                            if (finalDir != null && finalDir.isDirectory) {
+                                result.success(finalDir.uri.toString())
                             } else {
-                                result.error("FAILED", "Failed to create directory", null)
+                                result.error("FAILED", "Failed to create subdirectories", null)
                             }
                         }
                     } catch (e: Exception) {
@@ -69,6 +68,22 @@ class MainActivity: FlutterActivity() {
             addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         }
         startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT_TREE)
+    }
+
+    private fun createDirectoryRecursively(base: DocumentFile, path: String): DocumentFile? {
+        var current = base
+        val parts = path.split("/")
+
+        for (part in parts) {
+            val existing = current.findFile(part)
+            current = if (existing != null && existing.isDirectory) {
+                existing
+            } else {
+                current.createDirectory(part) ?: return null
+            }
+        }
+
+        return current
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

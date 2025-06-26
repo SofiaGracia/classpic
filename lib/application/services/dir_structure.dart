@@ -15,18 +15,18 @@ class DirStrucService {
 
   /// Crea la carpeta base de professors si no existeix
   static Future<void> creaEstructuraProfessors(String uri) async {
-    final professorsDir = await createSubdirectory(uri, professorsFolder);
+    await createSubdirectory(uri, professorsFolder);
   }
 
   /// Crea l’estructura inicial per als alumnes (un directori per curs)
   static Future<void> creaEstructuraAlumnes(String uri, Set<String>? nomsCursos) async {
 
-    final alumnesDir = await createSubdirectory(uri, alumnesFolder);
-
-    if(alumnesDir != null && nomsCursos != null){
+    if(nomsCursos != null){
       for (final nomCurs in nomsCursos) {
-        await createSubdirectory(alumnesDir, nomCurs);
+        await createSubdirectory(uri, '$baseFolderName/$alumnesFolder/$nomCurs');
       }
+    }else{
+      await createSubdirectory(uri, alumnesFolder);
     }
   }
 }

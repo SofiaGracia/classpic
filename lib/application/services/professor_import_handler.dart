@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
-import 'package:xml_fotos/application/services/dir_structure.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
 
 import '../../presentation/providers/professor_notifier.dart';
@@ -30,11 +29,6 @@ class ProfessorImportHandler{
     // Si no hi ha professors a la base de dades, és la primera importació
     if (professorsDB.isEmpty) {
 
-      // Creem l'estructura de carpetes al sistema per guardar les fotos dels professors
-      //await storage.creaEstructuraProfessors();
-      final baseDir = await ref.read(StorageServiceProvider).getBaseDirectory();
-      await DirStrucService.creaEstructuraProfessors(baseDir);
-
       // Inserim tots els professors parsejats
       await profNot.inserirProfessors(professorsXml);
     } else {
@@ -44,7 +38,7 @@ class ProfessorImportHandler{
       // Convertim la llista de professors de la base de dades a un conjunt de DNIs
       final profDBSet = professorsDB.map((e) => e.dni).toSet();
 
-      // Professors nous que s'han d'a  fegir: estan al XML però no a la base de dades
+      // Professors nous que s'han d'afegir: estan al XML però no a la base de dades
       final pAfegir = professorsXml.where((p) => !profDBSet.contains(p.dni)).toList();
 
       // Professors que s'han d'eliminar: estan a la base de dades però no al XML
@@ -56,6 +50,8 @@ class ProfessorImportHandler{
       // Eliminem professors que ja no apareixen al fitxer XML
       if (pEliminar.isNotEmpty){
         List<String> fotoPaths = [];
+
+        // ATENCIÓ !!!! Podem tindre el cas de no tindre baseDir però sí fotoPaths a eliminar
 
         // Recollim els camins de les fotos dels professors a eliminar
         for(final p in pEliminar){

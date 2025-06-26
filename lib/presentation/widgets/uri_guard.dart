@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/presentation/widgets/uri_dialog.dart';
 
 import '../providers/uri_notifier.dart';
 
@@ -20,26 +21,7 @@ class UriGuard extends ConsumerWidget {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             showDialog(
               context: context,
-              builder: (_) => AlertDialog(
-                title: const Text('Directori no configurat'),
-                content: const Text(
-                  'Has de seleccionar una carpeta per a guardar les fotos.',
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel·lar'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      // 🔑 Navega a la pantalla de configuració:
-                      Navigator.pushNamed(context, '/config');
-                    },
-                    child: const Text('Configurar'),
-                  ),
-                ],
-              ),
+              builder: (_) => UriDialog(navigates: true)
             );
           });
           return const SizedBox(); // Mentre es mostra el diàleg
