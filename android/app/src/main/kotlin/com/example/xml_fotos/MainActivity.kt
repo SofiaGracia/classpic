@@ -2,6 +2,7 @@ package com.example.xml_fotos
 
 import android.app.Activity
 import android.content.Intent
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.NonNull
@@ -9,6 +10,8 @@ import androidx.documentfile.provider.DocumentFile
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import java.io.File
+
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "classpic/saf_methods"
@@ -56,6 +59,25 @@ class MainActivity: FlutterActivity() {
                     }
                 }
 
+                "getProfessorPhotoUri" ->{
+                    val dni = call.argument<String>("dni")!!
+                    val baseUriStr = call.argument<String>("uri")!!
+
+                    val baseUri = Uri.parse(baseUriStr)
+                    val uri = getProfessorPhotoUri(context, baseUri, dni)
+                    result.success(uri?.toString())
+                }
+
+                "getAlumnePhotoUri" ->{
+                    val nia = call.argument<String>("nia")!!
+                    val grup = call.argument<String>("grup")!!
+                    val baseUriStr = call.argument<String>("uri")!!
+
+                    val baseUri = Uri.parse(baseUriStr)
+                    val uri = getAlumnePhotoUri(context, baseUri, grup, nia)
+                    result.success(uri?.toString())
+                }
+
                 "esborraFitxer" -> {
                     val path = call.argument<String>("path")
                     if (path != null) {
@@ -68,6 +90,22 @@ class MainActivity: FlutterActivity() {
                         }
                     } else {
                         result.error("ARGUMENT_MISSING", "Path no proporcionat", null)
+                    }
+                }
+
+                "readBytesFromUri" -> {
+                    val uriStr = call.argument<String>("uri")
+                    if (uriStr == null) {
+                        result.error("NO_URI", "No uri provided", null)
+                    } else {
+                        try {
+                            val uri = Uri.parse(uriStr)
+                            val inputStream = contentResolver.openInputStream(uri)
+                            val bytes = inputStream?.use { it.readBytes() }
+                            result.success(bytes)
+                        } catch (e: Exception) {
+                            result.error("READ_ERROR", "Failed to read bytes: ${e.message}", null)
+                        }
                     }
                 }
 
@@ -99,6 +137,21 @@ class MainActivity: FlutterActivity() {
         }
 
         return current
+    }
+
+    fun getProfessorPhotoUri(context: Context, baseUri: Uri, dni: String): Uri? {
+        val baseDir = DocumentFile.fromTreeUri(context, baseUri)
+        val professorsFolder = baseDir?.findFile("Professors")
+        val photoFile = professorsFolder?.findFile("$dni.jpg")
+        return photoFile?.uri
+    }
+
+    fun getAlumnePhotoUri(context: Context, baseUri: Uri, grup: String, nia: String): Uri? {
+        val baseDir = DocumentFile.fromTreeUri(context, baseUri)
+        val alumnesFolder = baseDir?.findFile("Alumnes")
+        val grupFolder = alumnesFolder?.findFile(grup)
+        val photoFile = grupFolder?.findFile("$nia.jpg")
+        return photoFile?.uri
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

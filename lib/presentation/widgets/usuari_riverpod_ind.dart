@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/application/services/saf_methods.dart';
 import 'package:xml_fotos/presentation/providers/alu_widget.dart';
+import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/professor.dart';
@@ -14,6 +16,7 @@ import '../../shared/utils/dialog.dart';
 import '../providers/prof_widget.dart';
 import '../screens/camera_camera.dart';
 import '../screens/new_edit_user.dart';
+import 'foto_usuari.dart';
 
 class UsuariWidgetRInd extends ConsumerStatefulWidget {
   final Usuari usuari;
@@ -134,20 +137,10 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                 // Foto de l'usuari
                 GestureDetector(
                   onTap: () async {
-
-                    String pathFoto = '';
-                    String pathDir = '';
-                    if (usuari is Alumne) {
-                      pathFoto = await ref.read(StorageServiceProvider).getPathAlumne(usuari.grup!, usuari.nia);
-                    } else {
-                      pathFoto = await ref.read(StorageServiceProvider).getPathProfessor(usuari.usuId);
-                    }
                     final File? novaFoto = await Navigator.push<File?>(
                       context,
                       MaterialPageRoute(
                         builder: (context) => CameraPage(
-                          pathPhoto: pathFoto,
-                          pathDir: pathDir,
                         ),
                       ),
                     );
@@ -169,16 +162,10 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                     }
                   },
                   child: CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.deepOrange,
-                  ),
-                  /*child: CircleAvatar(
                       radius: 30,
                       backgroundColor: Colors.grey.shade200,
-                      child: FutureBuilder<String?>(
-                        future: ref
-                            .read(StorageServiceProvider)
-                            .getPathUsuari(usuari),
+                      child: FutureBuilder<Uri?>(
+                        future: widget.usuari is Alumne ? PlatformChannel.getFotoAlumneUri(ref, (widget.usuari as Alumne).grup!, widget.usuari.usuId): PlatformChannel.getFotoProfessorUri(ref,  widget.usuari.usuId),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -195,12 +182,12 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                           }
 
                           return FotoUsuariWidget(
-                            fotoPath: path,
+                            uri: path,
                             fotoPathHash: usuari.fotoPathHash!,
                             radius: 30,
                           );
                         },
-                      )),*/
+                      )),
                 ),
                 const SizedBox(width: 12),
                 // Dades del usuari

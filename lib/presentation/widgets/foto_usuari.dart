@@ -3,14 +3,16 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
+import '../../application/services/saf_methods.dart';
+
 class FotoUsuariWidget extends StatelessWidget {
-  final String? fotoPath;
+  final Uri? uri;
   final String fotoPathHash; // Per forçar reconstrucció quan canviï
   final double radius;
 
   const FotoUsuariWidget({
     Key? key,
-    required this.fotoPath,
+    required this.uri,
     required this.fotoPathHash,
     this.radius = 30,
   }) : super(key: key);
@@ -20,9 +22,9 @@ class FotoUsuariWidget extends StatelessWidget {
     return CircleAvatar(
       radius: radius,
       backgroundColor: Colors.grey.shade200,
-      child: fotoPath != null
-          ? FutureBuilder<Uint8List>(
-        future: File(fotoPath!).readAsBytes(),
+      child: uri != null
+          ? FutureBuilder<Uint8List?>(
+        future: PlatformChannel.readBytesFromSafUri(uri!),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done &&
               snapshot.hasData) {

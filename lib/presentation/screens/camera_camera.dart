@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image/image.dart' as img;
-import 'package:path_provider/path_provider.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:xml_fotos/presentation/providers/configuration_foto.dart';
 
 import '../../shared/utils/guide_oval_painter.dart';
@@ -39,13 +37,9 @@ final cameraStateProvider =
 );
 
 class CameraPage extends ConsumerStatefulWidget {
-  final String pathPhoto;
-  final String pathDir;
 
   const CameraPage({
     super.key,
-    required this.pathPhoto,
-    required this.pathDir,
   });
 
   @override
@@ -142,12 +136,12 @@ class _CameraPageState extends ConsumerState<CameraPage> {
 
       if (result != null) {
         //Ací obtenim la ruta de la foto
-        final pathFoto = '${widget.pathDir}/${widget.pathPhoto}';
+        //final pathFoto = '${widget.pathDir}/${widget.pathPhoto}';
 
 
-        final outputFile = File(pathFoto);
-        await result.copy(outputFile.path);
-        Navigator.pop(context, outputFile);
+        //final outputFile = File(pathFoto);
+        //await result.copy(outputFile.path);
+        Navigator.pop(context);
       }
 
       ref.read(cameraStateProvider.notifier).setStatus(CameraStatus.ready);

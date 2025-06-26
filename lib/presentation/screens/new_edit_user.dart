@@ -240,8 +240,6 @@ class _NewEditUserScreenState<T extends Usuari>
         context,
         MaterialPageRoute(
           builder: (context) => CameraPage(
-            pathPhoto: pathPhoto,
-            pathDir: pathDir,
           ),
         ),
       );
@@ -351,7 +349,7 @@ class _NewEditUserScreenState<T extends Usuari>
                 ),
               ],
               const SizedBox(height: 30),
-              GestureDetector(
+              /*GestureDetector(
                 onTap: _gestionaFoto,
                 child: CircleAvatar(
                   radius: 50,
@@ -384,15 +382,15 @@ class _NewEditUserScreenState<T extends Usuari>
 
                       final fotoPath = '$dir/$pathPhoto';
 
-                      return FotoUsuariWidget(
-                        fotoPath: fotoPath,
+                      /*return FotoUsuariWidget(
+                        uri: fotoPath,
                         fotoPathHash: (widget.usuari as Usuari).fotoPathHash!,
                         radius: 30,
-                      );
+                      );*/
                     },
                   )
                 ),
-              ),
+              ),*/
               const SizedBox(height: 30),
               ElevatedButton.icon(
                 onPressed: _guardarUsuari,

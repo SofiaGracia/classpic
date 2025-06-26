@@ -30,9 +30,9 @@ class StorageService {
   }
 
   /// Obté el path de la foto d’un professor concret
-  Future<String> getPathProfessor(String nomProfessor) async {
+  Future<String> getPathProfessor(String dniProf) async {
     final baseDir = await getBaseDirectory();
-    return '$baseDir/$professorsFolder/$nomProfessor.jpg';
+    return '$baseDir/$professorsFolder/$dniProf.jpg';
   }
 
   Future<String> getDirAlumne(String nomCurs, String nomAlumne) async {
