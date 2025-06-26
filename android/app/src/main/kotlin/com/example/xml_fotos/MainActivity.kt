@@ -5,12 +5,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.NonNull
+import androidx.documentfile.provider.DocumentFile
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
-    private val CHANNEL = "classpic/saf_picker"
+    private val CHANNEL = "classpic/saf_methods"
     private val REQUEST_CODE_OPEN_DOCUMENT_TREE = 1001
     private var resultPending: MethodChannel.Result? = null
 
@@ -18,15 +19,45 @@ class MainActivity: FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
-            if (call.method == "getUri") {
-                if (resultPending != null) {
-                    result.error("ALREADY_ACTIVE", "Another directory pick is active", null)
-                    return@setMethodCallHandler
+            when (call.method) {
+                "getUri" -> {
+                    if (resultPending != null) {
+                        result.error("ALREADY_ACTIVE", "Another directory pick is active", null)
+                        return@setMethodCallHandler
+                    }
+                    resultPending = result
+                    openDocumentTree()
                 }
-                resultPending = result
-                openDocumentTree()
-            } else {
-                result.notImplemented()
+
+                "createDirectory" -> {
+                    val baseUriStr = call.argument<String>("baseUri")
+                    val dirName = call.argument<String>("name")
+
+                    if (baseUriStr == null || dirName == null) {
+                        result.error("INVALID_ARGUMENTS", "baseUri and name are required", null)
+                        return@setMethodCallHandler
+                    }
+
+                    try {
+                        val baseUri = Uri.parse(baseUriStr)
+                        val pickedDir = DocumentFile.fromTreeUri(this, baseUri)
+                        if (pickedDir == null || !pickedDir.isDirectory) {
+                            result.error("INVALID_URI", "Base URI is not a directory", null)
+                        } else {
+                            val existing = pickedDir.findFile(dirName)
+                            val newDir = existing ?: pickedDir.createDirectory(dirName)
+                            if (newDir != null && newDir.isDirectory) {
+                                result.success(newDir.uri.toString())
+                            } else {
+                                result.error("FAILED", "Failed to create directory", null)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        result.error("ERROR", "Exception: ${e.message}", null)
+                    }
+                }
+
+                else -> result.notImplemented()
             }
         }
     }
@@ -46,11 +77,14 @@ class MainActivity: FlutterActivity() {
                 super.onActivityResult(requestCode, resultCode, data)
                 return
             }
+
             if (resultCode == Activity.RESULT_OK && data != null) {
                 val uri: Uri? = data.data
                 if (uri != null) {
-                    contentResolver.takePersistableUriPermission(uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                    contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    )
                     resultPending?.success(uri.toString())
                 } else {
                     resultPending?.error("NO_URI", "No directory selected", null)
@@ -61,6 +95,7 @@ class MainActivity: FlutterActivity() {
             resultPending = null
             return
         }
+
         super.onActivityResult(requestCode, resultCode, data)
     }
 }

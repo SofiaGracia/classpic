@@ -7,7 +7,7 @@ import '../../application/services/dir_structure.dart';
 
 class UriNotifier extends AsyncNotifier<String?> {
   static const _methodGetUri = 'getUri';
-  static const _channelName = 'classpic/saf_picker';
+  static const _channelName = 'classpic/saf_methods';
 
   static const platform = MethodChannel(_channelName);
 

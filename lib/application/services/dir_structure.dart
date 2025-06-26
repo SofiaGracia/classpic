@@ -1,44 +1,31 @@
 import 'dart:io';
 
-import '../../shared/utils/constants.dart';
+import 'package:xml_fotos/application/services/saf_methods.dart';
 
+import '../../shared/utils/constants.dart';
 
 class DirStrucService {
   static Future<void> creaEstructuraInicial(String uri) async {
-    await creaEstructuraProfessors(uri);
-    await creaEstructuraAlumnes(uri, null);
-  }
 
-  /// Crea l’estructura inicial per als alumnes (un directori per curs)
-  static Future<void> creaEstructuraAlumnes(String uri, Set<String>? nomsCursos) async {
-    final alumnesDir = Directory('$uri/$alumnesFolder');
+    final newDirUri = await createSubdirectory(uri, baseFolderName);
 
-    if (!await alumnesDir.exists()) {
-      await alumnesDir.create();
-    }
-
-    if (nomsCursos != null) {
-      for (final nomCurs in nomsCursos) {
-        final cursDir = Directory('${alumnesDir.path}/$nomCurs');
-        if (!await cursDir.exists()) {
-          await cursDir.create(recursive: true);
-        }
-      }
-    }
+    await creaEstructuraProfessors(newDirUri!);
+    await creaEstructuraAlumnes(newDirUri, null);
   }
 
   /// Crea la carpeta base de professors si no existeix
   static Future<void> creaEstructuraProfessors(String uri) async {
+    final professorsDir = await createSubdirectory(uri, professorsFolder);
+  }
 
-    //final profDir = await Saf.
+  /// Crea l’estructura inicial per als alumnes (un directori per curs)
+  static Future<void> creaEstructuraAlumnes(String uri, Set<String>? nomsCursos) async {
 
-    final professorsDir = Directory('$uri/$professorsFolder');
+    final alumnesDir = await createSubdirectory(uri, alumnesFolder);
 
-    if (!await professorsDir.exists()) {
-      try{
-        await professorsDir.create(recursive: true);
-      }catch (e){
-        print(e);
+    if(alumnesDir != null && nomsCursos != null){
+      for (final nomCurs in nomsCursos) {
+        await createSubdirectory(alumnesDir, nomCurs);
       }
     }
   }
