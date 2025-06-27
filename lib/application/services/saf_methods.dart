@@ -56,7 +56,6 @@ class PlatformChannel {
     if(uri == null){
       return null;
     }
-
     final uriString = await platform.invokeMethod<String>('getAlumnePhotoUri', {
       'nia': nia,
       'uri': uri,
@@ -89,7 +88,7 @@ class PlatformChannel {
       'bytes': bytes,
     });
 
-    return result ?? false;
+    return    result ?? false;
   }
 }
 

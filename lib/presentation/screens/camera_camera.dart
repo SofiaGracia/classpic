@@ -90,7 +90,7 @@ class _CameraPageState extends ConsumerState<CameraPage> {
     super.dispose();
   }
 
-  Future<void> _takeCompressedPicture() async {
+  Future<bool?> _takeCompressedPicture() async {
     try {
       ref.read(cameraStateProvider.notifier).setStatus(CameraStatus.capturing);
       await _initializeControllerFuture;
@@ -145,17 +145,8 @@ class _CameraPageState extends ConsumerState<CameraPage> {
       );
 
       if (result != null) {
-        //Ací obtenim la ruta de la foto
-        //final pathFoto = '${widget.pathDir}/${widget.pathPhoto}';
-
-
-        //final outputFile = File(pathFoto);
-        //await result.copy(outputFile.path);
-
-        //HEM D'ASSEGURAR-NOS QUE RESULT SIGA Uint8List
-
-        await PlatformChannel.savePhoto(uri: widget.uri, id: widget.id, tipusUsuari: widget.tipusUsuari , grup: widget.grup, bytes: result);
-        Navigator.pop(context);
+        final guardada = await PlatformChannel.savePhoto(uri: widget.uri, id: widget.id, tipusUsuari: widget.tipusUsuari , grup: widget.grup, bytes: result);
+        Navigator.pop(context, guardada);
       }
 
       ref.read(cameraStateProvider.notifier).setStatus(CameraStatus.ready);

@@ -5,12 +5,14 @@ import android.content.Intent
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.NonNull
 import androidx.documentfile.provider.DocumentFile
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
+
 
 
 class MainActivity: FlutterActivity() {
@@ -70,12 +72,13 @@ class MainActivity: FlutterActivity() {
 
                 "getAlumnePhotoUri" ->{
                     val nia = call.argument<String>("nia")!!
-                    val grup = call.argument<String>("grup")!!
                     val baseUriStr = call.argument<String>("uri")!!
+                    val grup = call.argument<String>("grup")!!
+
 
                     val baseUri = Uri.parse(baseUriStr)
-                    val uri = getAlumnePhotoUri(context, baseUri, grup, nia)
-                    result.success(uri?.toString())
+                    val uriRes = getAlumnePhotoUri(context, baseUri, grup, nia)
+                    result.success(uriRes?.toString())
                 }
 
                 "esborraFitxer" -> {
@@ -207,17 +210,52 @@ class MainActivity: FlutterActivity() {
 
     fun getProfessorPhotoUri(context: Context, baseUri: Uri, dni: String): Uri? {
         val baseDir = DocumentFile.fromTreeUri(context, baseUri)
+        val appFolder = baseDir?.findFile("ClassPic")
         val professorsFolder = baseDir?.findFile("Professors")
         val photoFile = professorsFolder?.findFile("$dni.jpg")
         return photoFile?.uri
     }
 
-    fun getAlumnePhotoUri(context: Context, baseUri: Uri, grup: String, nia: String): Uri? {
+    fun getAlumnePhotoUri(
+        context: Context,
+        baseUri: Uri,
+        grup: String,
+        nia: String
+    ): Uri? {
         val baseDir = DocumentFile.fromTreeUri(context, baseUri)
-        val alumnesFolder = baseDir?.findFile("Alumnes")
-        val grupFolder = alumnesFolder?.findFile(grup)
-        val photoFile = grupFolder?.findFile("$nia.jpg")
-        return photoFile?.uri
+        if (baseDir == null) {
+            Log.e("PhotoUri", "No es pot accedir al baseUri")
+            return null
+        }
+        baseDir?.listFiles()?.forEach {
+            Log.d("SAF", "Fitxer a Alumnes: ${it.name}")
+        }
+
+        val classPic = baseDir.findFile("ClassPic") ?: baseDir?.createDirectory("ClassPic")
+        if (classPic == null) {
+            Log.e("PhotoUri", "No s'ha trobat la carpeta ClassPic")
+            return null
+        }
+
+        val alumnes = classPic.findFile("Alumnes") ?: classPic?.createDirectory("Alumnes")
+        if (alumnes == null) {
+            Log.e("PhotoUri", "No s'ha trobat la carpeta Alumnes")
+            return null
+        }
+
+        val grupFolder = alumnes.findFile(grup) ?: alumnes?.createDirectory(grup)
+        if (grupFolder == null) {
+            Log.e("PhotoUri", "No s'ha trobat el grup: $grup")
+            return null
+        }
+
+        val photoFile = grupFolder.findFile("$nia.jpg")
+        if (photoFile == null) {
+            Log.e("PhotoUri", "No s'ha trobat la foto per $nia.jpg")
+            return null
+        }
+
+        return photoFile.uri
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
