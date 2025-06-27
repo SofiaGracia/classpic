@@ -137,10 +137,15 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                 // Foto de l'usuari
                 GestureDetector(
                   onTap: () async {
+                    final uri = await ref.read(uriProvider.notifier).getUri();
                     final File? novaFoto = await Navigator.push<File?>(
                       context,
                       MaterialPageRoute(
                         builder: (context) => CameraPage(
+                          uri: uri!,
+                          id: usuari.usuId,
+                          tipusUsuari: usuari is Alumne? 'Alumne':'Professor',
+                          grup: usuari is Alumne? usuari.grup : null,
                         ),
                       ),
                     );

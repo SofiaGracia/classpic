@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image/image.dart' as img;
 import 'package:xml_fotos/presentation/providers/configuration_foto.dart';
 
+import '../../application/services/saf_methods.dart';
 import '../../shared/utils/guide_oval_painter.dart';
 import 'edit_photo_page.dart';
 
@@ -38,8 +39,17 @@ final cameraStateProvider =
 
 class CameraPage extends ConsumerStatefulWidget {
 
+  final String uri;
+  final String id;
+  final String tipusUsuari;
+  final String? grup;
+
   const CameraPage({
     super.key,
+    required this.uri,
+    required this.id,
+    required this.tipusUsuari,
+    required this.grup
   });
 
   @override
@@ -141,6 +151,10 @@ class _CameraPageState extends ConsumerState<CameraPage> {
 
         //final outputFile = File(pathFoto);
         //await result.copy(outputFile.path);
+
+        //HEM D'ASSEGURAR-NOS QUE RESULT SIGA Uint8List
+
+        await PlatformChannel.savePhoto(uri: widget.uri, id: widget.id, tipusUsuari: widget.tipusUsuari, bytes: result);
         Navigator.pop(context);
       }
 

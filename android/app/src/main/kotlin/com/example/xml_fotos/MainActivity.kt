@@ -109,6 +109,64 @@ class MainActivity: FlutterActivity() {
                     }
                 }
 
+                "savePhotoFile" -> {
+                    val uriStr = call.argument<String>("uri")!!
+                    val id = call.argument<String>("id")!!
+                    val tipusUsuari = call.argument<String>("tipusUsuari")!!
+                    val grup = call.argument<String>("grup") // pot ser null per a professors
+                    val bytes = call.argument<ByteArray>("bytes")
+
+                    if (bytes == null) {
+                        result.error("NO_BYTES", "No image bytes provided", null)
+                        return@setMethodCallHandler
+                    }
+
+                    val baseUri = Uri.parse(uriStr)
+                    val baseDir = DocumentFile.fromTreeUri(context, baseUri)
+                    if (baseDir == null) {
+                        result.error("INVALID_URI", "Could not access base directory", null)
+                        return@setMethodCallHandler
+                    }
+
+                    // Troba el subdirectori
+                    val usuariFolder = baseDir.findFile(tipusUsuari) ?: baseDir.createDirectory(tipusUsuari)
+                    if (usuariFolder == null) {
+                        result.error("NO_FOLDER", "Could not access/create $tipusUsuari folder", null)
+                        return@setMethodCallHandler
+                    }
+
+                    // Si és alumne, entra dins del grup
+                    val destinacio = if (tipusUsuari == "Alumne" && grup != null) {
+                        usuariFolder.findFile(grup) ?: usuariFolder.createDirectory(grup)
+                    } else {
+                        usuariFolder
+                    }
+
+                    if (destinacio == null) {
+                        result.error("NO_DEST", "Could not access/create final directory", null)
+                        return@setMethodCallHandler
+                    }
+
+                    // Esborra si ja existix
+                    destinacio.findFile("$id.jpg")?.delete()
+
+                    // Crea el fitxer
+                    val photoFile = destinacio.createFile("image/jpeg", id)
+                    if (photoFile == null) {
+                        result.error("FILE_ERROR", "Could not create file", null)
+                        return@setMethodCallHandler
+                    }
+
+                    try {
+                        val out = context.contentResolver.openOutputStream(photoFile.uri)
+                        out?.write(bytes)
+                        out?.flush()
+                        out?.close()
+                        result.success(true)
+                    } catch (e: Exception) {
+                        result.error("WRITE_ERROR", "Failed to write image: ${e.message}", null)
+                    }
+                }
                 else -> result.notImplemented()
             }
         }

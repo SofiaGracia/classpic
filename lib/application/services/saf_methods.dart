@@ -36,6 +36,10 @@ class PlatformChannel {
 
     final uri = await ref.read(uriProvider.notifier).getUri();
 
+    if(uri == null){
+      return null;
+    }
+
     final uriString = await platform.invokeMethod<String>('getProfessorPhotoUri', {
       'dni': dni,
       'uri': uri,
@@ -46,6 +50,10 @@ class PlatformChannel {
   static Future<Uri?> getFotoAlumneUri(WidgetRef ref, String grup, String nia) async {
 
     final uri = await ref.read(uriProvider.notifier).getUri();
+
+    if(uri == null){
+      return null;
+    }
 
     final uriString = await platform.invokeMethod<String>('getAlumnePhotoUri', {
       'nia': nia,
@@ -63,6 +71,23 @@ class PlatformChannel {
     return byteData;
   }
 
+  static Future<bool> savePhoto({
+    required String uri,
+    required String id,
+    required String tipusUsuari, // "Alumne" o "Professor"
+    String? grup, // només si és Alumne
+    required Uint8List bytes,
+  }) async {
+    final result = await platform.invokeMethod<bool>('savePhotoFile', {
+      'uri': uri.toString(),
+      'id': id,
+      'tipusUsuari': tipusUsuari,
+      'grup': grup,
+      'bytes': bytes,
+    });
+
+    return result ?? false;
+  }
 }
 
 
