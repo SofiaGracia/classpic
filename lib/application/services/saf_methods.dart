@@ -2,6 +2,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 
+import '../../shared/utils/constants.dart';
+
 class PlatformChannel {
   static const platform = MethodChannel('classpic/saf_methods');
 
@@ -80,6 +82,7 @@ class PlatformChannel {
   }) async {
     final result = await platform.invokeMethod<bool>('savePhotoFile', {
       'uri': uri.toString(),
+      'appName': baseFolderName,
       'id': id,
       'tipusUsuari': tipusUsuari,
       'grup': grup,

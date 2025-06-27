@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/saf_methods.dart';
+import 'package:xml_fotos/domain/errors/import.dart';
 import 'package:xml_fotos/presentation/providers/alu_widget.dart';
 import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
+import 'package:xml_fotos/presentation/widgets/uri_dialog.dart';
 
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/professor.dart';
@@ -137,40 +139,66 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                 // Foto de l'usuari
                 GestureDetector(
                   onTap: () async {
-                    final uri = await ref.read(uriProvider.notifier).getUri();
-                    final File? novaFoto = await Navigator.push<File?>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CameraPage(
-                          uri: uri!,
-                          id: usuari.usuId,
-                          tipusUsuari: usuari is Alumne? 'Alumne':'Professor',
-                          grup: usuari is Alumne? usuari.grup : null,
+                    final uri;
+
+                    try {
+                      uri = await ref.read(uriProvider.notifier).getUri();
+
+                      if (uri == null) {
+                        throw DirectoriBaseNoTriat();
+                      }
+
+                      final File? novaFoto = await Navigator.push<File?>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CameraPage(
+                            uri: uri,
+                            id: usuari.usuId,
+                            tipusUsuari:
+                                usuari is Alumne ? 'Alumnes' : 'Professors',
+                            grup: usuari is Alumne ? usuari.grup : null,
+                          ),
                         ),
-                      ),
-                    );
-                    if (novaFoto != null) {
-                      final actualitzat = usuari is Alumne
-                          ? usuari.copyWith(
-                              fotoFilename: await ref.read(StorageServiceProvider).getPathAlumne(usuari.grup!, usuari.nia),
-                              fotoPathHash: DateTime.now()
-                                  .millisecondsSinceEpoch
-                                  .toString(),
-                            )
-                          : (usuari as Professor).copyWith(
-                              fotoFilename: await ref.read(StorageServiceProvider).getPathProfessor(usuari.usuId),
-                              fotoPathHash: DateTime.now()
-                                  .millisecondsSinceEpoch
-                                  .toString(),
-                            );
-                      provider.actualitza(actualitzat);
+                      );
+                      if (novaFoto != null) {
+                        final actualitzat = usuari is Alumne
+                            ? usuari.copyWith(
+                                fotoFilename: await ref
+                                    .read(StorageServiceProvider)
+                                    .getPathAlumne(usuari.grup!, usuari.nia),
+                                fotoPathHash: DateTime.now()
+                                    .millisecondsSinceEpoch
+                                    .toString(),
+                              )
+                            : (usuari as Professor).copyWith(
+                                fotoFilename: await ref
+                                    .read(StorageServiceProvider)
+                                    .getPathProfessor(usuari.usuId),
+                                fotoPathHash: DateTime.now()
+                                    .millisecondsSinceEpoch
+                                    .toString(),
+                              );
+                        provider.actualitza(actualitzat);
+                      }
+                    } catch (e) {
+                      if (e is DirectoriBaseNoTriat) {
+                          showDialog(
+                              context: context,
+                              builder: (_) => UriDialog(navigates: true));
+                      }
                     }
                   },
                   child: CircleAvatar(
                       radius: 30,
                       backgroundColor: Colors.grey.shade200,
                       child: FutureBuilder<Uri?>(
-                        future: widget.usuari is Alumne ? PlatformChannel.getFotoAlumneUri(ref, (widget.usuari as Alumne).grup!, widget.usuari.usuId): PlatformChannel.getFotoProfessorUri(ref,  widget.usuari.usuId),
+                        future: widget.usuari is Alumne
+                            ? PlatformChannel.getFotoAlumneUri(
+                                ref,
+                                (widget.usuari as Alumne).grup!,
+                                widget.usuari.usuId)
+                            : PlatformChannel.getFotoProfessorUri(
+                                ref, widget.usuari.usuId),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {

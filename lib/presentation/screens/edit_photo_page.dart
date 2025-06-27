@@ -29,7 +29,7 @@ class EditPhotoPageState extends ConsumerState<EditPhotoPage> {
   // Aquí pots afegir controladors d'edició, si cal
   final GlobalKey _imageKey = GlobalKey();
 
-  Future<File?> _captureAndCrop(double maxWidth, double maxHeight, double widthSq, double heightSq) async {
+  Future<Uint8List?> _captureAndCrop(double maxWidth, double maxHeight, double widthSq, double heightSq) async {
     try {
       //El RepaintBoundary és com posar una "càmera" a un widget concret per a capturar només la seva visualització.
       RenderRepaintBoundary boundary =
@@ -54,12 +54,13 @@ class EditPhotoPageState extends ConsumerState<EditPhotoPage> {
       if (compressedBytes == null) return null;
 
       // Guarda la versió comprimida en un altre fitxer
-      final directory = await getTemporaryDirectory();
+      /*final directory = await getTemporaryDirectory();
       final outputPath = '${directory.path}/foto_retallada.jpg';
       final compressedFile = File(outputPath)
-        ..writeAsBytesSync(compressedBytes);
+        ..writeAsBytesSync(compressedBytes);*/
 
-      return compressedFile;
+      //return compressedFile;
+      return compressedBytes;
     } catch (e) {
       debugPrint("Error retallant la imatge: $e");
       return null;
@@ -165,7 +166,6 @@ class EditPhotoPageState extends ConsumerState<EditPhotoPage> {
                       onPressed: () async {
                         // Aquí podries afegir més tractament si cal (retall, ajust, etc.)
                         final result = await _captureAndCrop(maxWidth, maxHeight, widthSq, heightSq);
-                        debugPrint('${result?.path}');
                         Navigator.pop(context, result); // Confirmem
                       },
                     ),

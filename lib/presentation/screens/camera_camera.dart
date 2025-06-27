@@ -140,7 +140,7 @@ class _CameraPageState extends ConsumerState<CameraPage> {
           builder: (_) => EditPhotoPage(
             qualitat: qualitat,
               imageBytes:
-                  Uint8List.fromList(jpg)), //Ací deuriem cridar a ImageCropper
+                  Uint8List.fromList(jpg)),
         ),
       );
 
@@ -154,7 +154,7 @@ class _CameraPageState extends ConsumerState<CameraPage> {
 
         //HEM D'ASSEGURAR-NOS QUE RESULT SIGA Uint8List
 
-        await PlatformChannel.savePhoto(uri: widget.uri, id: widget.id, tipusUsuari: widget.tipusUsuari, bytes: result);
+        await PlatformChannel.savePhoto(uri: widget.uri, id: widget.id, tipusUsuari: widget.tipusUsuari , grup: widget.grup, bytes: result);
         Navigator.pop(context);
       }
 

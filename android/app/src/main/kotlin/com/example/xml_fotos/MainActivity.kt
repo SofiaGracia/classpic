@@ -111,6 +111,7 @@ class MainActivity: FlutterActivity() {
 
                 "savePhotoFile" -> {
                     val uriStr = call.argument<String>("uri")!!
+                    val appName = call.argument<String>("appName")!!
                     val id = call.argument<String>("id")!!
                     val tipusUsuari = call.argument<String>("tipusUsuari")!!
                     val grup = call.argument<String>("grup") // pot ser null per a professors
@@ -128,15 +129,22 @@ class MainActivity: FlutterActivity() {
                         return@setMethodCallHandler
                     }
 
+                    //Troba la carpeta de l'aplicació
+                    val appFolder = baseDir.findFile(appName) ?: baseDir.createDirectory(appName)
+                    if (appFolder == null) {
+                        result.error("NO_FOLDER", "Could not access/create $appName folder", null)
+                        return@setMethodCallHandler
+                    }
+
                     // Troba el subdirectori
-                    val usuariFolder = baseDir.findFile(tipusUsuari) ?: baseDir.createDirectory(tipusUsuari)
+                    val usuariFolder = appFolder.findFile(tipusUsuari) ?: appFolder.createDirectory(tipusUsuari)
                     if (usuariFolder == null) {
                         result.error("NO_FOLDER", "Could not access/create $tipusUsuari folder", null)
                         return@setMethodCallHandler
                     }
 
                     // Si és alumne, entra dins del grup
-                    val destinacio = if (tipusUsuari == "Alumne" && grup != null) {
+                    val destinacio = if (tipusUsuari == "Alumnes" && grup != null) {
                         usuariFolder.findFile(grup) ?: usuariFolder.createDirectory(grup)
                     } else {
                         usuariFolder

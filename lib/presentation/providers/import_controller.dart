@@ -20,6 +20,8 @@ class ImportController extends _$ImportController {
 
   Future<void> importaDades({required bool isAlumne}) async {
     try {
+
+      //Necessite un directori base per a crear l'estructura de carpetes dels cursos dels alumnes importats
       final baseDir = await ref.read(uriProvider.notifier).getUri();
 
       if (baseDir == null) {

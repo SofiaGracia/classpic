@@ -107,7 +107,6 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                 },
                 child: const Text('Configuració'),
               ),
-              UriWidget()
             ],
           ),
         ),
