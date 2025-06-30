@@ -88,7 +88,7 @@ class _CircleUserState extends ConsumerState<CicleUser> {
                 (widget.usuari as Alumne).grup!,
                 widget.usuari.usuId)
                 : PlatformChannel.getFotoProfessorUri(
-                ref, widget.usuari.usuId),
+                widget.usuari.usuId),
             builder: (context, snapshot) {
               if (snapshot.connectionState ==
                   ConnectionState.waiting) {

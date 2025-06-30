@@ -66,8 +66,9 @@ class PlatformChannel {
     }
   }
 
-  static Future<Uri?> getFotoProfessorUri(WidgetRef ref, String dni) async {
-    final uri = await ref.read(uriProvider.notifier).getUri();
+  static Future<Uri?> getFotoProfessorUri(String dni) async {
+    final prefs = await SharedPreferences.getInstance();
+    final uri = await prefs.getString(keyFolder);
 
     if (uri == null) {
       return null;

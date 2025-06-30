@@ -267,9 +267,9 @@ class MainActivity: FlutterActivity() {
             return null
         }
 
-        val professorsFolder = baseDir?.findFile("Professors")
+        val professorsFolder = classPic?.findFile("Professors")
         if (professorsFolder == null) {
-            Log.e("PhotoUri", "No s'ha trobat la carpeta Alumnes")
+            Log.e("PhotoUri", "No s'ha trobat la carpeta Professors")
             return null
         }
         val photoFile = professorsFolder?.findFile("$dni.jpg")
