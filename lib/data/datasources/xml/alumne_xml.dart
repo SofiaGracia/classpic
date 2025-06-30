@@ -57,10 +57,10 @@ class RepositoryAlumneXml {
             c1: aluC1,
             c2: aluC2,
             grup: aluGrup,
-            fotoFolder: alumnesFolder,
             fotoPathHash: DateTime.now()
                 .millisecondsSinceEpoch
                 .toString(),
+            hasFoto: false
           ));
         }
       }

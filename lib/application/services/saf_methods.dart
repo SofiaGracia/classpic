@@ -34,7 +34,7 @@ class PlatformChannel {
     }
   }
 
-  static Future<Uri?> getFotoProfessorUri(WidgetRef ref, String dni) async {
+  static Future<Uri?> getFotoProfessorUri(Ref ref, String dni) async {
 
     final uri = await ref.read(uriProvider.notifier).getUri();
 
@@ -49,7 +49,7 @@ class PlatformChannel {
     return uriString != null ? Uri.parse(uriString) : null;
   }
 
-  static Future<Uri?> getFotoAlumneUri(WidgetRef ref, String grup, String nia) async {
+  static Future<Uri?> getFotoAlumneUri(Ref ref, String grup, String nia) async {
 
     final uri = await ref.read(uriProvider.notifier).getUri();
 

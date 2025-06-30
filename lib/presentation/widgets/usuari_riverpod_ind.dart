@@ -48,7 +48,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
               required String nom,
               required String c1,
               required String c2,
-              String? fotoFilename,
+                required bool hasFoto,
               String? fotoPathHash,
               String? grup}) {
             if (usuari is Alumne) {
@@ -58,18 +58,18 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                   c1: c1,
                   c2: c2,
                   grup: grup,
-                  fotoFilename: fotoFilename,
+                  hasFoto: hasFoto,
                   fotoPathHash: fotoPathHash,
-                  fotoFolder: alumnesFolder);
+                  );
             } else {
               final professor = Professor(
                   dni: id,
                   nom: nom,
                   c1: c1,
                   c2: c2,
-                  fotoFilename: fotoFilename,
+                  hasFoto: hasFoto,
                   fotoPathHash: fotoPathHash,
-                  fotoFolder: professorsFolder);
+                  );
               return professor;
             }
           },
@@ -88,8 +88,8 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
         nom: alu.nom,
         c1: alu.c1,
         c2: alu.c2,
-        fotoFilename: alu.fotoFilename,
         fotoPathHash: alu.fotoPathHash,
+        hasFoto: alu.hasFoto,
         grup: alu.grup,
         cursId: alu.cursId,
       );
@@ -101,7 +101,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
         nom: prof.nom,
         c1: prof.c1,
         c2: prof.c2,
-        fotoFilename: prof.fotoFilename,
+        hasFoto: prof.hasFoto,
         fotoPathHash: prof.fotoPathHash,
       );
     }

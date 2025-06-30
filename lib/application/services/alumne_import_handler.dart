@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
 import 'package:xml_fotos/application/services/dir_structure.dart';
+import 'package:xml_fotos/application/services/saf_methods.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
 
@@ -132,13 +133,9 @@ class AlumneImportHandler {
           var alumneAmbCursCanviat;
           alumneAmbCursCanviat = alum.copyWith(id: existent.id);
 
-          if(existent.fotoFilename != null){
+          if(existent.hasFoto){
             alumnesACanviar.add(CanviDeCursAlumne(cursVell: existent.grup!, cursNou: alum.grup!, niaAlumne: existent.nia));
-            //final novaFotoPath = await storage.getPathAlumne(alum.grup!, existent.nom);
-            //final novaFotoPath = await storage.getPathAlumne(alum.grup!, existent.nia);
-            final novaFotoFileName = await storage.getPathAlumne(alum.grup!, existent.usuId);
-
-            alumneAmbCursCanviat = alum.copyWith(id: existent.id, fotoFilename: novaFotoFileName, fotoPathHash: existent.fotoPathHash);
+            //alumneAmbCursCanviat = alum.copyWith(id: existent.id, fotoPathHash: existent.fotoPathHash);
           }
           alumnesAEditar.add(alumneAmbCursCanviat);
         }
@@ -147,12 +144,18 @@ class AlumneImportHandler {
       final alumnesAEliminar = alumnesDB.where((a) => !alumnesNiesXml.contains(a.nia)).toList();
 
       if (alumnesAEliminar.isNotEmpty){
+
         List<String> fotoPaths = [];
         for(final a in alumnesAEliminar){
-          if(a.fotoFilename != null){
-            fotoPaths.add(a.fotoFilename!);
+          final uriFotoAlumne = await PlatformChannel.getFotoAlumneUri(ref, a.grup!, a.nia);
+
+          if(uriFotoAlumne != null){
+            fotoPaths.add(uriFotoAlumne.toString());
           }
         }
+
+        //Eliminar les fotos dels alumnes
+        //Eliminar alumnes
         await storage.eliminaFotos(fotoPaths);
         await alumneNot.eliminarAlumnes(alumnesAEliminar);
       }
@@ -160,13 +163,14 @@ class AlumneImportHandler {
       if (alumnesAEditar.isNotEmpty) await alumneNot.editarAlumnes(alumnesAEditar);
 
       // Mou les fotos d’alumnes que han canviat de curs
-      /*await Future.wait(alumnesACanviar.map((alumne) {
+      await Future.wait(alumnesACanviar.map((alumne) {
         return storage.mouFotoAlumne(
+          ref,
           alumne.cursVell,
           alumne.cursNou,
           alumne.niaAlumne,
         );
-      }));*/
+      }));
 
       // Esborra carpetes que ja no són necessàries
       //await storage.eliminaCarpetesAlumnes(nomsCursosABorrar);

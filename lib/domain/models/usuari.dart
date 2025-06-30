@@ -1,5 +1,3 @@
-import 'foto_info.dart';
-
 abstract class Usuari {
 
   String get usuId;
@@ -11,10 +9,10 @@ abstract class Usuari {
   // Afegim _fotoPathHash per a la lògica del cache
   String? fotoPathHash;
 
-  String fotoFolder;
-  String? fotoFilename;
+  //S'utilitzarà per a contar quants usuaris tenen foto
+  bool hasFoto;
 
-  Usuari({required this.nom, required this.c1, this.c2, this.fotoPathHash, required this.fotoFolder, this.fotoFilename});
+  Usuari({required this.nom, required this.c1, this.c2, this.fotoPathHash, required this.hasFoto});
 
   @override
   bool operator ==(Object other) {
@@ -26,17 +24,10 @@ abstract class Usuari {
         other.c1 == c1 &&
         other.c2 == c2 &&
         other.fotoPathHash == fotoPathHash &&
-        other.fotoFolder == fotoFolder &&
-        other.fotoFilename == fotoFilename &&
+        other.hasFoto == hasFoto &&
         runtimeType == other.runtimeType;
   }
 
-  /// Getter opcional per reconstruir FotoInfo al vol
-  FotoInfo? get fotoInfo =>
-      (fotoFilename != null)
-          ? FotoInfo(folder: fotoFolder, filename: fotoFilename!)
-          : null;
-
   @override
-  int get hashCode => Object.hash(usuId, nom, c1, c2, fotoPathHash, fotoFolder, fotoFilename, runtimeType);
+  int get hashCode => Object.hash(usuId, nom, c1, c2, fotoPathHash, hasFoto, runtimeType);
 }

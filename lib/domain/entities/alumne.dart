@@ -38,9 +38,8 @@ class Alumne extends Usuari {
     this.grup,
     String? fotoPathHash,
     this.cursId,
-    required String fotoFolder,
-    String? fotoFilename
-  }) : super(nom: nom, c1: c1, c2: c2, fotoPathHash: fotoPathHash, fotoFolder: fotoFolder, fotoFilename: fotoFilename);
+    required bool hasFoto
+  }) : super(nom: nom, c1: c1, c2: c2, fotoPathHash: fotoPathHash, hasFoto: hasFoto);
 
   Alumne copyWith({
     int? id,
@@ -51,8 +50,7 @@ class Alumne extends Usuari {
     String? grup,
     String? fotoPathHash,
     int? cursId,
-    String? fotoFolder,
-    String? fotoFilename,
+    bool? hasFoto
   }) {
     return Alumne(
       id: id ?? this.id,
@@ -63,8 +61,7 @@ class Alumne extends Usuari {
       grup: grup ?? this.grup,
       fotoPathHash: fotoPathHash ?? this.fotoPathHash,
       cursId: cursId ?? this.cursId,
-      fotoFolder: fotoFolder ?? this.fotoFolder,
-      fotoFilename: fotoFilename ?? this.fotoFilename,
+      hasFoto: hasFoto ?? this.hasFoto
     );
   }
 }

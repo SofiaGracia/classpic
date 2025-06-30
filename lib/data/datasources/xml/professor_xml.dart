@@ -6,7 +6,6 @@ import '../../../domain/entities/professor.dart';
 import '../../../shared/utils/constants.dart';
 
 class RepositoryProfessorXml {
-
   late XmlDocument doc;
 
   RepositoryProfessorXml({required this.doc});
@@ -26,11 +25,15 @@ class RepositoryProfessorXml {
         final profC2 = prof.getAttribute('apellido2');
 
         if (profDni != null && profNom != null && profC1 != null) {
-
           final idDni = CodiGenerator.normalitzaIdentificador(profDni);
 
-          Professor profAInsertar =
-              Professor(dni: idDni, nom: profNom, c1: profC1, c2: profC2, fotoFolder: professorsFolder);
+          Professor profAInsertar = Professor(
+              dni: idDni,
+              nom: profNom,
+              c1: profC1,
+              c2: profC2,
+              fotoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
+              hasFoto: false);
           llistaProfessors.add(profAInsertar);
         }
       }

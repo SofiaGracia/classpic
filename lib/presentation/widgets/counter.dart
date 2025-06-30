@@ -18,7 +18,7 @@ class CounterWidget<T extends Usuari> extends ConsumerWidget {
     return usuariAsync.when(
       data: (usuaris) {
         final total = usuaris.length;
-        final ambFoto = usuaris.where((u) => u.fotoFilename?.isNotEmpty == true).length;
+        final ambFoto = usuaris.where((u) => u.hasFoto == true).length;
 
         return Text(
           '$ambFoto/$total',

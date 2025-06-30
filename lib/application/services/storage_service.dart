@@ -53,4 +53,29 @@ class StorageService {
   Future<void> eliminaFotos(List<String> paths) async {
     await Future.wait(paths.map((path) => eliminaFoto(path)));
   }
+
+  Future<void> mouFotoAlumne(Ref ref, String cursVell, String cursNou, String niaAlumne) async {
+
+    try{
+
+      //Obtenim la uri de la foto vella
+      final uriFotoVella = await PlatformChannel.getFotoAlumneUri(ref, cursVell, niaAlumne);
+
+      //Passem de la uri de la foto vella a Uint8List amb readBytesFromSafUri i aixina obtenim la foto
+      final fotoVella = await PlatformChannel.readBytesFromSafUri(uriFotoVella!);
+
+      //Guardem primer la foto a la nova ubi
+      final uri = await ref.read(uriProvider.notifier).getUri();
+      final guardada = await PlatformChannel.savePhoto(uri: uri!, id: niaAlumne, tipusUsuari: "Alumnes", bytes: fotoVella!);
+
+      //Borrem després la foto a la ubi vella
+      if(guardada){
+        final pathFotoVella = uriFotoVella.toString();
+        final borrada = await PlatformChannel.esborraFitxer(pathFotoVella);
+      }
+
+    }catch (e){
+      //Farem un throw per mostrar a la UI
+    }
+  }
 }

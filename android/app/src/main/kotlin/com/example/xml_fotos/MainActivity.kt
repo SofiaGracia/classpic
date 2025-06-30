@@ -210,9 +210,31 @@ class MainActivity: FlutterActivity() {
 
     fun getProfessorPhotoUri(context: Context, baseUri: Uri, dni: String): Uri? {
         val baseDir = DocumentFile.fromTreeUri(context, baseUri)
-        val appFolder = baseDir?.findFile("ClassPic")
+        if (baseDir == null) {
+            Log.e("PhotoUri", "No es pot accedir al baseUri")
+            return null
+        }
+        baseDir?.listFiles()?.forEach {
+            Log.d("SAF", "Fitxer a Alumnes: ${it.name}")
+        }
+
+        val classPic = baseDir.findFile("ClassPic") ?: baseDir?.createDirectory("ClassPic")
+        if (classPic == null) {
+            Log.e("PhotoUri", "No s'ha trobat la carpeta ClassPic")
+            return null
+        }
+
         val professorsFolder = baseDir?.findFile("Professors")
+        if (professorsFolder == null) {
+            Log.e("PhotoUri", "No s'ha trobat la carpeta Alumnes")
+            return null
+        }
         val photoFile = professorsFolder?.findFile("$dni.jpg")
+        if (photoFile == null) {
+            Log.e("PhotoUri", "No s'ha trobat la foto per $nia.jpg")
+            return null
+        }
+
         return photoFile?.uri
     }
 

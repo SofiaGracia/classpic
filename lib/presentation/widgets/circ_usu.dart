@@ -81,11 +81,11 @@ class _CircleUserState extends ConsumerState<CicleUser> {
           child: FutureBuilder<Uri?>(
             future: widget.usuari is Alumne
                 ? PlatformChannel.getFotoAlumneUri(
-                ref,
+                ref as Ref<Object?>,
                 (widget.usuari as Alumne).grup!,
                 widget.usuari.usuId)
                 : PlatformChannel.getFotoProfessorUri(
-                ref, widget.usuari.usuId),
+                ref as Ref<Object?>, widget.usuari.usuId),
             builder: (context, snapshot) {
               if (snapshot.connectionState ==
                   ConnectionState.waiting) {

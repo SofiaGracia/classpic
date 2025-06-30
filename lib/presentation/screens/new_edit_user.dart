@@ -6,12 +6,9 @@ import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 import '../../application/services/saf_methods.dart';
 import '../../domain/entities/alumne.dart';
 import '../../domain/models/usuari.dart';
-import '../providers/alumne_notifier.dart';
 import '../providers/cursos_notifier.dart';
-import '../../application/services/storage_service.dart';
 import '../../shared/utils/constants.dart';
 import '../../shared/utils/validator.dart';
-import '../providers/professor_notifier.dart';
 import '../widgets/foto_usuari.dart';
 import 'camera_camera.dart';
 
@@ -24,7 +21,7 @@ class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
     required String nom,
     required String c1,
     required String c2,
-    String? fotoFilename,
+    required bool hasFoto,
     String? fotoPathHash,
   }) constructor; // Constructor per crear una instància del tipus T
   final bool isAlumne; // Indica si l'usuari és un alumne
@@ -121,6 +118,7 @@ class _NewEditUserScreenState<T extends Usuari>
         c1: cognom1Controller.text.trim(),
         c2: cognom2Controller.text.trim(),
         fotoPathHash: _fotoPathHashAGuardar,
+        hasFoto:
         /*fotoFilename: widget.isAlumne
             ? await ref.read(StorageServiceProvider).getPathAlumne(
                 grupSeleccionat ??= grupSensenom, idController.text)

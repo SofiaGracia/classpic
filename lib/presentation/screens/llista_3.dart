@@ -100,7 +100,7 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
           required String nom,
           required String c1,
           required String c2,
-          String? fotoFilename,
+          required bool hasFoto,
           String? fotoPathHash,
           String? grup,
         }) {
@@ -111,8 +111,7 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
               c1: c1,
               c2: c2,
               fotoPathHash: fotoPathHash,
-              fotoFilename: fotoFilename,
-              fotoFolder: alumnesFolder,
+              hasFoto: hasFoto,
               grup: grup,
             );
           } else {
@@ -122,8 +121,7 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
               c1: c1,
               c2: c2,
               fotoPathHash: fotoPathHash,
-              fotoFilename: fotoFilename,
-              fotoFolder: professorsFolder
+              hasFoto: hasFoto
             );
           }
         },

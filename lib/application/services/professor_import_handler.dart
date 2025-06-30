@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
+import 'package:xml_fotos/application/services/saf_methods.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
 
 import '../../presentation/providers/professor_notifier.dart';
@@ -57,12 +58,9 @@ class ProfessorImportHandler{
         for(final p in pEliminar){
 
           // Hi ha que trobar el path correcte
-
-          final fotoFilename = p.fotoFilename;
-          final dir = p.fotoFolder;
-
-          if(fotoFilename != null && dir != ''){
-            fotoPaths.add(p.fotoFilename!);
+          final uriFotoProf = await PlatformChannel.getFotoProfessorUri(ref, p.usuId);
+          if(uriFotoProf != null){
+            fotoPaths.add(uriFotoProf.toString());
           }
         }
 
