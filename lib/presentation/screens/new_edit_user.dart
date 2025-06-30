@@ -64,7 +64,7 @@ class _NewEditUserScreenState<T extends Usuari>
     super.initState();
 
     usuariActual = widget.usuari;
-    _imatge = widget.usuari?.fotoFilename;
+    //_imatge = widget.usuari?.fotoFilename;
     _fotoPathHash = widget.usuari?.fotoPathHash;
     _fotoPathHashAGuardar = _fotoPathHash;
 
@@ -118,7 +118,7 @@ class _NewEditUserScreenState<T extends Usuari>
         c1: cognom1Controller.text.trim(),
         c2: cognom2Controller.text.trim(),
         fotoPathHash: _fotoPathHashAGuardar,
-        hasFoto:
+        hasFoto: _imatge == null? false: true
         /*fotoFilename: widget.isAlumne
             ? await ref.read(StorageServiceProvider).getPathAlumne(
                 grupSeleccionat ??= grupSensenom, idController.text)
@@ -317,7 +317,7 @@ class _NewEditUserScreenState<T extends Usuari>
                 ),
               ],
               const SizedBox(height: 30),
-              GestureDetector(
+              /*GestureDetector(
                 onTap: _gestionaFoto,
                 child: CircleAvatar(
                     radius: 50,
@@ -351,7 +351,7 @@ class _NewEditUserScreenState<T extends Usuari>
                                   );
                                 },
                               )),
-              ),
+              ),*/
               const SizedBox(height: 30),
               ElevatedButton.icon(
                 onPressed: _guardarUsuari,

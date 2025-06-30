@@ -54,9 +54,11 @@ class _CircleUserState extends ConsumerState<CicleUser> {
         final actualitzat = widget.usuari is Alumne
             ? (widget.usuari as Alumne).copyWith(
           fotoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
+          hasFoto: true
         )
             : (widget.usuari as Professor).copyWith(
           fotoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
+            hasFoto: true
         );
 
         await widget.onUpdate(actualitzat);
@@ -71,6 +73,8 @@ class _CircleUserState extends ConsumerState<CicleUser> {
 
   @override
   Widget build(BuildContext context) {
+
+
     return GestureDetector(
       onTap: () async {
         _obriCamera(context);
@@ -81,11 +85,10 @@ class _CircleUserState extends ConsumerState<CicleUser> {
           child: FutureBuilder<Uri?>(
             future: widget.usuari is Alumne
                 ? PlatformChannel.getFotoAlumneUri(
-                ref as Ref<Object?>,
                 (widget.usuari as Alumne).grup!,
                 widget.usuari.usuId)
                 : PlatformChannel.getFotoProfessorUri(
-                ref as Ref<Object?>, widget.usuari.usuId),
+                ref, widget.usuari.usuId),
             builder: (context, snapshot) {
               if (snapshot.connectionState ==
                   ConnectionState.waiting) {

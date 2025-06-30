@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/saf_methods.dart';
 
@@ -54,28 +55,22 @@ class StorageService {
     await Future.wait(paths.map((path) => eliminaFoto(path)));
   }
 
-  Future<void> mouFotoAlumne(Ref ref, String cursVell, String cursNou, String niaAlumne) async {
+  Future<void> esborraDirIContingut(List<String> paths) async {
+    final baseDir = await getBaseDirectory();
+    await PlatformChannel.esborraDirIContingut(baseDir, paths);
+  }
 
-    try{
+  Future<void> mouFotoAlumne(String cursVell, String cursNou, String niaAlumne) async {
 
-      //Obtenim la uri de la foto vella
-      final uriFotoVella = await PlatformChannel.getFotoAlumneUri(ref, cursVell, niaAlumne);
+    //Obtenim la uri de la foto vella
+    final uriFotoVella = await PlatformChannel.getFotoAlumneUri(cursVell, niaAlumne);
 
-      //Passem de la uri de la foto vella a Uint8List amb readBytesFromSafUri i aixina obtenim la foto
-      final fotoVella = await PlatformChannel.readBytesFromSafUri(uriFotoVella!);
+    //Passem de la uri de la foto vella a Uint8List amb readBytesFromSafUri i aixina obtenim la foto
+    final fotoVella = await PlatformChannel.readBytesFromSafUri(uriFotoVella!);
 
-      //Guardem primer la foto a la nova ubi
-      final uri = await ref.read(uriProvider.notifier).getUri();
-      final guardada = await PlatformChannel.savePhoto(uri: uri!, id: niaAlumne, tipusUsuari: "Alumnes", bytes: fotoVella!);
-
-      //Borrem després la foto a la ubi vella
-      if(guardada){
-        final pathFotoVella = uriFotoVella.toString();
-        final borrada = await PlatformChannel.esborraFitxer(pathFotoVella);
-      }
-
-    }catch (e){
-      //Farem un throw per mostrar a la UI
-    }
+    //Guardem primer la foto a la nova ubi
+    final uri = await ref.read(uriProvider.notifier).getUri();
+    final guardada = await PlatformChannel.savePhoto(
+        uri: uri!, id: niaAlumne, tipusUsuari: "Alumnes", grup: cursNou,bytes: fotoVella!);
   }
 }

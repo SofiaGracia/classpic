@@ -112,6 +112,49 @@ class MainActivity: FlutterActivity() {
                     }
                 }
 
+                "deleteGrupFolders" -> {
+                    val uriStr = call.argument<String>("uri") ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing uri", null)
+                    val appName = call.argument<String>("appName") ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing appName", null)
+                    val grups = call.argument<List<String>>("grups") ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing grups", null)
+                    val aluName = call.argument<String>("aluName") ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing grups", null)
+
+                    val baseUri = Uri.parse(uriStr)
+                    val baseDir = DocumentFile.fromTreeUri(context, baseUri)
+                    if (baseDir == null) {
+                        result.error("INVALID_URI", "Could not access base directory", null)
+                        return@setMethodCallHandler
+                    }
+
+                    val appFolder = baseDir.findFile(appName)
+                    if (appFolder == null) {
+                        result.error("NO_FOLDER", "Could not access $appName folder", null)
+                        return@setMethodCallHandler
+                    }
+
+                    val aluFolder = appFolder.findFile(aluName)
+                    if (aluFolder == null) {
+                        result.error("NO_FOLDER", "Could not access $aluFolder folder", null)
+                        return@setMethodCallHandler
+                    }
+
+                    val results = mutableMapOf<String, Boolean>()
+                    for (grup in grups) {
+                        val grupFolder = aluFolder.findFile(grup)
+                        if (grupFolder != null) {
+                            try {
+                                results[grup] = deleteDocumentFileRecursive(grupFolder)
+                            } catch (e: Exception) {
+                                results[grup] = false
+                            }
+                        } else {
+                            results[grup] = false
+                        }
+                    }
+
+                    result.success(results)
+                }
+
+
                 "savePhotoFile" -> {
                     val uriStr = call.argument<String>("uri")!!
                     val appName = call.argument<String>("appName")!!
@@ -231,7 +274,7 @@ class MainActivity: FlutterActivity() {
         }
         val photoFile = professorsFolder?.findFile("$dni.jpg")
         if (photoFile == null) {
-            Log.e("PhotoUri", "No s'ha trobat la foto per $nia.jpg")
+            Log.e("PhotoUri", "No s'ha trobat la foto per $dni.jpg")
             return null
         }
 
@@ -306,5 +349,14 @@ class MainActivity: FlutterActivity() {
         }
 
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    fun deleteDocumentFileRecursive(file: DocumentFile): Boolean {
+        if (file.isDirectory) {
+            file.listFiles().forEach {
+                deleteDocumentFileRecursive(it)
+            }
+        }
+        return file.delete()
     }
 }

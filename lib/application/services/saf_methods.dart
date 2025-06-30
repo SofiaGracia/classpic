@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 
 import '../../shared/utils/constants.dart';
@@ -34,33 +35,61 @@ class PlatformChannel {
     }
   }
 
-  static Future<Uri?> getFotoProfessorUri(Ref ref, String dni) async {
+  static Future<bool> esborraDirIContingut(
+      String baseUri, List<String> nomCursos) async {
+    try {
+      final Map<dynamic, dynamic>? result = await platform.invokeMethod(
+        'deleteGrupFolders',
+        {
+          'uri': baseUri,
+          'appName': baseFolderName,
+          'aluName': alumnesFolder,
+          'grups': nomCursos,
+        },
+      );
 
+      if (result == null) return false;
+
+      // Convertim a Map<String, bool> si cal
+      final resultats = result.cast<String, bool>();
+
+      for (final res in resultats.values) {
+        if (res == false) {
+          return false;
+        }
+      }
+
+      return true;
+    } catch (e) {
+      print('Error esborrant: $e');
+      return false;
+    }
+  }
+
+  static Future<Uri?> getFotoProfessorUri(WidgetRef ref, String dni) async {
     final uri = await ref.read(uriProvider.notifier).getUri();
 
-    if(uri == null){
+    if (uri == null) {
       return null;
     }
 
-    final uriString = await platform.invokeMethod<String>('getProfessorPhotoUri', {
+    final uriString =
+        await platform.invokeMethod<String>('getProfessorPhotoUri', {
       'dni': dni,
       'uri': uri,
     });
     return uriString != null ? Uri.parse(uriString) : null;
   }
 
-  static Future<Uri?> getFotoAlumneUri(Ref ref, String grup, String nia) async {
+  static Future<Uri?> getFotoAlumneUri(String grup, String nia) async {
+    final prefs = await SharedPreferences.getInstance();
+    final uri = await prefs.getString(keyFolder);
 
-    final uri = await ref.read(uriProvider.notifier).getUri();
-
-    if(uri == null){
+    if (uri == null) {
       return null;
     }
-    final uriString = await platform.invokeMethod<String>('getAlumnePhotoUri', {
-      'nia': nia,
-      'uri': uri,
-      'grup':grup
-    });
+    final uriString = await platform.invokeMethod<String>(
+        'getAlumnePhotoUri', {'nia': nia, 'uri': uri, 'grup': grup});
     return uriString != null ? Uri.parse(uriString) : null;
   }
 
@@ -88,9 +117,6 @@ class PlatformChannel {
       'bytes': bytes,
     });
 
-    return    result ?? false;
+    return result ?? false;
   }
 }
-
-
-

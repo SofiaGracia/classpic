@@ -11,6 +11,7 @@ import '../../domain/entities/curs.dart';
 import '../../presentation/providers/alumne_notifier.dart';
 import '../../presentation/providers/cursos_notifier.dart';
 import '../../data/datasources/xml/alumne_xml.dart';
+import '../../presentation/providers/uri_notifier.dart';
 import '../../shared/utils/change_group.dart';
 
 
@@ -134,6 +135,7 @@ class AlumneImportHandler {
           alumneAmbCursCanviat = alum.copyWith(id: existent.id);
 
           if(existent.hasFoto){
+            alumneAmbCursCanviat = alum.copyWith(id: existent.id, hasFoto: existent.hasFoto);
             alumnesACanviar.add(CanviDeCursAlumne(cursVell: existent.grup!, cursNou: alum.grup!, niaAlumne: existent.nia));
             //alumneAmbCursCanviat = alum.copyWith(id: existent.id, fotoPathHash: existent.fotoPathHash);
           }
@@ -147,7 +149,7 @@ class AlumneImportHandler {
 
         List<String> fotoPaths = [];
         for(final a in alumnesAEliminar){
-          final uriFotoAlumne = await PlatformChannel.getFotoAlumneUri(ref, a.grup!, a.nia);
+          final uriFotoAlumne = await PlatformChannel.getFotoAlumneUri( a.grup!, a.nia);
 
           if(uriFotoAlumne != null){
             fotoPaths.add(uriFotoAlumne.toString());
@@ -162,10 +164,13 @@ class AlumneImportHandler {
 
       if (alumnesAEditar.isNotEmpty) await alumneNot.editarAlumnes(alumnesAEditar);
 
+      /*alumnesACanviar.map((alumne) async {
+        await storage.mouFotoAlumne(alumne.cursVell, alumne.cursNou, alumne.niaAlumne);
+      });*/
+
       // Mou les fotos d’alumnes que han canviat de curs
       await Future.wait(alumnesACanviar.map((alumne) {
         return storage.mouFotoAlumne(
-          ref,
           alumne.cursVell,
           alumne.cursNou,
           alumne.niaAlumne,
@@ -174,6 +179,8 @@ class AlumneImportHandler {
 
       // Esborra carpetes que ja no són necessàries
       //await storage.eliminaCarpetesAlumnes(nomsCursosABorrar);
+      final llistaNomsCursosABorrar = nomsCursosABorrar.toList();
+      await storage.esborraDirIContingut(llistaNomsCursosABorrar);
 
       return alumnesAInserir;
 
