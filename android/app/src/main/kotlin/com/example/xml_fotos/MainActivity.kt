@@ -2,10 +2,10 @@ package com.example.xml_fotos
 
 import android.app.Activity
 import android.content.Intent
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+
 import androidx.annotation.NonNull
 import androidx.documentfile.provider.DocumentFile
 import io.flutter.embedding.android.FlutterActivity
@@ -13,9 +13,10 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
 
+import com.example.xml_fotos.StorageHelper
+import com.example.xml_fotos.PhotoUriHelper
 
-
-class MainActivity: FlutterActivity() {
+class MainActivity : FlutterActivity() {
     private val CHANNEL = "classpic/saf_methods"
     private val REQUEST_CODE_OPEN_DOCUMENT_TREE = 1001
     private var resultPending: MethodChannel.Result? = null
@@ -24,6 +25,7 @@ class MainActivity: FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+            Log.d("MethodCallHandler", "Mètode rebut: ${call.method}")
             when (call.method) {
                 "getUri" -> {
                     if (resultPending != null) {
@@ -34,65 +36,102 @@ class MainActivity: FlutterActivity() {
                     openDocumentTree()
                 }
 
-                "createDirectory" -> {
+                "creaEstructuraProf" -> {
                     val baseUriStr = call.argument<String>("baseUri")
-                    val dirPath = call.argument<String>("name")
-
-                    if (baseUriStr == null || dirPath == null) {
-                        result.error("INVALID_ARGUMENTS", "baseUri and name are required", null)
-                        return@setMethodCallHandler
-                    }
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing uri", null)
+                    val appName = call.argument<String>("appName")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing appName", null)
 
                     try {
                         val baseUri = Uri.parse(baseUriStr)
-                        val pickedDir = DocumentFile.fromTreeUri(this, baseUri)
-                        if (pickedDir == null || !pickedDir.isDirectory) {
-                            result.error("INVALID_URI", "Base URI is not a directory", null)
+                        val appFolder = StorageHelper.getAppFolder(context, baseUri, appName)
+                        val profFolder = StorageHelper.getUserFolder(appFolder!!, "Professor", null)
+                        if (profFolder != null && profFolder.isDirectory) {
+                            result.success(profFolder.uri.toString())
                         } else {
-                            val finalDir = createDirectoryRecursively(pickedDir, dirPath)
-                            if (finalDir != null && finalDir.isDirectory) {
-                                result.success(finalDir.uri.toString())
-                            } else {
-                                result.error("FAILED", "Failed to create subdirectories", null)
-                            }
+                            result.error("FAILED", "Failed to create professor folder", null)
                         }
                     } catch (e: Exception) {
                         result.error("ERROR", "Exception: ${e.message}", null)
                     }
                 }
 
-                "getProfessorPhotoUri" ->{
-                    val dni = call.argument<String>("dni")!!
-                    val baseUriStr = call.argument<String>("uri")!!
+                "creaEstructuraAlu" -> {
+                    val baseUriStr = call.argument<String>("baseUri")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing uri", null)
+                    val appName = call.argument<String>("appName")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing appName", null)
+                    val grups = call.argument<List<String>>("grups")
 
-                    val baseUri = Uri.parse(baseUriStr)
-                    val uri = getProfessorPhotoUri(context, baseUri, dni)
-                    result.success(uri?.toString())
+                    try {
+                        val baseUri = Uri.parse(baseUriStr)
+                        val appFolder = StorageHelper.getAppFolder(context, baseUri, appName)
+                        val aluFolder = StorageHelper.getUserFolder(appFolder!!, "Alumnes", grups)
+                        if (aluFolder != null && aluFolder.isDirectory) {
+                            result.success(aluFolder.uri.toString())
+                        } else {
+                            result.error("FAILED", "Failed to create alumnes folder", null)
+                        }
+                    } catch (e: Exception) {
+                        result.error("ERROR", "Exception: ${e.message}", null)
+                    }
                 }
 
-                "getAlumnePhotoUri" ->{
+                "getProfessorPhotoUri" -> {
+                    val dni = call.argument<String>("dni")!!
+                    val baseUriStr = call.argument<String>("uri")!!
+                    val baseUri = Uri.parse(baseUriStr)
+                    try {
+                        val uri: Uri? = PhotoUriHelper.getProfessorPhotoUri(context, baseUri, dni)
+                        result.success(uri)
+                    } catch (e: Exception) {
+                        result.error("READ_ERROR", "Failed to get image: $e", null)
+                    }
+                }
+
+                "getAlumnePhotoUri" -> {
                     val nia = call.argument<String>("nia")!!
                     val baseUriStr = call.argument<String>("uri")!!
                     val grup = call.argument<String>("grup")!!
-
-
                     val baseUri = Uri.parse(baseUriStr)
-                    val uriRes = getAlumnePhotoUri(context, baseUri, grup, nia)
-                    result.success(uriRes?.toString())
+
+                    try {
+                        val uri: Uri? = PhotoUriHelper.getAlumnePhotoUriHelper(context, baseUri, grup, nia)
+                        result.success(uri)
+                    } catch (e: Exception) {
+                        result.error("READ_ERROR", "Failed to get image: $e", null)
+                    }
                 }
 
-                "esborraFitxer" -> {
-                    val path = call.argument<String>("path")
-                    if (path != null) {
-                        val file = File(path)
-                        if (file.exists()) {
-                            val deleted = file.delete()
-                            result.success(deleted)
-                        } else {
-                            result.success(false)
+                "deleteProfsPhotos" -> {
+                    val dnis = call.argument<List<String>>("dnis")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing dnis", null)
+                    val uriStr = call.argument<String>("uri")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing uri", null)
+                    val appName = call.argument<String>("appName")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing appName", null)
+
+                    val baseUri = Uri.parse(uriStr)
+                    val results = mutableMapOf<String, Boolean>()
+
+                    try {
+                        val baseDir = DocumentFile.fromTreeUri(context, baseUri)
+                            ?.findFile(appName)
+                            ?.findFile("Professors")
+
+                        if (baseDir == null || !baseDir.isDirectory) {
+                            return@setMethodCallHandler result.error("NOT_FOUND", "Professors folder not found", null)
                         }
-                    } else {
-                        result.error("ARGUMENT_MISSING", "Path no proporcionat", null)
+
+                        for (dni in dnis) {
+                            val photoFile = baseDir.findFile("$dni.jpg")
+                            val deleted = photoFile?.delete() ?: false
+                            results[dni] = deleted
+                        }
+
+                        result.success(results)
+                    } catch (e: Exception) {
+                        result.error("WRITE_ERROR", "Failed to delete file: ${e.message}", null)
                     }
                 }
 
@@ -113,10 +152,14 @@ class MainActivity: FlutterActivity() {
                 }
 
                 "deleteGrupFolders" -> {
-                    val uriStr = call.argument<String>("uri") ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing uri", null)
-                    val appName = call.argument<String>("appName") ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing appName", null)
-                    val grups = call.argument<List<String>>("grups") ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing grups", null)
-                    val aluName = call.argument<String>("aluName") ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing grups", null)
+                    val uriStr = call.argument<String>("uri")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing uri", null)
+                    val appName = call.argument<String>("appName")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing appName", null)
+                    val grups = call.argument<List<String>>("grups")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing grups", null)
+                    val aluName = call.argument<String>("aluName")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing aluName", null)
 
                     val baseUri = Uri.parse(uriStr)
                     val baseDir = DocumentFile.fromTreeUri(context, baseUri)
@@ -133,7 +176,7 @@ class MainActivity: FlutterActivity() {
 
                     val aluFolder = appFolder.findFile(aluName)
                     if (aluFolder == null) {
-                        result.error("NO_FOLDER", "Could not access $aluFolder folder", null)
+                        result.error("NO_FOLDER", "Could not access $aluName folder", null)
                         return@setMethodCallHandler
                     }
 
@@ -142,7 +185,7 @@ class MainActivity: FlutterActivity() {
                         val grupFolder = aluFolder.findFile(grup)
                         if (grupFolder != null) {
                             try {
-                                results[grup] = deleteDocumentFileRecursive(grupFolder)
+                                results[grup] = StorageHelper.deleteDocumentFileRecursive(grupFolder)
                             } catch (e: Exception) {
                                 results[grup] = false
                             }
@@ -154,74 +197,27 @@ class MainActivity: FlutterActivity() {
                     result.success(results)
                 }
 
-
                 "savePhotoFile" -> {
                     val uriStr = call.argument<String>("uri")!!
                     val appName = call.argument<String>("appName")!!
                     val id = call.argument<String>("id")!!
                     val tipusUsuari = call.argument<String>("tipusUsuari")!!
-                    val grup = call.argument<String>("grup") // pot ser null per a professors
+                    val grup = call.argument<List<String>>("grup")
                     val bytes = call.argument<ByteArray>("bytes")
 
-                    if (bytes == null) {
-                        result.error("NO_BYTES", "No image bytes provided", null)
-                        return@setMethodCallHandler
-                    }
-
                     val baseUri = Uri.parse(uriStr)
-                    val baseDir = DocumentFile.fromTreeUri(context, baseUri)
-                    if (baseDir == null) {
-                        result.error("INVALID_URI", "Could not access base directory", null)
-                        return@setMethodCallHandler
-                    }
-
-                    //Troba la carpeta de l'aplicació
-                    val appFolder = baseDir.findFile(appName) ?: baseDir.createDirectory(appName)
-                    if (appFolder == null) {
-                        result.error("NO_FOLDER", "Could not access/create $appName folder", null)
-                        return@setMethodCallHandler
-                    }
-
-                    // Troba el subdirectori
-                    val usuariFolder = appFolder.findFile(tipusUsuari) ?: appFolder.createDirectory(tipusUsuari)
-                    if (usuariFolder == null) {
-                        result.error("NO_FOLDER", "Could not access/create $tipusUsuari folder", null)
-                        return@setMethodCallHandler
-                    }
-
-                    // Si és alumne, entra dins del grup
-                    val destinacio = if (tipusUsuari == "Alumnes" && grup != null) {
-                        usuariFolder.findFile(grup) ?: usuariFolder.createDirectory(grup)
-                    } else {
-                        usuariFolder
-                    }
+                    val appFolder = StorageHelper.getAppFolder(context, baseUri, appName)
+                    val destinacio = appFolder?.let { StorageHelper.getUserFolder(it, tipusUsuari, grup) }
 
                     if (destinacio == null) {
-                        result.error("NO_DEST", "Could not access/create final directory", null)
+                        result.error("NO_DEST", "Could not access/create destination", null)
                         return@setMethodCallHandler
                     }
 
-                    // Esborra si ja existix
-                    destinacio.findFile("$id.jpg")?.delete()
-
-                    // Crea el fitxer
-                    val photoFile = destinacio.createFile("image/jpeg", id)
-                    if (photoFile == null) {
-                        result.error("FILE_ERROR", "Could not create file", null)
-                        return@setMethodCallHandler
-                    }
-
-                    try {
-                        val out = context.contentResolver.openOutputStream(photoFile.uri)
-                        out?.write(bytes)
-                        out?.flush()
-                        out?.close()
-                        result.success(true)
-                    } catch (e: Exception) {
-                        result.error("WRITE_ERROR", "Failed to write image: ${e.message}", null)
-                    }
+                    val success = StorageHelper.writeImageFile(context, destinacio, id, bytes!!)
+                    if (success) result.success(true)
+                    else result.error("WRITE_ERROR", "Failed to write image", null)
                 }
-                else -> result.notImplemented()
             }
         }
     }
@@ -233,94 +229,6 @@ class MainActivity: FlutterActivity() {
             addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         }
         startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT_TREE)
-    }
-
-    private fun createDirectoryRecursively(base: DocumentFile, path: String): DocumentFile? {
-        var current = base
-        val parts = path.split("/")
-
-        for (part in parts) {
-            val existing = current.findFile(part)
-            current = if (existing != null && existing.isDirectory) {
-                existing
-            } else {
-                current.createDirectory(part) ?: return null
-            }
-        }
-
-        return current
-    }
-
-    fun getProfessorPhotoUri(context: Context, baseUri: Uri, dni: String): Uri? {
-        val baseDir = DocumentFile.fromTreeUri(context, baseUri)
-        if (baseDir == null) {
-            Log.e("PhotoUri", "No es pot accedir al baseUri")
-            return null
-        }
-        baseDir?.listFiles()?.forEach {
-            Log.d("SAF", "Fitxer a Alumnes: ${it.name}")
-        }
-
-        val classPic = baseDir.findFile("ClassPic") ?: baseDir?.createDirectory("ClassPic")
-        if (classPic == null) {
-            Log.e("PhotoUri", "No s'ha trobat la carpeta ClassPic")
-            return null
-        }
-
-        val professorsFolder = classPic?.findFile("Professors")
-        if (professorsFolder == null) {
-            Log.e("PhotoUri", "No s'ha trobat la carpeta Professors")
-            return null
-        }
-        val photoFile = professorsFolder?.findFile("$dni.jpg")
-        if (photoFile == null) {
-            Log.e("PhotoUri", "No s'ha trobat la foto per $dni.jpg")
-            return null
-        }
-
-        return photoFile?.uri
-    }
-
-    fun getAlumnePhotoUri(
-        context: Context,
-        baseUri: Uri,
-        grup: String,
-        nia: String
-    ): Uri? {
-        val baseDir = DocumentFile.fromTreeUri(context, baseUri)
-        if (baseDir == null) {
-            Log.e("PhotoUri", "No es pot accedir al baseUri")
-            return null
-        }
-        baseDir?.listFiles()?.forEach {
-            Log.d("SAF", "Fitxer a Alumnes: ${it.name}")
-        }
-
-        val classPic = baseDir.findFile("ClassPic") ?: baseDir?.createDirectory("ClassPic")
-        if (classPic == null) {
-            Log.e("PhotoUri", "No s'ha trobat la carpeta ClassPic")
-            return null
-        }
-
-        val alumnes = classPic.findFile("Alumnes") ?: classPic?.createDirectory("Alumnes")
-        if (alumnes == null) {
-            Log.e("PhotoUri", "No s'ha trobat la carpeta Alumnes")
-            return null
-        }
-
-        val grupFolder = alumnes.findFile(grup) ?: alumnes?.createDirectory(grup)
-        if (grupFolder == null) {
-            Log.e("PhotoUri", "No s'ha trobat el grup: $grup")
-            return null
-        }
-
-        val photoFile = grupFolder.findFile("$nia.jpg")
-        if (photoFile == null) {
-            Log.e("PhotoUri", "No s'ha trobat la foto per $nia.jpg")
-            return null
-        }
-
-        return photoFile.uri
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -349,14 +257,5 @@ class MainActivity: FlutterActivity() {
         }
 
         super.onActivityResult(requestCode, resultCode, data)
-    }
-
-    fun deleteDocumentFileRecursive(file: DocumentFile): Boolean {
-        if (file.isDirectory) {
-            file.listFiles().forEach {
-                deleteDocumentFileRecursive(it)
-            }
-        }
-        return file.delete()
     }
 }

@@ -1,18 +1,31 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 
 import '../../shared/utils/constants.dart';
 
 class PlatformChannel {
   static const platform = MethodChannel('classpic/saf_methods');
 
-  static Future<String?> createSubdirectory(String baseUri, String name) async {
+  static Future<String?> creaEstructuraProf(String baseUri) async {
     try {
-      final uri = await platform.invokeMethod<String>('createDirectory', {
+      final uri = await platform.invokeMethod<String>('creaEstructuraProf', {
         'baseUri': baseUri,
-        'name': name,
+        'appName': baseFolderName,
+      });
+      return uri;
+    } on PlatformException catch (e) {
+      print("Error creating directory: ${e.message}");
+      return null;
+    }
+  }
+
+  static Future<String?> creaEstructuraAlu(
+      String baseUri, List<String>? grups) async {
+    try {
+      final uri = await platform.invokeMethod<String>('creaEstructuraAlu', {
+        'baseUri': baseUri,
+        'appName': baseFolderName,
+        'grups': grups,
       });
       return uri;
     } on PlatformException catch (e) {
@@ -89,7 +102,8 @@ class PlatformChannel {
     if (uri == null) {
       return null;
     }
-    final uriString = await platform.invokeMethod<String>(
+    final uriString;
+    uriString = await platform.invokeMethod<String?>(
         'getAlumnePhotoUri', {'nia': nia, 'uri': uri, 'grup': grup});
     return uriString != null ? Uri.parse(uriString) : null;
   }

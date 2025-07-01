@@ -158,7 +158,7 @@ class AlumneImportHandler {
 
         //Eliminar les fotos dels alumnes
         //Eliminar alumnes
-        await storage.eliminaFotos(fotoPaths);
+        //await storage.eliminaFotos(fotoPaths);
         await alumneNot.eliminarAlumnes(alumnesAEliminar);
       }
 
