@@ -4,7 +4,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../shared/utils/constants.dart';
 
 class PlatformChannel {
+  static String? _baseUriCache;
   static const platform = MethodChannel('classpic/saf_methods');
+
+  static setBaseUri(String? newUri) {
+    _baseUriCache = newUri;
+  }
+
+  static Uri? get baseUri =>
+      _baseUriCache != null ? Uri.parse(_baseUriCache!) : null;
 
   static Future<String?> creaEstructuraProf(String baseUri) async {
     try {
@@ -80,35 +88,29 @@ class PlatformChannel {
   }
 
   static Future<Uri?> getFotoProfessorUri(String dni) async {
-    final prefs = await SharedPreferences.getInstance();
-    final uri = await prefs.getString(keyFolder);
-
-    if (uri == null) {
+    if (_baseUriCache == null) {
       return null;
     }
 
     final uriString =
         await platform.invokeMethod<String>('getProfessorPhotoUri', {
       'dni': dni,
-      'uri': uri,
+      'uri': _baseUriCache,
     });
     return uriString != null ? Uri.parse(uriString) : null;
   }
 
   static Future<Uri?> getFotoAlumneUri(String grup, String nia) async {
-    final prefs = await SharedPreferences.getInstance();
-    final uri = await prefs.getString(keyFolder);
-
-    if (uri == null) {
+    if (_baseUriCache == null) {
       return null;
     }
     final uriString;
 
-    try{
-      uriString = await platform.invokeMethod<String?>(
-          'getAlumnePhotoUri', {'nia': nia, 'uri': uri, 'grup': grup});
+    try {
+      uriString = await platform.invokeMethod<String?>('getAlumnePhotoUri',
+          {'nia': nia, 'uri': _baseUriCache, 'grup': grup});
       return uriString != null ? Uri.parse(uriString) : null;
-    }catch (e){
+    } catch (e) {
       print(e);
       return null;
     }
@@ -129,9 +131,8 @@ class PlatformChannel {
     String? grup, // només si és Alumne
     required Uint8List bytes,
   }) async {
-
     final List<String> grups = [];
-    if(grup !=null){
+    if (grup != null) {
       grups.add(grup);
     }
 
@@ -140,7 +141,7 @@ class PlatformChannel {
       'appName': baseFolderName,
       'id': id,
       'tipusUsuari': tipusUsuari,
-      'grup': grup == null? grup: grups,
+      'grup': grup == null ? grup : grups,
       'bytes': bytes,
     });
 

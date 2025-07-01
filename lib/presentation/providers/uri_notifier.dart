@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
 
 import '../../application/services/dir_structure.dart';
+import '../../application/services/saf_methods.dart';
 
 class UriNotifier extends AsyncNotifier<String?> {
   static const _methodGetUri = 'getUri';
@@ -13,8 +14,12 @@ class UriNotifier extends AsyncNotifier<String?> {
 
   @override
   Future<String?> build() async {
+
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(keyFolder);
+    final uri = prefs.getString(keyFolder);
+    PlatformChannel.setBaseUri(uri);
+    return uri;
+
   }
 
   // Actualitzar la uri: Canviar d'ubicació
@@ -26,6 +31,9 @@ class UriNotifier extends AsyncNotifier<String?> {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString(keyFolder, uri);
         state = AsyncData(uri);
+
+        //Li passem la info a PlatformChannel
+        PlatformChannel.setBaseUri(uri);
 
         //Ací cridarem al mètode per a crear l'estructura de carpetes
         await DirStrucService.creaEstructuraInicial(uri);

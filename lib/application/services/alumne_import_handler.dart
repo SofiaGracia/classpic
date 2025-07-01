@@ -164,10 +164,6 @@ class AlumneImportHandler {
 
       if (alumnesAEditar.isNotEmpty) await alumneNot.editarAlumnes(alumnesAEditar);
 
-      /*alumnesACanviar.map((alumne) async {
-        await storage.mouFotoAlumne(alumne.cursVell, alumne.cursNou, alumne.niaAlumne);
-      });*/
-
       // Mou les fotos d’alumnes que han canviat de curs
       await Future.wait(alumnesACanviar.map((alumne) {
         return storage.mouFotoAlumne(

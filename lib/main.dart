@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 import 'package:xml_fotos/presentation/screens/configuration.dart';
-import 'package:xml_fotos/presentation/screens/menu_riverpod.dart';
 import 'package:xml_fotos/presentation/screens/splash.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final container = ProviderContainer();
+  final uri = await container.read(uriProvider.future); // força el build()
   runApp(const ProviderScope(child: MyApp()));
 }
 
