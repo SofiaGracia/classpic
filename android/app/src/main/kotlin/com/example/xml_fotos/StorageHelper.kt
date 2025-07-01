@@ -16,7 +16,7 @@ object StorageHelper {
         var currentFolder = appFolder.findFile(tipusUsuari) ?: appFolder.createDirectory(tipusUsuari)
 
         var userFolder = currentFolder
-        var grupFolder: DocumentFile?
+        var grupFolder: DocumentFile? = userFolder
 
         if (tipusUsuari == "Alumnes" && grup != null) {
             for (subfolder in grup) {
@@ -24,7 +24,7 @@ object StorageHelper {
             }
         }
 
-        return userFolder
+        return grupFolder
     }
 
 

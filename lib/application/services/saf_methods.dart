@@ -103,9 +103,15 @@ class PlatformChannel {
       return null;
     }
     final uriString;
-    uriString = await platform.invokeMethod<String?>(
-        'getAlumnePhotoUri', {'nia': nia, 'uri': uri, 'grup': grup});
-    return uriString != null ? Uri.parse(uriString) : null;
+
+    try{
+      uriString = await platform.invokeMethod<String?>(
+          'getAlumnePhotoUri', {'nia': nia, 'uri': uri, 'grup': grup});
+      return uriString != null ? Uri.parse(uriString) : null;
+    }catch (e){
+      print(e);
+      return null;
+    }
   }
 
   static Future<Uint8List?> readBytesFromSafUri(Uri uri) async {
@@ -123,12 +129,18 @@ class PlatformChannel {
     String? grup, // només si és Alumne
     required Uint8List bytes,
   }) async {
+
+    final List<String> grups = [];
+    if(grup !=null){
+      grups.add(grup);
+    }
+
     final result = await platform.invokeMethod<bool>('savePhotoFile', {
       'uri': uri.toString(),
       'appName': baseFolderName,
       'id': id,
       'tipusUsuari': tipusUsuari,
-      'grup': grup,
+      'grup': grup == null? grup: grups,
       'bytes': bytes,
     });
 

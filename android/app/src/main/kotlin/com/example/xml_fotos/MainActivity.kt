@@ -83,7 +83,7 @@ class MainActivity : FlutterActivity() {
                     val baseUri = Uri.parse(baseUriStr)
                     try {
                         val uri: Uri? = PhotoUriHelper.getProfessorPhotoUri(context, baseUri, dni)
-                        result.success(uri)
+                        result.success(uri.toString())
                     } catch (e: Exception) {
                         result.error("READ_ERROR", "Failed to get image: $e", null)
                     }
@@ -97,7 +97,7 @@ class MainActivity : FlutterActivity() {
 
                     try {
                         val uri: Uri? = PhotoUriHelper.getAlumnePhotoUriHelper(context, baseUri, grup, nia)
-                        result.success(uri)
+                        result.success(uri.toString())
                     } catch (e: Exception) {
                         result.error("READ_ERROR", "Failed to get image: $e", null)
                     }
@@ -214,8 +214,8 @@ class MainActivity : FlutterActivity() {
                         return@setMethodCallHandler
                     }
 
-                    val success = StorageHelper.writeImageFile(context, destinacio, id, bytes!!)
-                    if (success) result.success(true)
+                    val res = StorageHelper.writeImageFile(context, destinacio, id, bytes!!)
+                    if (res) result.success(true)
                     else result.error("WRITE_ERROR", "Failed to write image", null)
                 }
             }
