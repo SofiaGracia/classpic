@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/application/services/storage_service.dart';
 import 'package:xml_fotos/presentation/providers/alumne_notifier.dart';
 import 'package:xml_fotos/presentation/widgets/new_user.dart';
 import 'package:xml_fotos/presentation/widgets/usuari_riverpod_ind.dart';
 
+import '../../application/services/saf_methods.dart';
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/curs.dart';
 import '../../domain/entities/professor.dart';
@@ -77,8 +79,16 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
             onDelete: (u) async {
               if (u is Alumne) {
                 await ref.read(alumnesNotifierProvider.notifier).eliminarAlumne(u);
+                if (u.hasFoto){
+                  final uriAlumne = await PlatformChannel.getFotoAlumneUri(u.grup!, u.nia);
+                  await ref.read(StorageServiceProvider).eliminaFoto(uriAlumne!);
+                }
               } else {
                 await ref.read(professorNotifierProvider.notifier).eliminarProfessor(u as Professor);
+                if (u.hasFoto){
+                  final uriProf = await PlatformChannel.getFotoProfessorUri(u.dni);
+                  await ref.read(StorageServiceProvider).eliminaFoto(uriProf!);
+                }
               }
             },
           );

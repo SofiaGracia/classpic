@@ -4,6 +4,10 @@ import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel.Result
+
+
 
 object StorageHelper {
 
@@ -50,4 +54,28 @@ object StorageHelper {
         }
         return file.delete()
     }
+
+    fun eliminaFotos(context: Context, call: MethodCall, result: Result): Boolean {
+        val uris = call.argument<List<String>>("uris") ?: emptyList()
+        var allDeleted = true
+
+        for (uriStr in uris) {
+            val uri = Uri.parse(uriStr)
+            try {
+                val docFile = DocumentFile.fromSingleUri(context, uri)
+                if (docFile != null && docFile.exists()) {
+                    val deleted = docFile.delete()
+                    if (!deleted) allDeleted = false
+                } else {
+                    allDeleted = false
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                allDeleted = false
+            }
+        }
+
+        return allDeleted
+    }
+
 }

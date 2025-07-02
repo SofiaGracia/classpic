@@ -83,7 +83,8 @@ class MainActivity : FlutterActivity() {
                     val baseUri = Uri.parse(baseUriStr)
                     try {
                         val uri: Uri? = PhotoUriHelper.getProfessorPhotoUri(context, baseUri, dni)
-                        result.success(uri.toString())
+                        if (uri != null) result.success(uri.toString())
+                        else result.success(uri)
                     } catch (e: Exception) {
                         result.error("READ_ERROR", "Failed to get image: $e", null)
                     }
@@ -97,7 +98,9 @@ class MainActivity : FlutterActivity() {
 
                     try {
                         val uri: Uri? = PhotoUriHelper.getAlumnePhotoUriHelper(context, baseUri, grup, nia)
-                        result.success(uri.toString())
+                        if (uri != null) result.success(uri.toString())
+                        else result.success(uri)
+
                     } catch (e: Exception) {
                         result.error("READ_ERROR", "Failed to get image: $e", null)
                     }
@@ -217,6 +220,17 @@ class MainActivity : FlutterActivity() {
                     val res = StorageHelper.writeImageFile(context, destinacio, id, bytes!!)
                     if (res) result.success(true)
                     else result.error("WRITE_ERROR", "Failed to write image", null)
+                }
+
+                "eliminaFotos" -> {
+
+                    try {
+                        val deleted = StorageHelper.eliminaFotos(context, call, result)
+                        if (deleted) result.success(true)
+                        else result.error("PRIMER_ERROR", "Failed to delete image", false)
+                    } catch (e: Exception) {
+                        result.error("WRITE_ERROR", "Failed to delete image", false)
+                    }
                 }
             }
         }

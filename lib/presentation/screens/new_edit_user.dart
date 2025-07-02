@@ -77,25 +77,6 @@ class _NewEditUserScreenState<T extends Usuari>
       grupSeleccionat = usuari.grup;
       grupSeleccionat ??= grupSensenom;
     }
-
-    //Listener per a idController
-    /*idController.addListener(() {
-      final text = idController.text.trim();
-      try {
-        final normalitzat = CodiGenerator.normalitzaId(text);
-        setState(() {
-          // Si vols reescriure el camp amb el text normalitzat:
-          idController.value = idController.value.copyWith(
-            text: normalitzat,
-            selection: TextSelection.collapsed(offset: normalitzat.length),
-          );
-        });
-      } on FormatException catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message)),
-        );
-      }
-    });*/
   }
 
   // Guarda l'usuari (crear o editar)
@@ -117,7 +98,7 @@ class _NewEditUserScreenState<T extends Usuari>
         nom: nomController.text.trim(),
         c1: cognom1Controller.text.trim(),
         c2: cognom2Controller.text.trim(),
-        fotoPathHash: _fotoPathHashAGuardar,
+        fotoPathHash: _fotoPathHashAGuardar?? DateTime.now().millisecondsSinceEpoch.toString(),
         hasFoto: _imatge == null? false: true
         /*fotoFilename: widget.isAlumne
             ? await ref.read(StorageServiceProvider).getPathAlumne(
@@ -195,7 +176,8 @@ class _NewEditUserScreenState<T extends Usuari>
 
     final uri = await ref.read(uriProvider.notifier).getUri();
 
-    final File? novaFoto = await Navigator.push<File?>(
+    //Serà un Uint8List
+    final novaFoto = await Navigator.push<File?>(
       context,
       MaterialPageRoute(
         builder: (context) => CameraPage(
@@ -317,7 +299,7 @@ class _NewEditUserScreenState<T extends Usuari>
                 ),
               ],
               const SizedBox(height: 30),
-              /*GestureDetector(
+              GestureDetector(
                 onTap: _gestionaFoto,
                 child: CircleAvatar(
                     radius: 50,
@@ -328,10 +310,10 @@ class _NewEditUserScreenState<T extends Usuari>
                             ? const Icon(Icons.person)
                             : FutureBuilder<Uri?>(
                                 future: widget.isAlumne
-                                    ? PlatformChannel.getFotoAlumneUri(ref,
+                                    ? PlatformChannel.getFotoAlumneUri(
                                         grupSeleccionat!, idController.text)
                                     : PlatformChannel.getFotoProfessorUri(
-                                        ref, idController.text),
+                                        idController.text),
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
@@ -351,7 +333,7 @@ class _NewEditUserScreenState<T extends Usuari>
                                   );
                                 },
                               )),
-              ),*/
+              ),
               const SizedBox(height: 30),
               ElevatedButton.icon(
                 onPressed: _guardarUsuari,

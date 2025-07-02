@@ -36,6 +36,7 @@ class _CircleUserState extends ConsumerState<CicleUser> {
   Future<void> _obriCamera(BuildContext context) async {
     try {
       final uri = await ref.read(uriProvider.notifier).getUri();
+      print(uri);
       if (uri == null) throw DirectoriBaseNoTriat();
 
       final guardada = await Navigator.push<bool?>(
@@ -73,7 +74,6 @@ class _CircleUserState extends ConsumerState<CicleUser> {
 
   @override
   Widget build(BuildContext context) {
-
 
     return GestureDetector(
       onTap: () async {

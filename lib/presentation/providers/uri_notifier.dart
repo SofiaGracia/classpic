@@ -47,11 +47,22 @@ class UriNotifier extends AsyncNotifier<String?> {
   }
 
   Future<String?> getUri() async {
-    //final prefs = await SharedPreferences.getInstance();
-    //return prefs.getString(keyFolder);
+    final current = state;
 
-    return state.requireValue;
+    if (current is AsyncData) {
+      return current.value;
+    } else {
+      // Opció 1: esperar que carregue si tens accés a la funció que el carrega
+      state = const AsyncLoading();
+      state = await AsyncValue.guard(() async {
+
+        final prefs = await SharedPreferences.getInstance();
+        return prefs.getString(keyFolder);
+      });
+      return state.requireValue; // ara ja sí!
+    }
   }
+
 }
 
 final uriProvider = AsyncNotifierProvider<UriNotifier, String?>(

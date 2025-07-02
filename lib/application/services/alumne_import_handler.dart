@@ -147,18 +147,18 @@ class AlumneImportHandler {
 
       if (alumnesAEliminar.isNotEmpty){
 
-        List<String> fotoPaths = [];
+        List<Uri> fotoPaths = [];
         for(final a in alumnesAEliminar){
           final uriFotoAlumne = await PlatformChannel.getFotoAlumneUri( a.grup!, a.nia);
 
           if(uriFotoAlumne != null){
-            fotoPaths.add(uriFotoAlumne.toString());
+            fotoPaths.add(uriFotoAlumne);
           }
         }
 
         //Eliminar les fotos dels alumnes
         //Eliminar alumnes
-        //await storage.eliminaFotos(fotoPaths);
+        await storage.eliminaFotos(fotoPaths);
         await alumneNot.eliminarAlumnes(alumnesAEliminar);
       }
 

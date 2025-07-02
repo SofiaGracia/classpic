@@ -50,7 +50,7 @@ class ProfessorImportHandler{
 
       // Eliminem professors que ja no apareixen al fitxer XML
       if (pEliminar.isNotEmpty){
-        List<String> fotoPaths = [];
+        List<Uri> fotoPaths = [];
 
         // ATENCIÓ !!!! Podem tindre el cas de no tindre baseDir però sí fotoPaths a eliminar
 
@@ -60,7 +60,7 @@ class ProfessorImportHandler{
           // Hi ha que trobar el path correcte
           final uriFotoProf = await PlatformChannel.getFotoProfessorUri(p.usuId);
           if(uriFotoProf != null){
-            fotoPaths.add(uriFotoProf.toString());
+            fotoPaths.add(uriFotoProf);
           }
         }
 

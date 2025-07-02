@@ -47,12 +47,14 @@ class StorageService {
     return '$baseDir/$professorsFolder';
   }
 
-  Future<void> eliminaFoto(String fotoPath) async {
-    await PlatformChannel.esborraFitxer(fotoPath);
+  Future<void> eliminaFoto(Uri uri) async {
+    final List<Uri> llistaUris = [];
+    llistaUris.add(uri);
+    await eliminaFotos(llistaUris);
   }
 
-  Future<void> eliminaFotos(List<String> paths) async {
-    await Future.wait(paths.map((path) => eliminaFoto(path)));
+  Future<void> eliminaFotos(List<Uri> uris) async {
+    await PlatformChannel.eliminaFotos(uris);
   }
 
   Future<void> esborraDirIContingut(List<String> paths) async {

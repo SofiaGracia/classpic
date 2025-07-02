@@ -42,19 +42,18 @@ class PlatformChannel {
     }
   }
 
-  /// Mètode per esborrar un fitxer
-  static Future<bool> esborraFitxer(String filePath) async {
+  static Future<bool> eliminaFotos(List<Uri> uris) async {
     try {
-      final result = await platform.invokeMethod<bool>(
-        'esborraFitxer',
-        {'path': filePath},
-      );
+      final result = await platform.invokeMethod<bool>('eliminaFotos', {
+        'uris': uris.map((e) => e.toString()).toList(),
+      });
       return result ?? false;
-    } on PlatformException catch (e) {
-      print('Error esborrant fitxer: ${e.message}');
+    } catch (e) {
+      print('Error eliminant fotos: $e');
       return false;
     }
   }
+
 
   static Future<bool> esborraDirIContingut(
       String baseUri, List<String> nomCursos) async {
