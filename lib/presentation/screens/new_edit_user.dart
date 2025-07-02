@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/codi_generator.dart';
+import 'package:xml_fotos/application/services/storage_service.dart';
 import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 import '../../application/services/saf_methods.dart';
 import '../../domain/entities/alumne.dart';
@@ -26,7 +27,9 @@ class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
   }) constructor; // Constructor per crear una instància del tipus T
   final bool isAlumne; // Indica si l'usuari és un alumne
   final int? cursId; // ID del curs si s'està creant un alumne
+  final String? cursNom;
   final String codiUsuari; // Codi identificador (NIA, DNI o generat)
+  final Uri? imageUser;
 
   const NewEditUserScreen({
     super.key,
@@ -35,6 +38,8 @@ class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
     required this.constructor,
     required this.isAlumne,
     required this.codiUsuari,
+    required this.imageUser,
+    required this.cursNom,
     this.cursId,
   });
 
@@ -53,9 +58,10 @@ class _NewEditUserScreenState<T extends Usuari>
   late TextEditingController cognom1Controller;
   late TextEditingController cognom2Controller;
 
-  String? _imatge; // Ruta de la imatge de l'usuari
+  Uri? _imatge; // Ruta de la imatge de l'usuari
   String? _fotoPathHash; // Hash de la foto per invalidació de caché
   String? grupSeleccionat; // Grup seleccionat per a alumnes
+  String? _grupActual;
   T? usuariActual; // Referència a l'usuari actual
   String? _fotoPathHashAGuardar;
 
@@ -64,7 +70,7 @@ class _NewEditUserScreenState<T extends Usuari>
     super.initState();
 
     usuariActual = widget.usuari;
-    //_imatge = widget.usuari?.fotoFilename;
+    _imatge = widget.imageUser;
     _fotoPathHash = widget.usuari?.fotoPathHash;
     _fotoPathHashAGuardar = _fotoPathHash;
 
@@ -74,7 +80,9 @@ class _NewEditUserScreenState<T extends Usuari>
     cognom1Controller = TextEditingController(text: usuari?.c1 ?? '');
     cognom2Controller = TextEditingController(text: usuari?.c2 ?? '');
     if (usuari is Alumne) {
-      grupSeleccionat = usuari.grup;
+      _grupActual = widget.cursNom;
+      grupSeleccionat = widget.cursNom;
+      _grupActual ??= grupSensenom;
       grupSeleccionat ??= grupSensenom;
     }
   }
@@ -94,22 +102,14 @@ class _NewEditUserScreenState<T extends Usuari>
 
       // Creem la nova instància d'usuari
       final usuariNou = widget.constructor(
-        id: idController.text,
-        nom: nomController.text.trim(),
-        c1: cognom1Controller.text.trim(),
-        c2: cognom2Controller.text.trim(),
-        fotoPathHash: _fotoPathHashAGuardar?? DateTime.now().millisecondsSinceEpoch.toString(),
-        hasFoto: _imatge == null? false: true
-        /*fotoFilename: widget.isAlumne
-            ? await ref.read(StorageServiceProvider).getPathAlumne(
-                grupSeleccionat ??= grupSensenom, idController.text)
-            : await ref
-                .read(StorageServiceProvider)
-                .getPathProfessor(idController.text),*/
-      );
+          id: idController.text,
+          nom: nomController.text.trim(),
+          c1: cognom1Controller.text.trim(),
+          c2: cognom2Controller.text.trim(),
+          fotoPathHash: _fotoPathHashAGuardar ??
+              DateTime.now().millisecondsSinceEpoch.toString(),
+          hasFoto: _imatge == null ? false : true);
 
-      // Si és alumne, busquem el curs associat al grup seleccionat
-      //En principi grupSeleccionat no pot ser mai null
       if (usuariNou is Alumne) {
         int? idCursSeleccionat;
         String? nomCursSeleccionat;
@@ -128,27 +128,12 @@ class _NewEditUserScreenState<T extends Usuari>
         usuariNou.grup = nomCursSeleccionat;
         usuariNou.cursId = idCursSeleccionat;
 
-        //Se ha canviat de curs
-        /*if ((widget.usuari != null) &&
-            ((widget.usuari) as Alumne).grup != grupSeleccionat) {
-          //Si canviem de lloc la foto...
-          /*await ref.read(StorageServiceProvider).mouFotoAlumne(
-              (widget.usuari as Alumne).grup!,
-              nomCursSeleccionat,
-              widget.usuari!.usuId);*/
-
-          //...hi ha que canviar-li el path
-          /*usuariNou.fotoFilename = await ref
-              .read(StorageServiceProvider)
-              .getPathAlumne(nomCursSeleccionat, '$idNormalitzat');*/
-          usuariNou.fotoFilename = await ref
-              .read(StorageServiceProvider)
-              .getPathAlumne(nomCursSeleccionat, idController.text);
-        }*/
+        //Canviem de lloc la foto
+        if (_grupActual != nomCursSeleccionat) {
+          await ref.read(StorageServiceProvider).mouFotoAlumne(
+              _grupActual!, nomCursSeleccionat, idController.text);
+        }
       }
-
-      //print(usuariNou.fotoFilename);
-
       // Tornem enrere amb el nou usuari
       Navigator.pop(context, usuariNou);
     }
@@ -164,6 +149,7 @@ class _NewEditUserScreenState<T extends Usuari>
     }
     String? nomCursSeleccionat;
 
+    //grupSeleccionat realment no pot ser null
     if (widget.isAlumne && grupSeleccionat != null) {
       final cursTrobat = await ref
           .read(cursosNotifierProvider.notifier)
@@ -176,8 +162,7 @@ class _NewEditUserScreenState<T extends Usuari>
 
     final uri = await ref.read(uriProvider.notifier).getUri();
 
-    //Serà un Uint8List
-    final novaFoto = await Navigator.push<File?>(
+    final guardada = await Navigator.push<bool?>(
       context,
       MaterialPageRoute(
         builder: (context) => CameraPage(
@@ -189,11 +174,21 @@ class _NewEditUserScreenState<T extends Usuari>
       ),
     );
 
-    if (novaFoto != null) {
-      setState(() {
+    if (guardada == true) {
+      setState(() async {
         _fotoPathHashAGuardar =
             DateTime.now().millisecondsSinceEpoch.toString();
-        _imatge = novaFoto.path;
+
+        //obtindre el uri
+        final imageUser = widget.isAlumne
+            ? await PlatformChannel.getFotoAlumneUri(
+                nomCursSeleccionat!, idController.text)
+            : await PlatformChannel.getFotoProfessorUri(idController.text);
+
+        //_grupActual = nomCursSeleccionat;
+
+        //Assignar-ho a image
+        _imatge = imageUser;
       });
     }
   }
@@ -219,7 +214,12 @@ class _NewEditUserScreenState<T extends Usuari>
                 controller: idController,
                 label: "Identificador (NIA o DNI)",
                 validator: (text) => Validator.validarUsuId(
-                    idController.text, ref, widget.isAlumne),
+                    idController.text,
+                    ref,
+                    widget.isAlumne,
+                    usuariActual == null
+                        ? usuariActual?.usuId
+                        : usuariActual?.usuId),
                 icon: Icons.badge,
                 textCapitalization: TextCapitalization.characters,
               ),
@@ -306,12 +306,12 @@ class _NewEditUserScreenState<T extends Usuari>
                     backgroundColor: Colors.grey.shade200,
                     child: widget.usuari == null
                         ? const Icon(Icons.person)
-                        : _imatge == null
+                        : widget.usuari?.hasFoto == false
                             ? const Icon(Icons.person)
                             : FutureBuilder<Uri?>(
                                 future: widget.isAlumne
                                     ? PlatformChannel.getFotoAlumneUri(
-                                        grupSeleccionat!, idController.text)
+                                    grupSeleccionat!, idController.text)
                                     : PlatformChannel.getFotoProfessorUri(
                                         idController.text),
                                 builder: (context, snapshot) {

@@ -16,6 +16,7 @@ import '../../domain/models/usuari.dart';
 import '../../application/services/storage_service.dart';
 import '../../shared/utils/constants.dart';
 import '../../shared/utils/dialog.dart';
+import '../providers/cursos_notifier.dart';
 import '../providers/prof_widget.dart';
 import '../screens/camera_camera.dart';
 import '../screens/new_edit_user.dart';
@@ -36,7 +37,21 @@ class UsuariWidgetRInd extends ConsumerStatefulWidget {
 }
 
 class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
+
+  var nomDelGrupActual = null;
+
   Future<Usuari?> _editarUsuari(Usuari usuari) async {
+
+    final imageUser = usuari is Alumne? await PlatformChannel.getFotoAlumneUri(usuari.grup!, usuari.usuId): await PlatformChannel.getFotoProfessorUri(usuari.usuId);
+
+    if (usuari is Alumne) {
+      final cursos = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
+
+      nomDelGrupActual = cursos
+          .firstWhere((c) => c.id.toString() == usuari.cursId.toString())
+          .nom;
+    }
+
     final nouUsuari = await Navigator.push<Usuari>(
       context,
       MaterialPageRoute(
@@ -75,7 +90,9 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
           },
           isAlumne: usuari is Alumne?,
           cursId: usuari is Alumne ? usuari.cursId : null,
+          cursNom: nomDelGrupActual,
           codiUsuari: usuari is Alumne ? usuari.nia : (usuari as Professor).dni,
+          imageUser: imageUser,
         ),
       ),
     );

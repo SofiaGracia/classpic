@@ -35,7 +35,7 @@ class Validator {
     return null;
   }*/
 
-  static String? validarUsuId(String? valor, WidgetRef ref, bool isAlumne){
+  static String? validarUsuId(String? valor, WidgetRef ref, bool isAlumne, String? id){
 
     if(valor == null || valor.isEmpty){
       return 'Has d’omplir ID';
@@ -56,7 +56,7 @@ class Validator {
     );
 
     final idJaExisteix =
-    llistaExistents.any((usuari) => usuari.usuId == valor);
+    llistaExistents.any((usuari) => usuari.usuId == valor && (id == null || id != valor));
 
     if(idJaExisteix){
       return 'Ja existeix un usuari amb aquest ID.';

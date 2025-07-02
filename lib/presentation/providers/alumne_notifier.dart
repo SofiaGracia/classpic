@@ -71,9 +71,6 @@ class AlumnesNotifier extends _$AlumnesNotifier {
       final actualitzats = await repo.carregaAlumnesDB();
       state = AsyncData(actualitzats);
 
-      // Refresca el notifier individual
-      //ref.invalidate(alumneWidgetNotifierProvider(idNou));
-
       // Espera a que el nou notifier es construïsca correctament
       await ref.read(alumneWidgetNotifierProvider(idNou).future);
     } catch (e, st) {

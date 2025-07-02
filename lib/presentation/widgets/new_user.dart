@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
 
 import '../../application/services/codi_generator.dart';
 import '../../domain/models/usuari.dart';
@@ -48,6 +49,16 @@ class NewUserR<T extends Usuari> extends ConsumerWidget {
                       .existeixDni(codi);
             });
 
+        var nomDelGrupActual = null;
+
+        if (isAlumne){
+          final cursos = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
+
+          nomDelGrupActual = cursos
+              .firstWhere((c) => c.id.toString() == cursId.toString())
+              .nom;
+        }
+
         final nouUsuari = await Navigator.push<Usuari>(
           context,
           MaterialPageRoute(
@@ -57,7 +68,9 @@ class NewUserR<T extends Usuari> extends ConsumerWidget {
               constructor: constructor,
               isAlumne: isAlumne,
               cursId: isAlumne? cursId: null,
+              cursNom: nomDelGrupActual,
               codiUsuari: codiUsuari,
+              imageUser: null,
             ),
           ),
         );
