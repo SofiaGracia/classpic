@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/codi_generator.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
 import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
+import 'package:xml_fotos/presentation/widgets/drop_down_button.dart';
 import '../../application/services/saf_methods.dart';
 import '../../domain/entities/alumne.dart';
 import '../../domain/models/usuari.dart';
@@ -129,7 +130,7 @@ class _NewEditUserScreenState<T extends Usuari>
         usuariNou.cursId = idCursSeleccionat;
 
         //Canviem de lloc la foto
-        if (_grupActual != nomCursSeleccionat) {
+        if (usuariNou.hasFoto && _grupActual != nomCursSeleccionat) {
           await ref.read(StorageServiceProvider).mouFotoAlumne(
               _grupActual!, nomCursSeleccionat, idController.text);
         }
@@ -195,9 +196,9 @@ class _NewEditUserScreenState<T extends Usuari>
 
   @override
   Widget build(BuildContext context) {
-    final cursosAsync = widget.isAlumne
+    /*final cursosAsync = widget.isAlumne
         ? ref.watch(cursosNotifierProvider)
-        : const AsyncValue.data([]);
+        : const AsyncValue.data([]);*/
 
     final isNou = usuariActual == null;
     return Scaffold(
@@ -249,7 +250,13 @@ class _NewEditUserScreenState<T extends Usuari>
               ),
               const SizedBox(height: 20),
               if (widget.isAlumne) ...[
-                cursosAsync.when(
+                CursosDropdown(
+                    cursId: widget.cursId!,
+                    onGrupSeleccionat: (nomCurs) {
+                      grupSeleccionat = nomCurs;
+                    })
+
+                /*cursosAsync.when(
                   data: (cursos) {
                     String? valorInicial;
                     if (widget.cursId != null) {
@@ -296,7 +303,7 @@ class _NewEditUserScreenState<T extends Usuari>
                   },
                   loading: () => const CircularProgressIndicator(),
                   error: (e, _) => Text('Error carregant cursos: $e'),
-                ),
+                ),*/
               ],
               const SizedBox(height: 30),
               GestureDetector(
@@ -311,7 +318,7 @@ class _NewEditUserScreenState<T extends Usuari>
                             : FutureBuilder<Uri?>(
                                 future: widget.isAlumne
                                     ? PlatformChannel.getFotoAlumneUri(
-                                    grupSeleccionat!, idController.text)
+                                        grupSeleccionat!, idController.text)
                                     : PlatformChannel.getFotoProfessorUri(
                                         idController.text),
                                 builder: (context, snapshot) {

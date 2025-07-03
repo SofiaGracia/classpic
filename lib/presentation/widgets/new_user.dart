@@ -52,6 +52,7 @@ class NewUserR<T extends Usuari> extends ConsumerWidget {
         var nomDelGrupActual = null;
 
         if (isAlumne){
+
           final cursos = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
 
           nomDelGrupActual = cursos

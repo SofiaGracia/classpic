@@ -45,6 +45,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
     final imageUser = usuari is Alumne? await PlatformChannel.getFotoAlumneUri(usuari.grup!, usuari.usuId): await PlatformChannel.getFotoProfessorUri(usuari.usuId);
 
     if (usuari is Alumne) {
+
       final cursos = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
 
       nomDelGrupActual = cursos
