@@ -7,7 +7,7 @@ import androidx.documentfile.provider.DocumentFile
 
 object PhotoUriHelper {
 
-    fun getProfessorPhotoUri(context: Context, baseUri: Uri, dni: String): Uri? {
+    fun getProfessorPhotoUriHelper(context: Context, baseUri: Uri, dni: String): Uri? {
         val baseDir = DocumentFile.fromTreeUri(context, baseUri) ?: return null
         val profFolder = baseDir.findFile("ClassPic")?.findFile("Professors") ?: return null
         return profFolder.findFile("$dni.jpg")?.uri

@@ -45,7 +45,7 @@ class MainActivity : FlutterActivity() {
                     try {
                         val baseUri = Uri.parse(baseUriStr)
                         val appFolder = StorageHelper.getAppFolder(context, baseUri, appName)
-                        val profFolder = StorageHelper.getUserFolder(appFolder!!, "Professor", null)
+                        val profFolder = StorageHelper.getUserFolder(appFolder!!, "Professors", null)
                         if (profFolder != null && profFolder.isDirectory) {
                             result.success(profFolder.uri.toString())
                         } else {
@@ -82,7 +82,7 @@ class MainActivity : FlutterActivity() {
                     val baseUriStr = call.argument<String>("uri")!!
                     val baseUri = Uri.parse(baseUriStr)
                     try {
-                        val uri: Uri? = PhotoUriHelper.getProfessorPhotoUri(context, baseUri, dni)
+                        val uri: Uri? = PhotoUriHelper.getProfessorPhotoUriHelper(context, baseUri, dni)
                         if (uri != null) result.success(uri.toString())
                         else result.success(uri)
                     } catch (e: Exception) {

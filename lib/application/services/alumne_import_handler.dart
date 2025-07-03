@@ -65,7 +65,7 @@ class AlumneImportHandler {
       // Crea l'estructura de carpetes per als cursos nous
       //await storage.creaEstructuraAlumnes(cursosXml);
       final baseDir = await ref.read(StorageServiceProvider).getBaseDirectory();
-      await DirStrucService.creaEstructuraAlumnes(baseDir, cursosXml);
+      await DirStrucService.creaEstructuraAlumnes(cursosXml);
 
       // Insereix els cursos a la base de dades
       final cursos = cursosXml.map((nom) => Curs(nom: nom)).toList();
@@ -109,8 +109,7 @@ class AlumneImportHandler {
       final nomsNousCursos = cursosPerAfegir.map((c) => c.nom).toSet();
       //Ací creariem els directoris nous
       //await storage.creaEstructuraAlumnes(nomsNousCursos);
-      final baseDir = await ref.read(StorageServiceProvider).getBaseDirectory();
-      await DirStrucService.creaEstructuraAlumnes(baseDir, nomsNousCursos);
+      await DirStrucService.creaEstructuraAlumnes(nomsNousCursos);
 
       // Torna a carregar cursos actualitzats
       final cursosActualitzats = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();

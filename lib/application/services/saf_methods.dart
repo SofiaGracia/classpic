@@ -14,10 +14,10 @@ class PlatformChannel {
   static Uri? get baseUri =>
       _baseUriCache != null ? Uri.parse(_baseUriCache!) : null;
 
-  static Future<String?> creaEstructuraProf(String baseUri) async {
+  static Future<String?> creaEstructuraProf() async {
     try {
       final uri = await platform.invokeMethod<String>('creaEstructuraProf', {
-        'baseUri': baseUri,
+        'baseUri': _baseUriCache,
         'appName': baseFolderName,
       });
       return uri;
@@ -28,10 +28,10 @@ class PlatformChannel {
   }
 
   static Future<String?> creaEstructuraAlu(
-      String baseUri, List<String>? grups) async {
+      List<String>? grups) async {
     try {
       final uri = await platform.invokeMethod<String>('creaEstructuraAlu', {
-        'baseUri': baseUri,
+        'baseUri': _baseUriCache,
         'appName': baseFolderName,
         'grups': grups,
       });
@@ -91,12 +91,17 @@ class PlatformChannel {
       return null;
     }
 
-    final uriString =
-        await platform.invokeMethod<String>('getProfessorPhotoUri', {
-      'dni': dni,
-      'uri': _baseUriCache,
-    });
-    return uriString != null ? Uri.parse(uriString) : null;
+    try{
+      final uriString =
+      await platform.invokeMethod<String?>('getProfessorPhotoUri', {
+        'dni': dni,
+        'uri': _baseUriCache,
+      });
+      return uriString != null ? Uri.parse(uriString) : null;
+    }catch (e){
+      print(e);
+      return null;
+    }
   }
 
   static Future<Uri?> getFotoAlumneUri(String grup, String nia) async {

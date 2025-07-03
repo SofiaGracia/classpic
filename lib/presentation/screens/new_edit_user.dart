@@ -13,6 +13,7 @@ import '../providers/cursos_notifier.dart';
 import '../../shared/utils/constants.dart';
 import '../../shared/utils/validator.dart';
 import '../widgets/foto_usuari.dart';
+import '../widgets/uri_dialog.dart';
 import 'camera_camera.dart';
 
 // Aquesta pantalla permet crear o editar un usuari (alumne o professor)
@@ -83,14 +84,14 @@ class _NewEditUserScreenState<T extends Usuari>
 
   Usuari guardarUsuariGeneric() {
     final nouUsuari = UsuariFactory.create(
-        isAlumne: widget.isAlumne,
-        usuId: idController.text,
-        nom: nomController.text.trim(),
-        c1: cognom1Controller.text.trim(),
-        c2: cognom2Controller.text.trim(),
-        hasFoto: _imatge == null ? false : true,
-        fotoPathHash: _fotoPathHashAGuardar ??
-        DateTime.now().millisecondsSinceEpoch.toString(),
+      isAlumne: widget.isAlumne,
+      usuId: idController.text,
+      nom: nomController.text.trim(),
+      c1: cognom1Controller.text.trim(),
+      c2: cognom2Controller.text.trim(),
+      hasFoto: _imatge == null ? false : true,
+      fotoPathHash: _fotoPathHashAGuardar ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
     );
     return nouUsuari;
   }
@@ -145,6 +146,25 @@ class _NewEditUserScreenState<T extends Usuari>
     }
   }
 
+  bool _validarId() {
+    if (idController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Has d’omplir ID')),
+      );
+      return false;
+    }
+    return true;
+  }
+
+  void _mostrarDialogUri() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        context: context,
+        builder: (_) => UriDialog(navigates: true),
+      );
+    });
+  }
+
   // Obre la pantalla de càmera i actualitza la imatge si es fa una foto nova.
 //
 // Cas especial a tenir en compte:
@@ -157,12 +177,8 @@ class _NewEditUserScreenState<T extends Usuari>
 //
 // ✅ Solució possible: Cal assegurar que la foto es mogui o es renomene si el grup canvia després de fer la foto.
   Future<void> _gestionaFoto() async {
-    if (idController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Has d’omplir ID')),
-      );
-      return null;
-    }
+    if (!_validarId()) return;
+
     String? nomCursSeleccionat;
 
     //grupSeleccionat realment no pot ser null
@@ -178,13 +194,18 @@ class _NewEditUserScreenState<T extends Usuari>
 
     final uri = await ref.read(uriProvider.notifier).getUri();
 
+    if (uri == null) {
+      _mostrarDialogUri();
+      return;
+    }
+
     final guardada = await Navigator.push<bool?>(
       context,
       MaterialPageRoute(
         builder: (context) => CameraPage(
-          uri: uri!,
+          uri: uri,
           id: idController.text,
-          tipusUsuari: widget.isAlumne ? 'Alumnes' : 'Professor',
+          tipusUsuari: widget.isAlumne ? 'Alumnes' : 'Professors',
           grup: nomCursSeleccionat,
         ),
       ),
@@ -211,7 +232,6 @@ class _NewEditUserScreenState<T extends Usuari>
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text(usuariActual == null ? "Nou usuari" : "Editar usuari"),
