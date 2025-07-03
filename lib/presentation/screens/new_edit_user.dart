@@ -65,6 +65,7 @@ class _NewEditUserScreenState<T extends Usuari>
   String? _grupActual;
   T? usuariActual; // Referència a l'usuari actual
   String? _fotoPathHashAGuardar;
+  String? grupEnQueEsFaLaFoto;
 
   @override
   void initState() {
@@ -129,10 +130,27 @@ class _NewEditUserScreenState<T extends Usuari>
         usuariNou.grup = nomCursSeleccionat;
         usuariNou.cursId = idCursSeleccionat;
 
-        //Canviem de lloc la foto
-        if (usuariNou.hasFoto && _grupActual != nomCursSeleccionat) {
-          await ref.read(StorageServiceProvider).mouFotoAlumne(
-              _grupActual!, nomCursSeleccionat, idController.text);
+        if (usuariNou.hasFoto){
+          bool moure = false;
+          String grupVell = '';
+          String grupNou = '';
+
+          if (_grupActual != nomCursSeleccionat){
+            moure = true;
+            grupVell = _grupActual!;
+            grupNou = nomCursSeleccionat;
+          }
+
+          if (grupEnQueEsFaLaFoto != null && grupEnQueEsFaLaFoto != nomCursSeleccionat){
+            moure = true;
+            grupVell = grupEnQueEsFaLaFoto!;
+            grupNou = nomCursSeleccionat;
+          }
+
+          if (moure) {
+            await ref.read(StorageServiceProvider).mouFotoAlumne(
+                grupVell,grupNou, idController.text);
+          }
         }
       }
       // Tornem enrere amb el nou usuari
@@ -141,6 +159,21 @@ class _NewEditUserScreenState<T extends Usuari>
   }
 
   // Obre la pantalla de càmera i actualitza la imatge si es fa una foto nova
+  // La cosa és que es pot donar el seguent cas:
+  /*
+  * - S'obri la pantalla d'edició de l'usuari en un grup: 3ESOC
+  *
+  * - Es canvia de grup: En el dropdownbutton posem 1DAM
+  *
+  * - Es fa la foto: La uri de la  foto tindrà 1DAM
+  *
+  * - Es torna a canviar de grup: Per exemple posem com abans 3ESOC
+  *
+  * - Es guarda l'usuari, però al sortir no es veu la foto al Tile pq hem guardat la foto amb 1DAM i el grup actual
+  * de l'usuari per a trobar la foto es 3ESOC
+  *
+  * */
+
   Future<void> _gestionaFoto() async {
     if (idController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -169,24 +202,25 @@ class _NewEditUserScreenState<T extends Usuari>
         builder: (context) => CameraPage(
           uri: uri!,
           id: idController.text,
-          tipusUsuari: widget.isAlumne ? 'Alumne' : 'Professor',
+          tipusUsuari: widget.isAlumne ? 'Alumnes' : 'Professor',
           grup: nomCursSeleccionat,
         ),
       ),
     );
 
     if (guardada == true) {
-      setState(() async {
+
+      //obtindre el uri
+      final imageUser = widget.isAlumne
+          ? await PlatformChannel.getFotoAlumneUri(
+          nomCursSeleccionat!, idController.text)
+          : await PlatformChannel.getFotoProfessorUri(idController.text);
+
+      setState(() {
         _fotoPathHashAGuardar =
             DateTime.now().millisecondsSinceEpoch.toString();
 
-        //obtindre el uri
-        final imageUser = widget.isAlumne
-            ? await PlatformChannel.getFotoAlumneUri(
-                nomCursSeleccionat!, idController.text)
-            : await PlatformChannel.getFotoProfessorUri(idController.text);
-
-        //_grupActual = nomCursSeleccionat;
+        grupEnQueEsFaLaFoto = nomCursSeleccionat;
 
         //Assignar-ho a image
         _imatge = imageUser;
@@ -196,10 +230,6 @@ class _NewEditUserScreenState<T extends Usuari>
 
   @override
   Widget build(BuildContext context) {
-    /*final cursosAsync = widget.isAlumne
-        ? ref.watch(cursosNotifierProvider)
-        : const AsyncValue.data([]);*/
-
     final isNou = usuariActual == null;
     return Scaffold(
       appBar: AppBar(
@@ -255,55 +285,6 @@ class _NewEditUserScreenState<T extends Usuari>
                     onGrupSeleccionat: (nomCurs) {
                       grupSeleccionat = nomCurs;
                     })
-
-                /*cursosAsync.when(
-                  data: (cursos) {
-                    String? valorInicial;
-                    if (widget.cursId != null) {
-                      // Comprova que el id estiga a la llista
-                      if (cursos.any((c) => c.id == widget.cursId)) {
-                        valorInicial = widget.cursId.toString();
-                      }
-                    }
-
-                    // Si no està en l allista gasta el primer o a null
-                    valorInicial ??=
-                        cursos.isNotEmpty ? cursos.first.id.toString() : null;
-
-                    // Actualitza grupSeleccionat
-                    if (valorInicial != null && grupSeleccionat == null) {
-                      grupSeleccionat = cursos
-                          .firstWhere((c) => c.id.toString() == valorInicial)
-                          .nom;
-                    }
-
-                    return DropdownButtonFormField<String>(
-                      value: valorInicial,
-                      onChanged: (nouId) {
-                        if (nouId != null) {
-                          final nomDelGrup = cursos
-                              .firstWhere((c) => c.id.toString() == nouId)
-                              .nom;
-                          setState(() {
-                            grupSeleccionat = nomDelGrup;
-                          });
-                        }
-                      },
-                      decoration: const InputDecoration(
-                        labelText: "Curs",
-                        border: OutlineInputBorder(),
-                      ),
-                      items: cursos.map((c) {
-                        return DropdownMenuItem<String>(
-                          value: c.id.toString(),
-                          child: Text(c.nom),
-                        );
-                      }).toList(),
-                    );
-                  },
-                  loading: () => const CircularProgressIndicator(),
-                  error: (e, _) => Text('Error carregant cursos: $e'),
-                ),*/
               ],
               const SizedBox(height: 30),
               GestureDetector(
@@ -311,35 +292,14 @@ class _NewEditUserScreenState<T extends Usuari>
                 child: CircleAvatar(
                     radius: 50,
                     backgroundColor: Colors.grey.shade200,
-                    child: widget.usuari == null
+                    child: _imatge == null
                         ? const Icon(Icons.person)
-                        : widget.usuari?.hasFoto == false
-                            ? const Icon(Icons.person)
-                            : FutureBuilder<Uri?>(
-                                future: widget.isAlumne
-                                    ? PlatformChannel.getFotoAlumneUri(
-                                        grupSeleccionat!, idController.text)
-                                    : PlatformChannel.getFotoProfessorUri(
-                                        idController.text),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const CircularProgressIndicator();
-                                  }
-                                  if (snapshot.hasError) {
-                                    return const Icon(Icons.error);
-                                  }
-
-                                  final pathPhoto = snapshot.data;
-
-                                  return FotoUsuariWidget(
-                                    uri: pathPhoto,
-                                    fotoPathHash:
-                                        (widget.usuari as Usuari).fotoPathHash!,
-                                    radius: 30,
-                                  );
-                                },
-                              )),
+                        : FotoUsuariWidget(
+                            uri: _imatge,
+                            fotoPathHash:
+                                (widget.usuari as Usuari).fotoPathHash!,
+                            radius: 30,
+                          )),
               ),
               const SizedBox(height: 30),
               ElevatedButton.icon(
