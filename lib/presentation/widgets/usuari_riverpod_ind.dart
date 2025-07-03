@@ -59,36 +59,6 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
         builder: (_) => NewEditUserScreen(
           usuari: usuari,
           getId: (u) => u is Alumne ? u.nia : (u as Professor).dni,
-          constructor: (
-              {required String id,
-              required String nom,
-              required String c1,
-              required String c2,
-                required bool hasFoto,
-              String? fotoPathHash,
-              String? grup}) {
-            if (usuari is Alumne) {
-              return Alumne(
-                  nia: id,
-                  nom: nom,
-                  c1: c1,
-                  c2: c2,
-                  grup: grup,
-                  hasFoto: hasFoto,
-                  fotoPathHash: fotoPathHash,
-                  );
-            } else {
-              final professor = Professor(
-                  dni: id,
-                  nom: nom,
-                  c1: c1,
-                  c2: c2,
-                  hasFoto: hasFoto,
-                  fotoPathHash: fotoPathHash,
-                  );
-              return professor;
-            }
-          },
           isAlumne: usuari is Alumne?,
           cursId: usuari is Alumne ? usuari.cursId : null,
           cursNom: nomDelGrupActual,
@@ -97,6 +67,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
         ),
       ),
     );
+
     final usuariARetornar;
     if (usuari is Alumne) {
       final alu = (nouUsuari as Alumne);
@@ -188,12 +159,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                     onPressed: () async {
                       final actualitzat = await _editarUsuari(usuari);
                       if (actualitzat != null) {
-                        if (usuari is Alumne) {
-                          /*ref.read(StorageServiceProvider).mouFotoAlumne(
-                              usuari.grup!,
-                              (actualitzat as Alumne).grup!,
-                              actualitzat.nia);*/
-                        }
+
                         provider.actualitza(actualitzat);
                       }
                     }),
@@ -205,7 +171,6 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                       titol: 'Eliminar usuari',
                       missatge: 'Estàs segur que vols eliminar aquest usuari?',
                     );
-
                     if (confirmat == true) {
                       widget.onDelete(usuari);
                     }

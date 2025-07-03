@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/codi_generator.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
+import 'package:xml_fotos/domain/models/usuari_factory.dart';
 import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 import 'package:xml_fotos/presentation/widgets/drop_down_button.dart';
 import '../../application/services/saf_methods.dart';
@@ -18,14 +19,7 @@ import 'camera_camera.dart';
 class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
   final T? usuari; // Usuari a editar, null si és un nou usuari
   final String Function(T) getId; // Funció per obtenir l'ID del tipus T
-  final T Function({
-    required String id,
-    required String nom,
-    required String c1,
-    required String c2,
-    required bool hasFoto,
-    String? fotoPathHash,
-  }) constructor; // Constructor per crear una instància del tipus T
+
   final bool isAlumne; // Indica si l'usuari és un alumne
   final int? cursId; // ID del curs si s'està creant un alumne
   final String? cursNom;
@@ -36,7 +30,6 @@ class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
     super.key,
     required this.usuari,
     required this.getId,
-    required this.constructor,
     required this.isAlumne,
     required this.codiUsuari,
     required this.imageUser,
@@ -70,7 +63,10 @@ class _NewEditUserScreenState<T extends Usuari>
   @override
   void initState() {
     super.initState();
+  }
 
+  //Inicialitza els valors (Així no depenem de l'init)
+  void _assignarValors() {
     usuariActual = widget.usuari;
     _imatge = widget.imageUser;
     _fotoPathHash = widget.usuari?.fotoPathHash;
@@ -89,6 +85,20 @@ class _NewEditUserScreenState<T extends Usuari>
     }
   }
 
+  Usuari guardarUsuariGeneric() {
+    final nouUsuari = UsuariFactory.create(
+        isAlumne: widget.isAlumne,
+        usuId: idController.text,
+        nom: nomController.text.trim(),
+        c1: cognom1Controller.text.trim(),
+        c2: cognom2Controller.text.trim(),
+        hasFoto: _imatge == null ? false : true,
+        fotoPathHash: _fotoPathHashAGuardar ??
+        DateTime.now().millisecondsSinceEpoch.toString(),
+    );
+    return nouUsuari;
+  }
+
   // Guarda l'usuari (crear o editar)
   Future<void> _guardarUsuari() async {
     if (_formKey.currentState!.validate()) {
@@ -103,14 +113,15 @@ class _NewEditUserScreenState<T extends Usuari>
       });
 
       // Creem la nova instància d'usuari
-      final usuariNou = widget.constructor(
+      /*final usuariNou = widget.constructor(
           id: idController.text,
           nom: nomController.text.trim(),
           c1: cognom1Controller.text.trim(),
           c2: cognom2Controller.text.trim(),
           fotoPathHash: _fotoPathHashAGuardar ??
               DateTime.now().millisecondsSinceEpoch.toString(),
-          hasFoto: _imatge == null ? false : true);
+          hasFoto: _imatge == null ? false : true);*/
+      final usuariNou = guardarUsuariGeneric();
 
       if (usuariNou is Alumne) {
         String? nomCursSeleccionat;
@@ -130,6 +141,8 @@ class _NewEditUserScreenState<T extends Usuari>
         usuariNou.cursId = idCursSeleccionat;
 
         await _moureFotoSiCal(usuariNou, nomCursSeleccionat);
+      }else{
+        print("algo");
       }
       // Tornem enrere amb el nou usuari
       Navigator.pop(context, usuariNou);
@@ -147,21 +160,17 @@ class _NewEditUserScreenState<T extends Usuari>
     }
   }
 
-  // Obre la pantalla de càmera i actualitza la imatge si es fa una foto nova
-  // La cosa és que es pot donar el seguent cas:
-  /*
-  * - S'obri la pantalla d'edició de l'usuari en un grup: 3ESOC
-  *
-  * - Es canvia de grup: En el dropdownbutton posem 1DAM
-  *
-  * - Es fa la foto: La uri de la  foto tindrà 1DAM
-  *
-  * - Es torna a canviar de grup: Per exemple posem com abans 3ESOC
-  *
-  * - Es guarda l'usuari, però al sortir no es veu la foto al Tile pq hem guardat la foto amb 1DAM i el grup actual
-  * de l'usuari per a trobar la foto es 3ESOC
-  *
-  * */
+  // Obre la pantalla de càmera i actualitza la imatge si es fa una foto nova.
+//
+// Cas especial a tenir en compte:
+// 1. S'obre la pantalla d'edició d'un usuari assignat al grup "3ESOC".
+// 2. L'usuari canvia el grup al Dropdown a "1DAM".
+// 3. Es fa la foto ➝ la URI de la foto s'emmagatzema amb "1DAM" com a grup.
+// 4. Abans de guardar, l'usuari torna a canviar el grup a "3ESOC".
+// 5. Quan es guarda l'usuari, aquest queda amb el grup "3ESOC", però la foto està guardada a la carpeta "1DAM".
+// 6. Per tant, al sortir, el `Tile` no pot mostrar la foto perquè busca la imatge a "3ESOC", però està a "1DAM".
+//
+// ✅ Solució possible: Cal assegurar que la foto es mogui o es renomene si el grup canvia després de fer la foto.
   Future<void> _gestionaFoto() async {
     if (idController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -217,10 +226,11 @@ class _NewEditUserScreenState<T extends Usuari>
 
   @override
   Widget build(BuildContext context) {
-    final isNou = usuariActual == null;
+    _assignarValors();
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(isNou ? "Nou usuari" : "Editar usuari"),
+        title: Text(usuariActual == null ? "Nou usuari" : "Editar usuari"),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -231,11 +241,8 @@ class _NewEditUserScreenState<T extends Usuari>
               _buildTextField(
                 controller: idController,
                 label: "Identificador (NIA o DNI)",
-                validator: (text) => Validator.validarUsuId(
-                    idController.text,
-                    ref,
-                    widget.isAlumne,
-                    usuariActual?.usuId),
+                validator: (text) => Validator.validarUsuId(idController.text,
+                    ref, widget.isAlumne, usuariActual?.usuId),
                 icon: Icons.badge,
                 textCapitalization: TextCapitalization.characters,
               ),

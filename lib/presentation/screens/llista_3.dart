@@ -104,36 +104,6 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
         },
         cursId: isAlumne? curs!.id! : null,
         getId: (u) => isAlumne ? (u as Alumne).nia : (u as Professor).dni,
-        constructor: ({
-          required String id,
-          required String nom,
-          required String c1,
-          required String c2,
-          required bool hasFoto,
-          String? fotoPathHash,
-          String? grup,
-        }) {
-          if (isAlumne) {
-            return Alumne(
-              nia: id,
-              nom: nom,
-              c1: c1,
-              c2: c2,
-              fotoPathHash: fotoPathHash,
-              hasFoto: hasFoto,
-              grup: grup,
-            );
-          } else {
-            return Professor(
-              dni: id,
-              nom: nom,
-              c1: c1,
-              c2: c2,
-              fotoPathHash: fotoPathHash,
-              hasFoto: hasFoto
-            );
-          }
-        },
         isAlumne: isAlumne,
       ),
     );
