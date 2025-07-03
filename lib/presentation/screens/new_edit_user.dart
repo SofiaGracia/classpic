@@ -113,48 +113,37 @@ class _NewEditUserScreenState<T extends Usuari>
           hasFoto: _imatge == null ? false : true);
 
       if (usuariNou is Alumne) {
-        int? idCursSeleccionat;
         String? nomCursSeleccionat;
+        int? idCursSeleccionat;
 
         grupSeleccionat ??= grupSensenom;
 
-        //final cursTrobat = _trobaCurs(cursos as List<Curs>);
         final cursTrobat = await ref
             .read(cursosNotifierProvider.notifier)
             .getCursPerNom(grupSeleccionat!);
 
-        idCursSeleccionat = cursTrobat!.id;
-        nomCursSeleccionat = cursTrobat.nom;
+        nomCursSeleccionat = cursTrobat!.nom;
+        idCursSeleccionat = cursTrobat.id;
 
         //Assignem a l'usuari nou el curs corresponent
         usuariNou.grup = nomCursSeleccionat;
         usuariNou.cursId = idCursSeleccionat;
 
-        if (usuariNou.hasFoto){
-          bool moure = false;
-          String grupVell = '';
-          String grupNou = '';
-
-          if (_grupActual != nomCursSeleccionat){
-            moure = true;
-            grupVell = _grupActual!;
-            grupNou = nomCursSeleccionat;
-          }
-
-          if (grupEnQueEsFaLaFoto != null && grupEnQueEsFaLaFoto != nomCursSeleccionat){
-            moure = true;
-            grupVell = grupEnQueEsFaLaFoto!;
-            grupNou = nomCursSeleccionat;
-          }
-
-          if (moure) {
-            await ref.read(StorageServiceProvider).mouFotoAlumne(
-                grupVell,grupNou, idController.text);
-          }
-        }
+        await _moureFotoSiCal(usuariNou, nomCursSeleccionat);
       }
       // Tornem enrere amb el nou usuari
       Navigator.pop(context, usuariNou);
+    }
+  }
+
+  Future<void> _moureFotoSiCal(Alumne usuariNou, String grupNou) async {
+    if (!usuariNou.hasFoto) return;
+
+    final grupAntic = grupEnQueEsFaLaFoto ?? _grupActual;
+    if (grupAntic != null && grupAntic != grupNou) {
+      await ref
+          .read(StorageServiceProvider)
+          .mouFotoAlumne(grupAntic, grupNou, idController.text);
     }
   }
 
@@ -173,7 +162,6 @@ class _NewEditUserScreenState<T extends Usuari>
   * de l'usuari per a trobar la foto es 3ESOC
   *
   * */
-
   Future<void> _gestionaFoto() async {
     if (idController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -209,11 +197,10 @@ class _NewEditUserScreenState<T extends Usuari>
     );
 
     if (guardada == true) {
-
       //obtindre el uri
       final imageUser = widget.isAlumne
           ? await PlatformChannel.getFotoAlumneUri(
-          nomCursSeleccionat!, idController.text)
+              nomCursSeleccionat!, idController.text)
           : await PlatformChannel.getFotoProfessorUri(idController.text);
 
       setState(() {
@@ -248,9 +235,7 @@ class _NewEditUserScreenState<T extends Usuari>
                     idController.text,
                     ref,
                     widget.isAlumne,
-                    usuariActual == null
-                        ? usuariActual?.usuId
-                        : usuariActual?.usuId),
+                    usuariActual?.usuId),
                 icon: Icons.badge,
                 textCapitalization: TextCapitalization.characters,
               ),
