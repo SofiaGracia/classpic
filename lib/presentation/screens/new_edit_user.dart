@@ -63,10 +63,6 @@ class _NewEditUserScreenState<T extends Usuari>
   @override
   void initState() {
     super.initState();
-  }
-
-  //Inicialitza els valors (Així no depenem de l'init)
-  void _assignarValors() {
     usuariActual = widget.usuari;
     _imatge = widget.imageUser;
     _fotoPathHash = widget.usuari?.fotoPathHash;
@@ -77,7 +73,7 @@ class _NewEditUserScreenState<T extends Usuari>
     nomController = TextEditingController(text: usuari?.nom ?? '');
     cognom1Controller = TextEditingController(text: usuari?.c1 ?? '');
     cognom2Controller = TextEditingController(text: usuari?.c2 ?? '');
-    if (usuari is Alumne) {
+    if (widget.isAlumne) {
       _grupActual = widget.cursNom;
       grupSeleccionat = widget.cursNom;
       _grupActual ??= grupSensenom;
@@ -112,15 +108,6 @@ class _NewEditUserScreenState<T extends Usuari>
         );
       });
 
-      // Creem la nova instància d'usuari
-      /*final usuariNou = widget.constructor(
-          id: idController.text,
-          nom: nomController.text.trim(),
-          c1: cognom1Controller.text.trim(),
-          c2: cognom2Controller.text.trim(),
-          fotoPathHash: _fotoPathHashAGuardar ??
-              DateTime.now().millisecondsSinceEpoch.toString(),
-          hasFoto: _imatge == null ? false : true);*/
       final usuariNou = guardarUsuariGeneric();
 
       if (usuariNou is Alumne) {
@@ -141,8 +128,6 @@ class _NewEditUserScreenState<T extends Usuari>
         usuariNou.cursId = idCursSeleccionat;
 
         await _moureFotoSiCal(usuariNou, nomCursSeleccionat);
-      }else{
-        print("algo");
       }
       // Tornem enrere amb el nou usuari
       Navigator.pop(context, usuariNou);
@@ -226,7 +211,6 @@ class _NewEditUserScreenState<T extends Usuari>
 
   @override
   Widget build(BuildContext context) {
-    _assignarValors();
 
     return Scaffold(
       appBar: AppBar(
