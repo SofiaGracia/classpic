@@ -39,17 +39,17 @@ final cameraStateProvider =
 
 class CameraPage extends ConsumerStatefulWidget {
 
-  final String uri;
+  /*final String uri;
   final String id;
   final String tipusUsuari;
-  final String? grup;
+  final String? grup;*/
 
   const CameraPage({
     super.key,
-    required this.uri,
-    required this.id,
-    required this.tipusUsuari,
-    required this.grup
+    //required this.uri,
+    //required this.id,
+    //required this.tipusUsuari,
+    //required this.grup
   });
 
   @override
@@ -90,7 +90,7 @@ class _CameraPageState extends ConsumerState<CameraPage> {
     super.dispose();
   }
 
-  Future<bool?> _takeCompressedPicture() async {
+  Future<Uint8List?> _takeCompressedPicture() async {
     try {
       ref.read(cameraStateProvider.notifier).setStatus(CameraStatus.capturing);
       await _initializeControllerFuture;
@@ -144,12 +144,14 @@ class _CameraPageState extends ConsumerState<CameraPage> {
         ),
       );
 
-      if (result != null) {
-        final guardada = await PlatformChannel.savePhoto(uri: widget.uri, id: widget.id, tipusUsuari: widget.tipusUsuari , grup: widget.grup, bytes: result);
-        Navigator.pop(context, guardada);
-      }
-
+      Navigator.pop(context, result);
       ref.read(cameraStateProvider.notifier).setStatus(CameraStatus.ready);
+
+      /*if (result != null) {
+        final guardada = await PlatformChannel.savePhoto(uri: widget.uri, id: widget.id, tipusUsuari: widget.tipusUsuari , grup: widget.grup, bytes: result);
+
+      }*/
+
     } catch (e) {
       debugPrint("Error capturant/comprimint: $e");
       if (context.mounted) {

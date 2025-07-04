@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 import '../../application/services/saf_methods.dart';
 
 class FotoUsuariWidget extends StatelessWidget {
+  final Uint8List? bytes;
   final Uri? uri;
   final String fotoPathHash; // Per forçar reconstrucció quan canviï
   final double radius;
 
   const FotoUsuariWidget({
     Key? key,
+    required this.bytes,
     required this.uri,
     required this.fotoPathHash,
     this.radius = 30,
@@ -19,11 +21,20 @@ class FotoUsuariWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
-      radius: radius,
-      backgroundColor: Colors.grey.shade200,
-      child: uri != null
-          ? FutureBuilder<Uint8List?>(
+    Widget content;
+
+    if (bytes != null) {
+      content = ClipOval(
+        child: Image.memory(
+          bytes!,
+          key: ValueKey(fotoPathHash),
+          width: radius * 2,
+          height: radius * 2,
+          fit: BoxFit.cover,
+        ),
+      );
+    } else if (uri != null) {
+      content = FutureBuilder<Uint8List?>(
         future: PlatformChannel.readBytesFromSafUri(uri!),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done &&
@@ -37,12 +48,21 @@ class FotoUsuariWidget extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             );
+          } else if (snapshot.hasError) {
+            return const Icon(Icons.error, color: Colors.red);
           } else {
             return const CircularProgressIndicator(strokeWidth: 2);
           }
         },
-      )
-          : const Icon(Icons.person),
+      );
+    } else {
+      content = const Icon(Icons.person);
+    }
+
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: Colors.grey.shade200,
+      child: content,
     );
   }
 }

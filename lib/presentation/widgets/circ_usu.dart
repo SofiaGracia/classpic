@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,7 +41,7 @@ class _CircleUserState extends ConsumerState<CicleUser> {
       print(uri);
       if (uri == null) throw DirectoriBaseNoTriat();
 
-      final guardada = await Navigator.push<bool?>(
+      /*final guardada = await Navigator.push<bool?>(
         context,
         MaterialPageRoute(
           builder: (context) => CameraPage(
@@ -49,7 +51,20 @@ class _CircleUserState extends ConsumerState<CicleUser> {
             grup: widget.usuari is Alumne ? (widget.usuari as Alumne).grup : null,
           ),
         ),
+      );*/
+      final resultat = await Navigator.push<Uint8List?>(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CameraPage(
+          ),
+        ),
       );
+
+      if (resultat == null) {
+        return;
+      }
+
+      final guardada = await PlatformChannel.savePhoto(uri: uri, id: widget.usuari.usuId, tipusUsuari: widget.usuari is Alumne ? 'Alumnes' : 'Professors' , grup: widget.usuari is Alumne ? (widget.usuari as Alumne).grup : null, bytes: resultat);
 
       if (guardada == true) {
         final actualitzat = widget.usuari is Alumne
@@ -70,7 +85,6 @@ class _CircleUserState extends ConsumerState<CicleUser> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +120,7 @@ class _CircleUserState extends ConsumerState<CicleUser> {
 
               return FotoUsuariWidget(
                 uri: path,
+                bytes: null,
                 fotoPathHash: usuari.fotoPathHash!,
                 radius: 30,
               );

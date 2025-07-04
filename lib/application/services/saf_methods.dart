@@ -27,8 +27,7 @@ class PlatformChannel {
     }
   }
 
-  static Future<String?> creaEstructuraAlu(
-      List<String>? grups) async {
+  static Future<String?> creaEstructuraAlu(List<String>? grups) async {
     try {
       final uri = await platform.invokeMethod<String>('creaEstructuraAlu', {
         'baseUri': _baseUriCache,
@@ -53,7 +52,6 @@ class PlatformChannel {
       return false;
     }
   }
-
 
   static Future<bool> esborraDirIContingut(
       String baseUri, List<String> nomCursos) async {
@@ -91,14 +89,14 @@ class PlatformChannel {
       return null;
     }
 
-    try{
+    try {
       final uriString =
-      await platform.invokeMethod<String?>('getProfessorPhotoUri', {
+          await platform.invokeMethod<String?>('getProfessorPhotoUri', {
         'dni': dni,
         'uri': _baseUriCache,
       });
       return uriString != null ? Uri.parse(uriString) : null;
-    }catch (e){
+    } catch (e) {
       print(e);
       return null;
     }
@@ -150,5 +148,38 @@ class PlatformChannel {
     });
 
     return result ?? false;
+  }
+
+  static Future<bool> renameFile({
+    required String uri,
+    required Uri uriFoto,
+    required String id,
+    required String tipusUsuari, // "Alumne" o "Professor"
+    String? grup, // només si és Alumne
+  }) async {
+    final bytesOrigen = await readBytesFromSafUri(uriFoto);
+
+    if (bytesOrigen == null) {
+      return false;
+    }
+
+    final guardada = await savePhoto(
+        uri: uri,
+        id: id,
+        tipusUsuari: tipusUsuari,
+        grup: grup,
+        bytes: bytesOrigen);
+
+    if (guardada) {
+      //Si es guarda borram la foto anterior
+      List<Uri> uris = [];
+      uris.add(uriFoto);
+
+      await eliminaFotos(uris);
+
+      return true;
+    } else {
+      return false;
+    }
   }
 }

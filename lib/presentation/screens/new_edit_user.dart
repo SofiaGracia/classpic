@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/codi_generator.dart';
@@ -46,6 +47,7 @@ class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
 class _NewEditUserScreenState<T extends Usuari>
     extends ConsumerState<NewEditUserScreen<T>> {
   final _formKey = GlobalKey<FormState>();
+  final idFieldKey = GlobalKey<FormFieldState>();
 
   // Controladors pels camps del formulari
   late TextEditingController idController;
@@ -54,6 +56,7 @@ class _NewEditUserScreenState<T extends Usuari>
   late TextEditingController cognom2Controller;
 
   Uri? _imatge; // Ruta de la imatge de l'usuari
+  Uint8List? foto;
   String? _fotoPathHash; // Hash de la foto per invalidació de caché
   String? grupSeleccionat; // Grup seleccionat per a alumnes
   String? _grupActual;
@@ -67,7 +70,8 @@ class _NewEditUserScreenState<T extends Usuari>
     usuariActual = widget.usuari;
     _imatge = widget.imageUser;
     _fotoPathHash = widget.usuari?.fotoPathHash;
-    _fotoPathHashAGuardar = _fotoPathHash;
+    _fotoPathHashAGuardar = _fotoPathHashAGuardar ??
+        DateTime.now().millisecondsSinceEpoch.toString();
 
     final usuari = widget.usuari;
     idController = TextEditingController(text: widget.codiUsuari);
@@ -82,7 +86,7 @@ class _NewEditUserScreenState<T extends Usuari>
     }
   }
 
-  Usuari guardarUsuariGeneric() {
+  Usuari crearUsuariGeneric() {
     final nouUsuari = UsuariFactory.create(
       isAlumne: widget.isAlumne,
       usuId: idController.text,
@@ -109,10 +113,10 @@ class _NewEditUserScreenState<T extends Usuari>
         );
       });
 
-      final usuariNou = guardarUsuariGeneric();
+      final usuariNou = crearUsuariGeneric();
 
+      String? nomCursSeleccionat;
       if (usuariNou is Alumne) {
-        String? nomCursSeleccionat;
         int? idCursSeleccionat;
 
         grupSeleccionat ??= grupSensenom;
@@ -130,6 +134,36 @@ class _NewEditUserScreenState<T extends Usuari>
 
         await _moureFotoSiCal(usuariNou, nomCursSeleccionat);
       }
+
+      final idActual = usuariActual?.usuId;
+      if (foto != null) {
+        //Guardem la foto
+        final uri = await ref.read(uriProvider.notifier).getUri();
+        final guardada = await PlatformChannel.savePhoto(
+            uri: uri!,
+            id: idController.text,
+            tipusUsuari: widget.isAlumne ? 'Alumnes' : 'Professors',
+            grup: nomCursSeleccionat,
+            bytes: foto!);
+
+        if (guardada) {
+          //Posar a true el hasFoto encara que uri siga null
+          usuariNou.hasFoto = true;
+        }
+
+      } else if ((_imatge != null) &&
+          (idActual != null && idActual != idController.text)) {
+        //Entrem a este cas si sí que tenim una foto i el id s'ha canviat per tant haurem de renombrar la foto
+
+        final uri = await ref.read(uriProvider.notifier).getUri();
+
+        await PlatformChannel.renameFile(
+            uri: uri!,
+            uriFoto: _imatge!,
+            id: idController.text,
+            tipusUsuari: widget.isAlumne ? 'Alumnes' : 'Professors');
+      }
+
       // Tornem enrere amb el nou usuari
       Navigator.pop(context, usuariNou);
     }
@@ -199,33 +233,24 @@ class _NewEditUserScreenState<T extends Usuari>
       return;
     }
 
-    final guardada = await Navigator.push<bool?>(
+    final result = await Navigator.push<Uint8List?>(
       context,
       MaterialPageRoute(
         builder: (context) => CameraPage(
-          uri: uri,
-          id: idController.text,
-          tipusUsuari: widget.isAlumne ? 'Alumnes' : 'Professors',
-          grup: nomCursSeleccionat,
-        ),
+            //uri: uri,
+            //id: idController.text,
+            //tipusUsuari: widget.isAlumne ? 'Alumnes' : 'Professors',
+            //grup: nomCursSeleccionat,
+            ),
       ),
     );
 
-    if (guardada == true) {
-      //obtindre el uri
-      final imageUser = widget.isAlumne
-          ? await PlatformChannel.getFotoAlumneUri(
-              nomCursSeleccionat!, idController.text)
-          : await PlatformChannel.getFotoProfessorUri(idController.text);
-
+    if (result != null) {
       setState(() {
+        foto = result;
+
         _fotoPathHashAGuardar =
             DateTime.now().millisecondsSinceEpoch.toString();
-
-        grupEnQueEsFaLaFoto = nomCursSeleccionat;
-
-        //Assignar-ho a image
-        _imatge = imageUser;
       });
     }
   }
@@ -242,13 +267,18 @@ class _NewEditUserScreenState<T extends Usuari>
           key: _formKey,
           child: Column(
             children: [
-              _buildTextField(
+              TextFormField(
+                key: idFieldKey,
                 controller: idController,
-                label: "Identificador (NIA o DNI)",
                 validator: (text) => Validator.validarUsuId(idController.text,
                     ref, widget.isAlumne, usuariActual?.usuId),
-                icon: Icons.badge,
                 textCapitalization: TextCapitalization.characters,
+                decoration: InputDecoration(
+                  labelText: "Identificador (NIA o DNI)",
+                  prefixIcon: Icon(Icons.badge),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(22)),
+                ),
               ),
               const SizedBox(height: 12),
               _buildTextField(
@@ -284,18 +314,23 @@ class _NewEditUserScreenState<T extends Usuari>
               ],
               const SizedBox(height: 30),
               GestureDetector(
-                onTap: _gestionaFoto,
+                onTap: () {
+                  final valid = idFieldKey.currentState?.validate();
+                  if (valid == true) {
+                    _gestionaFoto();
+                  }
+                },
                 child: CircleAvatar(
                     radius: 50,
                     backgroundColor: Colors.grey.shade200,
-                    child: _imatge == null
-                        ? const Icon(Icons.person)
-                        : FotoUsuariWidget(
-                            uri: _imatge,
-                            fotoPathHash:
-                                (widget.usuari as Usuari).fotoPathHash!,
-                            radius: 30,
-                          )),
+                    child: FotoUsuariWidget(
+                      uri: _imatge,
+                      bytes: foto,
+                      fotoPathHash:
+                          //(widget.usuari as Usuari).fotoPathHash!,
+                          _fotoPathHashAGuardar!,
+                      radius: 30,
+                    )),
               ),
               const SizedBox(height: 30),
               ElevatedButton.icon(
