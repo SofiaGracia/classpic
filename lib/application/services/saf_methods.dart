@@ -129,7 +129,7 @@ class PlatformChannel {
   static Future<bool> savePhoto({
     required String uri,
     required String id,
-    required String tipusUsuari, // "Alumne" o "Professor"
+    required String tipusUsuari, // "Alumnes" o "Professor"
     String? grup, // només si és Alumne
     required Uint8List bytes,
   }) async {
@@ -154,7 +154,7 @@ class PlatformChannel {
     required String uri,
     required Uri uriFoto,
     required String id,
-    required String tipusUsuari, // "Alumne" o "Professor"
+    required String tipusUsuari, // "Alumnes" o "Professor"
     String? grup, // només si és Alumne
   }) async {
     final bytesOrigen = await readBytesFromSafUri(uriFoto);

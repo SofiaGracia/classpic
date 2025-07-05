@@ -161,6 +161,7 @@ class _NewEditUserScreenState<T extends Usuari>
             uri: uri!,
             uriFoto: _imatge!,
             id: idController.text,
+            grup: grupSeleccionat,
             tipusUsuari: widget.isAlumne ? 'Alumnes' : 'Professors');
       }
 
