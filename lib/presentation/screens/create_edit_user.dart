@@ -73,6 +73,7 @@ class _CreateEditUserScreenState<T extends Usuari>
   late String idGuardaUsuari;
   String? idAmbQueEsFaLaFoto;
   late String cursAmbQueShaFetLaFoto;
+  bool faFaltaMoure = true;
 
   @override
   void initState() {
@@ -130,11 +131,12 @@ class _CreateEditUserScreenState<T extends Usuari>
 
     final grupAntic = cursAmbQueShaFetLaFoto;
 
-    if (grupAntic != grupNou) {
+    if (grupAntic != grupNou && faFaltaMoure) {
       final id = idAmbQueEsFaLaFoto ?? (idGuardaUsuari != idActual? idGuardaUsuari: idActual) ;
       await ref
           .read(StorageServiceProvider)
           .mouFotoAlumne(grupAntic, grupNou, id!);
+      faFaltaMoure = true;
     }
   }
 
@@ -177,6 +179,7 @@ class _CreateEditUserScreenState<T extends Usuari>
       //Pero haurem d'eliminar l'antiga si el id no és igual
       if (uriImageUser != null && idActual != idGuardaUsuari) {
         await ref.read(StorageServiceProvider).eliminaFoto(uriImageUser!);
+        faFaltaMoure = false;
       }
     } else if ((uriImageUser != null) && (idActual != idGuardaUsuari)) {
       //Este cas és quan no s'ha fet una foto nova però sí que s'ha canviat el id, per tant hem de renombrar-la
