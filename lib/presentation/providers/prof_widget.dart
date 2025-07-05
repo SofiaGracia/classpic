@@ -33,8 +33,8 @@ class ProfWidgetNotifier
       nom: nou.nom,
       c1: nou.c1,
       c2: nou.c2,
-      fotoPath: nou.fotoPath,
       fotoPathHash: nou.fotoPathHash,
+      hasFoto: nou.hasFoto
     );
 
     if (prof.fotoPathHash != nou.fotoPathHash) {

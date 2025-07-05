@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/application/services/storage_service.dart';
 import 'package:xml_fotos/presentation/providers/alumne_notifier.dart';
-import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
 import 'package:xml_fotos/presentation/widgets/new_user.dart';
 import 'package:xml_fotos/presentation/widgets/usuari_riverpod_ind.dart';
 
+import '../../application/services/saf_methods.dart';
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/curs.dart';
 import '../../domain/entities/professor.dart';
 import '../../domain/models/usuari.dart';
+import '../../shared/utils/constants.dart';
 import '../providers/provider_id.dart';
 import '../providers/professor_notifier.dart';
 
@@ -77,8 +79,16 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
             onDelete: (u) async {
               if (u is Alumne) {
                 await ref.read(alumnesNotifierProvider.notifier).eliminarAlumne(u);
+                if (u.hasFoto){
+                  final uriAlumne = await PlatformChannel.getFotoAlumneUri(u.grup!, u.nia);
+                  await ref.read(StorageServiceProvider).eliminaFoto(uriAlumne!);
+                }
               } else {
                 await ref.read(professorNotifierProvider.notifier).eliminarProfessor(u as Professor);
+                if (u.hasFoto){
+                  final uriProf = await PlatformChannel.getFotoProfessorUri(u.dni);
+                  await ref.read(StorageServiceProvider).eliminaFoto(uriProf!);
+                }
               }
             },
           );
@@ -94,36 +104,6 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
         },
         cursId: isAlumne? curs!.id! : null,
         getId: (u) => isAlumne ? (u as Alumne).nia : (u as Professor).dni,
-        constructor: ({
-          required String id,
-          required String nom,
-          required String c1,
-          required String c2,
-          String? fotoPath,
-          String? fotoPathHash,
-          String? grup,
-        }) {
-          if (isAlumne) {
-            return Alumne(
-              nia: id,
-              nom: nom,
-              c1: c1,
-              c2: c2,
-              fotoPath: fotoPath,
-              fotoPathHash: fotoPathHash,
-              grup: grup,
-            );
-          } else {
-            return Professor(
-              dni: id,
-              nom: nom,
-              c1: c1,
-              c2: c2,
-              fotoPath: fotoPath,
-              fotoPathHash: fotoPathHash,
-            );
-          }
-        },
         isAlumne: isAlumne,
       ),
     );

@@ -47,7 +47,7 @@ class _CursosScreenState extends ConsumerState<CursosScreen> {
             onDelete: (c) async {
               await ref.read(cursosNotifierProvider.notifier).eliminarCurs(c);
               final storage = ref.read(StorageServiceProvider);
-              await storage.eliminarFotosCarpetaCurs(c.nom);
+              //await storage.eliminarFotosCarpetaCurs(c.nom);
               await _loadLlista();
             },
           );
@@ -58,7 +58,7 @@ class _CursosScreenState extends ConsumerState<CursosScreen> {
         onCreate: (c) async {
           await ref.read(cursosNotifierProvider.notifier).inserirCurs(c);
           final storage = ref.read(StorageServiceProvider);
-          await storage.creaCarpetaGrup(c.nom);
+          //await storage.creaCarpetaGrup(c.nom);
           //Sustituir el setState() per un await _loadLlista()
           setState(() {
             _loadLlista();

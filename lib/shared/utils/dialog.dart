@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Future<bool?> showConfirmacioEliminacioDialog({
+Future<bool?> showConfirmacioDialog({
   required BuildContext context,
   required String titol,
   required String missatge,

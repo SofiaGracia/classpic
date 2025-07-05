@@ -60,6 +60,7 @@ class RepositoryAlumneXml {
             fotoPathHash: DateTime.now()
                 .millisecondsSinceEpoch
                 .toString(),
+            hasFoto: false
           ));
         }
       }

@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:xml_fotos/presentation/providers/alu_widget.dart';
 import 'package:xml_fotos/presentation/providers/repository.dart';
 
 import '../../domain/entities/alumne.dart';
@@ -70,11 +71,8 @@ class AlumnesNotifier extends _$AlumnesNotifier {
       final actualitzats = await repo.carregaAlumnesDB();
       state = AsyncData(actualitzats);
 
-      // Refresca el notifier individual
-      //ref.invalidate(alumneWidgetNotifierProvider(idNou));
-
       // Espera a que el nou notifier es construïsca correctament
-      //await ref.read(alumneWidgetNotifierProvider(idNou).future);
+      await ref.read(alumneWidgetNotifierProvider(idNou).future);
     } catch (e, st) {
       state = AsyncError(e, st);
     }

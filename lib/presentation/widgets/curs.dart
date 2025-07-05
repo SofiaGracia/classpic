@@ -90,9 +90,10 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
                     IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () async {
-                        final confirmat = await showConfirmacioEliminacioDialog(
+                        final confirmat = await showConfirmacioDialog(
                           context: context,
                           titol: 'Eliminar curs',
+                          botoConfirmar: 'Si, eliminar',
                           missatge:
                               'Estàs segur que vols eliminar aquest curs?',
                         );

@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/widgets/image_configuration.dart';
 import 'package:xml_fotos/presentation/widgets/import_button.dart';
+import 'package:xml_fotos/presentation/widgets/radio_storage.dart';
+import 'package:xml_fotos/presentation/widgets/uri_widget.dart';
 
 import '../../application/services/storage_service.dart';
 
 class ConfigurationScreen extends ConsumerStatefulWidget {
-  final DirectoriFotos seleccio;
+  //final DirectoriFotos seleccio;
 
-  const ConfigurationScreen({super.key, required this.seleccio});
+  const ConfigurationScreen({super.key});
 
   @override
   ConsumerState<ConfigurationScreen> createState() =>
@@ -18,18 +20,16 @@ class ConfigurationScreen extends ConsumerStatefulWidget {
 
 /// Pantalla amb opcions per importar dades d'alumnes o professors.
 class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
-  late DirectoriFotos seleccioActual;
+  //late DirectoriFotos seleccioActual;
 
   @override
   void initState() {
     super.initState();
-    seleccioActual = widget.seleccio;
+    //seleccioActual = widget.seleccio;
   }
 
   @override
   Widget build(BuildContext context) {
-    final storage = ref.read(StorageServiceProvider);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -57,35 +57,10 @@ class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
                 //ImportButton per a Professors
                 ImportButton(isAlumne: false),
                 const SizedBox(height: 16),
-                RadioListTile(
-                  title: Text('Carpeta interna de l\'aplicació'),
-                  value: DirectoriFotos.intern,
-                  groupValue: seleccioActual,
-                  onChanged: (value) async {
-                    setState(() => seleccioActual = value!);
-                    await storage.guardaDirectoriSeleccionat(value!);
-                  },
-                ),
-                RadioListTile(
-                  title: Text('Pictures/ClassPic'),
-                  value: DirectoriFotos.pictures,
-                  groupValue: seleccioActual,
-                  onChanged: (value) async {
-                    setState(() => seleccioActual = value!);
-                    await storage.guardaDirectoriSeleccionat(value!);
-                  },
-                ),
-                RadioListTile(
-                  title: Text('DCIM/ClassPic'),
-                  value: DirectoriFotos.dcim,
-                  groupValue: seleccioActual,
-                  onChanged: (value) async {
-                    setState(() => seleccioActual = value!);
-                    await storage.guardaDirectoriSeleccionat(value!);
-                  },
-                ),
+                //RadioStorage(seleccio: seleccioActual),
                 const SizedBox(height: 16),
-                ImageConfigurationWidget()
+                ImageConfigurationWidget(),
+                UriWidget(),
               ],
             ),
           ),

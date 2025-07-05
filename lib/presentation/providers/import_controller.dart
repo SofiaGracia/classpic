@@ -1,9 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 import '../../data/datasources/xml/xml.dart';
 import '../../application/services/alumne_import_handler.dart';
 import '../../application/services/professor_import_handler.dart';
 import '../../application/services/storage_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../domain/errors/import.dart';
 
 part 'import_controller.g.dart';
 
@@ -17,7 +20,21 @@ class ImportController extends _$ImportController {
 
   Future<void> importaDades({required bool isAlumne}) async {
     try {
+
+      //Necessite un directori base per a crear l'estructura de carpetes dels cursos dels alumnes importats
+      final baseDir = await ref.read(uriProvider.notifier).getUri();
+
+      if (baseDir == null) {
+        throw DirectoriBaseNoTriat();
+      }
+
       final doc = await ref.read(RepositoryXmlProvider).carregaInfo();
+
+      // Si el XML és nul, també ho controlem (per si falla la càrrega)
+      if (doc == null) {
+        throw XmlNoCarregat();
+      }
+
       final storage = ref.read(StorageServiceProvider);
 
       if (isAlumne) {

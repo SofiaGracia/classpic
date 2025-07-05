@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
+import 'package:xml_fotos/application/services/saf_methods.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
 
 import '../../presentation/providers/professor_notifier.dart';
@@ -29,9 +30,6 @@ class ProfessorImportHandler{
     // Si no hi ha professors a la base de dades, és la primera importació
     if (professorsDB.isEmpty) {
 
-      // Creem l'estructura de carpetes al sistema per guardar les fotos dels professors
-      await storage.creaEstructuraProfessors();
-
       // Inserim tots els professors parsejats
       await profNot.inserirProfessors(professorsXml);
     } else {
@@ -52,12 +50,17 @@ class ProfessorImportHandler{
 
       // Eliminem professors que ja no apareixen al fitxer XML
       if (pEliminar.isNotEmpty){
-        List<String> fotoPaths = [];
+        List<Uri> fotoPaths = [];
+
+        // ATENCIÓ !!!! Podem tindre el cas de no tindre baseDir però sí fotoPaths a eliminar
 
         // Recollim els camins de les fotos dels professors a eliminar
         for(final p in pEliminar){
-          if(p.fotoPath != null){
-            fotoPaths.add(p.fotoPath!);
+
+          // Hi ha que trobar el path correcte
+          final uriFotoProf = await PlatformChannel.getFotoProfessorUri(p.usuId);
+          if(uriFotoProf != null){
+            fotoPaths.add(uriFotoProf);
           }
         }
 

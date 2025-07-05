@@ -41,8 +41,8 @@ class CursWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Curs, int> {
       }
 
       //També ho podries fer en el provider però bueno...
-      final repoStorage = StorageService();
-      repoStorage.renombraCarpetaCurs(curs.nom, nouNom);
+      //final repoStorage = StorageService();
+      //repoStorage.renombraCarpetaCurs(curs.nom, nouNom);
 
       state = AsyncData(cursActualitzat);
     } catch (e, st) {

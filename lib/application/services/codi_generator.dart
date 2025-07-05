@@ -1,3 +1,5 @@
+import '../../shared/utils/constants.dart';
+
 class CodiGenerator {
   static Future<String> generaCodi({
     required bool isAlumne,
@@ -20,4 +22,24 @@ class CodiGenerator {
     // Afegim tants zeros com calgui fins a arribar a 10 caràcters
     return trimmed.padRight(10, '0');
   }
+
+  // Funció per normalitzar l'identificador
+  /*static String normalitzaId(String idInput) {
+    //Per al nia
+    if (idInput.length == numNia) {
+      return CodiGenerator.normalitzaIdentificador(idInput);
+    }
+
+    //Per al dni
+    if (idInput.length == numDni) {
+      return CodiGenerator.normalitzaIdentificador(idInput);
+    }
+
+    //Per si és l'id generat per defecte
+    if (idInput.length == numMax) {
+      return idInput;
+    }
+
+    throw FormatException('L\'ID ha de tenir entre $numNia i 10 caràcters.');
+  }*/
 }

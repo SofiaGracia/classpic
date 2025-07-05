@@ -5,10 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image/image.dart' as img;
-import 'package:path_provider/path_provider.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:xml_fotos/presentation/providers/configuration_foto.dart';
 
+import '../../application/services/saf_methods.dart';
 import '../../shared/utils/guide_oval_painter.dart';
 import 'edit_photo_page.dart';
 
@@ -39,13 +38,18 @@ final cameraStateProvider =
 );
 
 class CameraPage extends ConsumerStatefulWidget {
-  final String pathPhoto;
-  final String pathDir;
+
+  /*final String uri;
+  final String id;
+  final String tipusUsuari;
+  final String? grup;*/
 
   const CameraPage({
     super.key,
-    required this.pathPhoto,
-    required this.pathDir,
+    //required this.uri,
+    //required this.id,
+    //required this.tipusUsuari,
+    //required this.grup
   });
 
   @override
@@ -86,7 +90,7 @@ class _CameraPageState extends ConsumerState<CameraPage> {
     super.dispose();
   }
 
-  Future<void> _takeCompressedPicture() async {
+  Future<Uint8List?> _takeCompressedPicture() async {
     try {
       ref.read(cameraStateProvider.notifier).setStatus(CameraStatus.capturing);
       await _initializeControllerFuture;
@@ -136,17 +140,18 @@ class _CameraPageState extends ConsumerState<CameraPage> {
           builder: (_) => EditPhotoPage(
             qualitat: qualitat,
               imageBytes:
-                  Uint8List.fromList(jpg)), //Ací deuriem cridar a ImageCropper
+                  Uint8List.fromList(jpg)),
         ),
       );
 
-      if (result != null) {
-        final outputFile = File(widget.pathPhoto);
-        await result.copy(outputFile.path);
-        Navigator.pop(context, outputFile);
-      }
-
+      Navigator.pop(context, result);
       ref.read(cameraStateProvider.notifier).setStatus(CameraStatus.ready);
+
+      /*if (result != null) {
+        final guardada = await PlatformChannel.savePhoto(uri: widget.uri, id: widget.id, tipusUsuari: widget.tipusUsuari , grup: widget.grup, bytes: result);
+
+      }*/
+
     } catch (e) {
       debugPrint("Error capturant/comprimint: $e");
       if (context.mounted) {

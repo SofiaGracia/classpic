@@ -1,51 +1,52 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/application/services/codi_generator.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
-import 'package:xml_fotos/domain/models/usuari_factory.dart';
-import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
-import 'package:xml_fotos/presentation/widgets/drop_down_button.dart';
+import 'package:xml_fotos/shared/utils/constants.dart';
+
+import '../../application/services/codi_generator.dart';
 import '../../application/services/saf_methods.dart';
 import '../../domain/entities/alumne.dart';
 import '../../domain/models/usuari.dart';
-import '../providers/cursos_notifier.dart';
-import '../../shared/utils/constants.dart';
+import '../../domain/models/usuari_factory.dart';
 import '../../shared/utils/validator.dart';
+import '../providers/cursos_notifier.dart';
+import '../providers/uri_notifier.dart';
+import '../widgets/drop_down_button.dart';
 import '../widgets/foto_usuari.dart';
 import '../widgets/uri_dialog.dart';
 import 'camera_camera.dart';
 
-// Aquesta pantalla permet crear o editar un usuari (alumne o professor)
-class NewEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
-  final T? usuari; // Usuari a editar, null si és un nou usuari
-  final String Function(T) getId; // Funció per obtenir l'ID del tipus T
+class CreateEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
+  final T? usuari;
 
-  final bool isAlumne; // Indica si l'usuari és un alumne
-  final int? cursId; // ID del curs si s'està creant un alumne
+  //Referent a curs
+  final bool isAlumne;
+  final int? cursId;
   final String? cursNom;
-  final String codiUsuari; // Codi identificador (NIA, DNI o generat)
-  final Uri? imageUser;
 
-  const NewEditUserScreen({
-    super.key,
-    required this.usuari,
-    required this.getId,
-    required this.isAlumne,
-    required this.codiUsuari,
-    required this.imageUser,
-    required this.cursNom,
-    this.cursId,
-  });
+  //Referent a usuari
+  final String codiUsuari;
+  final Uri? uriImageUser;
+
+  const CreateEditUserScreen(
+      {super.key,
+      required this.usuari,
+      required this.isAlumne,
+      required this.cursId,
+      required this.cursNom,
+      required this.codiUsuari,
+      required this.uriImageUser});
 
   @override
-  ConsumerState<NewEditUserScreen<T>> createState() =>
-      _NewEditUserScreenState<T>();
+  _CreateEditUserScreenState<T> createState() =>
+      _CreateEditUserScreenState<T>();
 }
 
-class _NewEditUserScreenState<T extends Usuari>
-    extends ConsumerState<NewEditUserScreen<T>> {
+class _CreateEditUserScreenState<T extends Usuari>
+    extends ConsumerState<CreateEditUserScreen> {
+  //FORMULARI:
   final _formKey = GlobalKey<FormState>();
   final idFieldKey = GlobalKey<FormFieldState>();
 
@@ -55,132 +56,51 @@ class _NewEditUserScreenState<T extends Usuari>
   late TextEditingController cognom1Controller;
   late TextEditingController cognom2Controller;
 
-  Uri? _imatge; // Ruta de la imatge de l'usuari
+  //VARIABLES:
+  Usuari? usuari;
+  late bool isAlumne;
+  Uri? uriImageUser;
+  String? fotoPathHash;
+
+  //Si l'usuari nou a editar o crear és alumne:
+  String? nomCursActual;
+  String? nomCursSeleccionat;
+
+  //VARIABLES AMB LES QUE COMPARAR:
   Uint8List? foto;
-  String? _fotoPathHash; // Hash de la foto per invalidació de caché
-  String? grupSeleccionat; // Grup seleccionat per a alumnes
-  String? _grupActual;
-  T? usuariActual; // Referència a l'usuari actual
-  String? _fotoPathHashAGuardar;
-  String? grupEnQueEsFaLaFoto;
-  String? idEdicio;
+  late String fotoPathHashAGuardar;
+  late String idActual;
+  late String idGuardaUsuari;
+  String? idAmbQueEsFaLaFoto;
+  late String cursAmbQueShaFetLaFoto;
+  bool faFaltaMoure = true;
 
   @override
   void initState() {
     super.initState();
-    usuariActual = widget.usuari;
-    _imatge = widget.imageUser;
-    _fotoPathHash = widget.usuari?.fotoPathHash;
-    _fotoPathHashAGuardar = _fotoPathHashAGuardar ??
-        DateTime.now().millisecondsSinceEpoch.toString();
+    usuari = widget.usuari;
 
-    final usuari = widget.usuari;
+    //VARIABLES:
+    isAlumne = widget.isAlumne;
+    uriImageUser = widget.uriImageUser;
+    fotoPathHash = usuari?.fotoPathHash;
+    fotoPathHashAGuardar =
+        fotoPathHash ?? DateTime.now().millisecondsSinceEpoch.toString();
+
+    idActual = widget.codiUsuari;
+    idGuardaUsuari = widget.codiUsuari;
+
+    if (isAlumne) {
+      nomCursActual = widget.cursNom ?? grupSensenom;
+      nomCursSeleccionat = widget.cursNom ?? grupSensenom;
+      cursAmbQueShaFetLaFoto = widget.cursNom ?? grupSensenom;
+    }
+
+    //FORMULARI:
     idController = TextEditingController(text: widget.codiUsuari);
     nomController = TextEditingController(text: usuari?.nom ?? '');
     cognom1Controller = TextEditingController(text: usuari?.c1 ?? '');
     cognom2Controller = TextEditingController(text: usuari?.c2 ?? '');
-    if (widget.isAlumne) {
-      _grupActual = widget.cursNom;
-      grupSeleccionat = widget.cursNom;
-      _grupActual ??= grupSensenom;
-      grupSeleccionat ??= grupSensenom;
-    }
-  }
-
-  Usuari crearUsuariGeneric() {
-    final nouUsuari = UsuariFactory.create(
-      isAlumne: widget.isAlumne,
-      usuId: idController.text,
-      nom: nomController.text.trim(),
-      c1: cognom1Controller.text.trim(),
-      c2: cognom2Controller.text.trim(),
-      hasFoto: _imatge == null ? false : true,
-      fotoPathHash: _fotoPathHashAGuardar ??
-          DateTime.now().millisecondsSinceEpoch.toString(),
-    );
-    return nouUsuari;
-  }
-
-  // Guarda l'usuari (crear o editar)
-  Future<void> _guardarUsuari() async {
-    if (_formKey.currentState!.validate()) {
-      final normalitzat =
-          CodiGenerator.normalitzaIdentificador(idController.text);
-      setState(() {
-        // Si vols reescriure el camp amb el text normalitzat:
-        idController.value = idController.value.copyWith(
-          text: normalitzat,
-          selection: TextSelection.collapsed(offset: normalitzat.length),
-        );
-      });
-
-      final usuariNou = crearUsuariGeneric();
-
-      String? nomCursSeleccionat;
-      if (usuariNou is Alumne) {
-        int? idCursSeleccionat;
-
-        grupSeleccionat ??= grupSensenom;
-
-        final cursTrobat = await ref
-            .read(cursosNotifierProvider.notifier)
-            .getCursPerNom(grupSeleccionat!);
-
-        nomCursSeleccionat = cursTrobat!.nom;
-        idCursSeleccionat = cursTrobat.id;
-
-        //Assignem a l'usuari nou el curs corresponent
-        usuariNou.grup = nomCursSeleccionat;
-        usuariNou.cursId = idCursSeleccionat;
-
-        await _moureFotoSiCal(usuariNou, nomCursSeleccionat);
-      }
-
-      final idActual = usuariActual?.usuId;
-      if (foto != null) {
-        //Guardem la foto
-        final uri = await ref.read(uriProvider.notifier).getUri();
-        final guardada = await PlatformChannel.savePhoto(
-            uri: uri!,
-            id: idController.text,
-            tipusUsuari: widget.isAlumne ? 'Alumnes' : 'Professors',
-            grup: nomCursSeleccionat,
-            bytes: foto!);
-
-        if (guardada) {
-          //Posar a true el hasFoto encara que uri siga null
-          usuariNou.hasFoto = true;
-        }
-
-      } else if ((_imatge != null) &&
-          (idActual != null && idActual != idController.text)) {
-        //Entrem a este cas si sí que tenim una foto i el id s'ha canviat per tant haurem de renombrar la foto
-
-        final uri = await ref.read(uriProvider.notifier).getUri();
-
-        await PlatformChannel.renameFile(
-            uri: uri!,
-            uriFoto: _imatge!,
-            id: idController.text,
-            grup: grupSeleccionat,
-            tipusUsuari: widget.isAlumne ? 'Alumnes' : 'Professors');
-      }
-
-      // Tornem enrere amb el nou usuari
-      Navigator.pop(context, usuariNou);
-    }
-  }
-
-  Future<void> _moureFotoSiCal(Alumne usuariNou, String grupNou) async {
-    if (!usuariNou.hasFoto) return;
-
-    final grupAntic = grupEnQueEsFaLaFoto ?? _grupActual;
-    final id = idEdicio != null? idEdicio : widget.usuari != null? widget.usuari?.usuId.toString() : idController.text;
-    if (grupAntic != null && grupAntic != grupNou) {
-      await ref
-          .read(StorageServiceProvider)
-          .mouFotoAlumne(grupAntic, grupNou, id!);
-    }
   }
 
   bool _validarId() {
@@ -191,6 +111,108 @@ class _NewEditUserScreenState<T extends Usuari>
       return false;
     }
     return true;
+  }
+
+  Usuari crearUsuariGeneric() {
+    final nouUsuari = UsuariFactory.create(
+      isAlumne: isAlumne,
+      usuId: idGuardaUsuari,
+      nom: nomController.text.trim(),
+      c1: cognom1Controller.text.trim(),
+      c2: cognom2Controller.text.trim(),
+      hasFoto: uriImageUser == null ? false : true,
+      fotoPathHash: fotoPathHash,
+    );
+    return nouUsuari;
+  }
+
+  Future<void> _moureFotoSiCal(Alumne usuariNou, String grupNou) async {
+    if (!usuariNou.hasFoto) return;
+
+    final grupAntic = cursAmbQueShaFetLaFoto;
+
+    if (grupAntic != grupNou && faFaltaMoure) {
+      final id = idAmbQueEsFaLaFoto ?? (idGuardaUsuari != idActual? idGuardaUsuari: idActual) ;
+      await ref
+          .read(StorageServiceProvider)
+          .mouFotoAlumne(grupAntic, grupNou, id!);
+      faFaltaMoure = true;
+    }
+  }
+
+  // Guarda l'usuari (crear o editar)
+  Future<void> _guardarUsuari() async {
+    final formulariValid = _formKey.currentState!.validate();
+
+    if (!formulariValid) return;
+
+    final normalitzat =
+        CodiGenerator.normalitzaIdentificador(idController.text);
+    setState(() {
+      // Si vols reescriure el camp amb el text normalitzat:
+      idController.value = idController.value.copyWith(
+        text: normalitzat,
+        selection: TextSelection.collapsed(offset: normalitzat.length),
+      );
+
+      idGuardaUsuari = normalitzat;
+    });
+
+    final usuariNou = crearUsuariGeneric();
+
+    if (foto != null) {
+      //Guardem la foto
+      final uri = await ref.read(uriProvider.notifier).getUri();
+      final guardada = await PlatformChannel.savePhoto(
+          uri: uri!,
+          id: idGuardaUsuari,
+          tipusUsuari: widget.isAlumne ? 'Alumnes' : 'Professors',
+          grup: nomCursSeleccionat,
+          bytes: foto!);
+
+      if (guardada) {
+        usuariNou.hasFoto = true;
+        usuariNou.fotoPathHash =
+            DateTime.now().millisecondsSinceEpoch.toString();
+      }
+
+      //Pero haurem d'eliminar l'antiga si el id no és igual
+      if (uriImageUser != null && idActual != idGuardaUsuari) {
+        await ref.read(StorageServiceProvider).eliminaFoto(uriImageUser!);
+        faFaltaMoure = false;
+      }
+    } else if ((uriImageUser != null) && (idActual != idGuardaUsuari)) {
+      //Este cas és quan no s'ha fet una foto nova però sí que s'ha canviat el id, per tant hem de renombrar-la
+
+      final uri = await ref.read(uriProvider.notifier).getUri();
+
+      await PlatformChannel.renameFile(
+          uri: uri!,
+          uriFoto: uriImageUser!,
+          id: idGuardaUsuari,
+          grup: cursAmbQueShaFetLaFoto,
+          tipusUsuari: widget.isAlumne ? 'Alumnes' : 'Professors');
+    }
+
+    String? nomCurs;
+    if (usuariNou is Alumne) {
+      int? idCurs;
+
+      final cursTrobat = await ref
+          .read(cursosNotifierProvider.notifier)
+          .getCursPerNom(nomCursSeleccionat!);
+
+      nomCurs = cursTrobat!.nom;
+      idCurs = cursTrobat.id;
+
+      //Assignem a l'usuari nou el curs corresponent
+      usuariNou.grup = nomCurs;
+      usuariNou.cursId = idCurs;
+
+      await _moureFotoSiCal(usuariNou, nomCursSeleccionat!);
+    }
+
+    Navigator.pop(context, usuariNou);
   }
 
   void _mostrarDialogUri() {
@@ -216,16 +238,15 @@ class _NewEditUserScreenState<T extends Usuari>
   Future<void> _gestionaFoto() async {
     if (!_validarId()) return;
 
-    String? nomCursSeleccionat;
-
-    //grupSeleccionat realment no pot ser null
-    if (widget.isAlumne && grupSeleccionat != null) {
+    //nomCursSeleccionat realment no pot ser null
+    String? cursFoto;
+    if (isAlumne) {
       final cursTrobat = await ref
           .read(cursosNotifierProvider.notifier)
-          .getCursPerNom(grupSeleccionat!);
+          .getCursPerNom(nomCursSeleccionat!);
 
       if (cursTrobat != null) {
-        nomCursSeleccionat = cursTrobat.nom;
+        cursFoto = cursTrobat.nom;
       }
     }
 
@@ -239,12 +260,7 @@ class _NewEditUserScreenState<T extends Usuari>
     final result = await Navigator.push<Uint8List?>(
       context,
       MaterialPageRoute(
-        builder: (context) => CameraPage(
-            //uri: uri,
-            //id: idController.text,
-            //tipusUsuari: widget.isAlumne ? 'Alumnes' : 'Professors',
-            //grup: nomCursSeleccionat,
-            ),
+        builder: (context) => CameraPage(),
       ),
     );
 
@@ -252,10 +268,8 @@ class _NewEditUserScreenState<T extends Usuari>
       setState(() {
         foto = result;
 
-        _fotoPathHashAGuardar =
-            DateTime.now().millisecondsSinceEpoch.toString();
-
-        idEdicio = idController.text;
+        idAmbQueEsFaLaFoto = idController.text;
+        cursAmbQueShaFetLaFoto = cursFoto!;
       });
     }
   }
@@ -264,7 +278,7 @@ class _NewEditUserScreenState<T extends Usuari>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(usuariActual == null ? "Nou usuari" : "Editar usuari"),
+        title: Text(usuari == null ? "Nou usuari" : "Editar usuari"),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -275,8 +289,8 @@ class _NewEditUserScreenState<T extends Usuari>
               TextFormField(
                 key: idFieldKey,
                 controller: idController,
-                validator: (text) => Validator.validarUsuId(idController.text,
-                    ref, widget.isAlumne, usuariActual?.usuId),
+                validator: (text) => Validator.validarUsuId(
+                    idController.text, ref, isAlumne, usuari?.usuId),
                 textCapitalization: TextCapitalization.characters,
                 decoration: InputDecoration(
                   labelText: "Identificador (NIA o DNI)",
@@ -310,11 +324,11 @@ class _NewEditUserScreenState<T extends Usuari>
                 textCapitalization: TextCapitalization.words,
               ),
               const SizedBox(height: 20),
-              if (widget.isAlumne) ...[
+              if (isAlumne) ...[
                 CursosDropdown(
                     cursId: widget.cursId!,
                     onGrupSeleccionat: (nomCurs) {
-                      grupSeleccionat = nomCurs;
+                      nomCursSeleccionat = nomCurs;
                     })
               ],
               const SizedBox(height: 30),
@@ -329,11 +343,11 @@ class _NewEditUserScreenState<T extends Usuari>
                     radius: 50,
                     backgroundColor: Colors.grey.shade200,
                     child: FotoUsuariWidget(
-                      uri: _imatge,
+                      uri: uriImageUser,
                       bytes: foto,
                       fotoPathHash:
                           //(widget.usuari as Usuari).fotoPathHash!,
-                          _fotoPathHashAGuardar!,
+                          fotoPathHashAGuardar,
                       radius: 30,
                     )),
               ),

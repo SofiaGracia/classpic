@@ -3,7 +3,6 @@ import 'package:xml_fotos/domain/models/usuari.dart';
 
 import 'curs.dart';
 
-
 @Entity(
   tableName: 'alumnes',
   foreignKeys: [
@@ -16,19 +15,16 @@ import 'curs.dart';
   ],
 )
 class Alumne extends Usuari {
-
   static const String estatMatriculat = 'M';
 
   @PrimaryKey(autoGenerate: true)
   final int? id;
 
-  //@ColumnInfo(name: 'nia', unique: true)
   String nia;
 
   @override
   String get usuId => nia;
 
-  //Ara en principi curs podria ser required i no null
   late String? grup;
 
   late int? cursId;
@@ -40,10 +36,10 @@ class Alumne extends Usuari {
     required String c1,
     String? c2,
     this.grup,
-    String? fotoPath,
     String? fotoPathHash,
     this.cursId,
-  }) : super(nom: nom, c1: c1, c2: c2, fotoPath: fotoPath, fotoPathHash: fotoPathHash);
+    required bool hasFoto
+  }) : super(nom: nom, c1: c1, c2: c2, fotoPathHash: fotoPathHash, hasFoto: hasFoto);
 
   Alumne copyWith({
     int? id,
@@ -52,9 +48,9 @@ class Alumne extends Usuari {
     String? c1,
     String? c2,
     String? grup,
-    String? fotoPath,
     String? fotoPathHash,
     int? cursId,
+    bool? hasFoto
   }) {
     return Alumne(
       id: id ?? this.id,
@@ -63,9 +59,9 @@ class Alumne extends Usuari {
       c1: c1 ?? this.c1,
       c2: c2 ?? this.c2,
       grup: grup ?? this.grup,
-      fotoPath: fotoPath ?? this.fotoPath,
       fotoPathHash: fotoPathHash ?? this.fotoPathHash,
       cursId: cursId ?? this.cursId,
+      hasFoto: hasFoto ?? this.hasFoto
     );
   }
 }

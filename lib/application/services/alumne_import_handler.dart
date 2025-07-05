@@ -1,13 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
+import 'package:xml_fotos/application/services/dir_structure.dart';
+import 'package:xml_fotos/application/services/saf_methods.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
+import 'package:xml_fotos/shared/utils/constants.dart';
 
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/curs.dart';
 import '../../presentation/providers/alumne_notifier.dart';
 import '../../presentation/providers/cursos_notifier.dart';
 import '../../data/datasources/xml/alumne_xml.dart';
+import '../../presentation/providers/uri_notifier.dart';
 import '../../shared/utils/change_group.dart';
 
 
@@ -59,7 +63,9 @@ class AlumneImportHandler {
       await cursosNot.buidarCursos();
 
       // Crea l'estructura de carpetes per als cursos nous
-      await storage.creaEstructuraAlumnes(cursosXml);
+      //await storage.creaEstructuraAlumnes(cursosXml);
+      final baseDir = await ref.read(StorageServiceProvider).getBaseDirectory();
+      await DirStrucService.creaEstructuraAlumnes(cursosXml);
 
       // Insereix els cursos a la base de dades
       final cursos = cursosXml.map((nom) => Curs(nom: nom)).toList();
@@ -102,7 +108,8 @@ class AlumneImportHandler {
       await cursosNot.inserirCursos(cursosPerAfegir);
       final nomsNousCursos = cursosPerAfegir.map((c) => c.nom).toSet();
       //Ací creariem els directoris nous
-      await storage.creaEstructuraAlumnes(nomsNousCursos);
+      //await storage.creaEstructuraAlumnes(nomsNousCursos);
+      await DirStrucService.creaEstructuraAlumnes(nomsNousCursos);
 
       // Torna a carregar cursos actualitzats
       final cursosActualitzats = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
@@ -126,12 +133,10 @@ class AlumneImportHandler {
           var alumneAmbCursCanviat;
           alumneAmbCursCanviat = alum.copyWith(id: existent.id);
 
-          if(existent.fotoPath != null){
+          if(existent.hasFoto){
+            alumneAmbCursCanviat = alum.copyWith(id: existent.id, hasFoto: existent.hasFoto);
             alumnesACanviar.add(CanviDeCursAlumne(cursVell: existent.grup!, cursNou: alum.grup!, niaAlumne: existent.nia));
-            //final novaFotoPath = await storage.getPathAlumne(alum.grup!, existent.nom);
-            final novaFotoPath = await storage.getPathAlumne(alum.grup!, existent.nia);
-
-            alumneAmbCursCanviat = alum.copyWith(id: existent.id, fotoPath: novaFotoPath, fotoPathHash: existent.fotoPath);
+            //alumneAmbCursCanviat = alum.copyWith(id: existent.id, fotoPathHash: existent.fotoPathHash);
           }
           alumnesAEditar.add(alumneAmbCursCanviat);
         }
@@ -140,12 +145,18 @@ class AlumneImportHandler {
       final alumnesAEliminar = alumnesDB.where((a) => !alumnesNiesXml.contains(a.nia)).toList();
 
       if (alumnesAEliminar.isNotEmpty){
-        List<String> fotoPaths = [];
+
+        List<Uri> fotoPaths = [];
         for(final a in alumnesAEliminar){
-          if(a.fotoPath != null){
-            fotoPaths.add(a.fotoPath!);
+          final uriFotoAlumne = await PlatformChannel.getFotoAlumneUri( a.grup!, a.nia);
+
+          if(uriFotoAlumne != null){
+            fotoPaths.add(uriFotoAlumne);
           }
         }
+
+        //Eliminar les fotos dels alumnes
+        //Eliminar alumnes
         await storage.eliminaFotos(fotoPaths);
         await alumneNot.eliminarAlumnes(alumnesAEliminar);
       }
@@ -162,7 +173,9 @@ class AlumneImportHandler {
       }));
 
       // Esborra carpetes que ja no són necessàries
-      await storage.eliminaCarpetesAlumnes(nomsCursosABorrar);
+      //await storage.eliminaCarpetesAlumnes(nomsCursosABorrar);
+      final llistaNomsCursosABorrar = nomsCursosABorrar.toList();
+      await storage.esborraDirIContingut(llistaNomsCursosABorrar);
 
       return alumnesAInserir;
 
