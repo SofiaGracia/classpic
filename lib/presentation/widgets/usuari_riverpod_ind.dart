@@ -19,6 +19,7 @@ import '../../shared/utils/dialog.dart';
 import '../providers/cursos_notifier.dart';
 import '../providers/prof_widget.dart';
 import '../screens/camera_camera.dart';
+import '../screens/create_edit_user.dart';
 import '../screens/new_edit_user.dart';
 import 'foto_usuari.dart';
 
@@ -53,7 +54,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
           .nom;
     }
 
-    final nouUsuari = await Navigator.push<Usuari>(
+    /*final nouUsuari = await Navigator.push<Usuari>(
       context,
       MaterialPageRoute(
         builder: (_) => NewEditUserScreen(
@@ -64,6 +65,20 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
           cursNom: nomDelGrupActual,
           codiUsuari: usuari is Alumne ? usuari.nia : (usuari as Professor).dni,
           imageUser: imageUser,
+        ),
+      ),
+    );*/
+
+    final nouUsuari = await Navigator.push<Usuari>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateEditUserScreen(
+          usuari: usuari,
+          isAlumne: usuari is Alumne?,
+          cursId: usuari is Alumne ? usuari.cursId : null,
+          cursNom: nomDelGrupActual,
+          codiUsuari: usuari is Alumne ? usuari.nia : (usuari as Professor).dni,
+          uriImageUser: imageUser,
         ),
       ),
     );

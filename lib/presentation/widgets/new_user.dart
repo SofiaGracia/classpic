@@ -7,6 +7,7 @@ import '../../application/services/codi_generator.dart';
 import '../../domain/models/usuari.dart';
 import '../providers/alumne_notifier.dart';
 import '../providers/professor_notifier.dart';
+import '../screens/create_edit_user.dart';
 import '../screens/new_edit_user.dart';
 
 class NewUserR<T extends Usuari> extends ConsumerWidget {
@@ -50,7 +51,7 @@ class NewUserR<T extends Usuari> extends ConsumerWidget {
               .nom;
         }
 
-        final nouUsuari = await Navigator.push<Usuari>(
+        /*final nouUsuari = await Navigator.push<Usuari>(
           context,
           MaterialPageRoute(
             builder: (_) => NewEditUserScreen<T>(
@@ -61,6 +62,20 @@ class NewUserR<T extends Usuari> extends ConsumerWidget {
               cursNom: nomDelGrupActual,
               codiUsuari: codiUsuari,
               imageUser: null,
+            ),
+          ),
+        );*/
+
+        final nouUsuari = await Navigator.push<Usuari>(
+          context,
+          MaterialPageRoute(
+            builder: (_) => CreateEditUserScreen<T>(
+              usuari: null,
+              isAlumne: isAlumne,
+              cursId: isAlumne? cursId: null,
+              cursNom: nomDelGrupActual,
+              codiUsuari: codiUsuari,
+              uriImageUser: null,
             ),
           ),
         );

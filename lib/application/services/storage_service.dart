@@ -74,5 +74,9 @@ class StorageService {
     final uri = await ref.read(uriProvider.notifier).getUri();
     final guardada = await PlatformChannel.savePhoto(
         uri: uri!, id: niaAlumne, tipusUsuari: "Alumnes", grup: cursNou,bytes: fotoVella!);
+
+    if (guardada){
+      await eliminaFoto(uriFotoVella);
+    }
   }
 }
