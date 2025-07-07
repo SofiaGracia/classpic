@@ -19,7 +19,7 @@ import '../../shared/utils/dialog.dart';
 import '../providers/cursos_notifier.dart';
 import '../providers/prof_widget.dart';
 import '../screens/camera_camera.dart';
-import '../screens/create_edit_user.dart';
+import '../screens/create_edit_user_screen.dart';
 import '../screens/new_edit_user.dart';
 import 'foto_usuari.dart';
 
@@ -38,36 +38,22 @@ class UsuariWidgetRInd extends ConsumerStatefulWidget {
 }
 
 class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
-
   var nomDelGrupActual = null;
 
   Future<Usuari?> _editarUsuari(Usuari usuari) async {
-
-    final imageUser = usuari is Alumne? await PlatformChannel.getFotoAlumneUri(usuari.grup!, usuari.usuId): await PlatformChannel.getFotoProfessorUri(usuari.usuId);
+    final imageUser = usuari is Alumne
+        ? await PlatformChannel.getFotoAlumneUri(usuari.grup!, usuari.usuId)
+        : await PlatformChannel.getFotoProfessorUri(usuari.usuId);
 
     if (usuari is Alumne) {
-
-      final cursos = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
+      final cursos = await ref
+          .read(cursosNotifierProvider.notifier)
+          .getCursosSenseModificarState();
 
       nomDelGrupActual = cursos
           .firstWhere((c) => c.id.toString() == usuari.cursId.toString())
           .nom;
     }
-
-    /*final nouUsuari = await Navigator.push<Usuari>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => NewEditUserScreen(
-          usuari: usuari,
-          getId: (u) => u is Alumne ? u.nia : (u as Professor).dni,
-          isAlumne: usuari is Alumne?,
-          cursId: usuari is Alumne ? usuari.cursId : null,
-          cursNom: nomDelGrupActual,
-          codiUsuari: usuari is Alumne ? usuari.nia : (usuari as Professor).dni,
-          imageUser: imageUser,
-        ),
-      ),
-    );*/
 
     final nouUsuari = await Navigator.push<Usuari>(
       context,
@@ -144,8 +130,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                 // Foto de l'usuari
                 CicleUser(
                     usuari: usuari,
-                    onUpdate: (usu) => provider.actualitza(usu)
-                ),
+                    onUpdate: (usu) => provider.actualitza(usu)),
                 const SizedBox(width: 12),
                 // Dades del usuari
                 Expanded(
@@ -174,7 +159,6 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                     onPressed: () async {
                       final actualitzat = await _editarUsuari(usuari);
                       if (actualitzat != null) {
-
                         provider.actualitza(actualitzat);
                       }
                     }),

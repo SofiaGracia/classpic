@@ -135,7 +135,7 @@ class _CreateEditUserScreenState<T extends Usuari>
       final id = idAmbQueEsFaLaFoto ?? (idGuardaUsuari != idActual? idGuardaUsuari: idActual) ;
       await ref
           .read(StorageServiceProvider)
-          .mouFotoAlumne(grupAntic, grupNou, id!);
+          .mouFotoAlumne(grupAntic, grupNou, id);
       faFaltaMoure = true;
     }
   }
