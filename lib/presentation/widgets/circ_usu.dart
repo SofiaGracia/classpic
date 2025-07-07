@@ -41,17 +41,7 @@ class _CircleUserState extends ConsumerState<CicleUser> {
       print(uri);
       if (uri == null) throw DirectoriBaseNoTriat();
 
-      /*final guardada = await Navigator.push<bool?>(
-        context,
-        MaterialPageRoute(
-          builder: (context) => CameraPage(
-            uri: uri,
-            id: widget.usuari.usuId,
-            tipusUsuari: widget.usuari is Alumne ? 'Alumnes' : 'Professors',
-            grup: widget.usuari is Alumne ? (widget.usuari as Alumne).grup : null,
-          ),
-        ),
-      );*/
+
       final resultat = await Navigator.push<Uint8List?>(
         context,
         MaterialPageRoute(
@@ -121,7 +111,7 @@ class _CircleUserState extends ConsumerState<CicleUser> {
               return FotoUsuariWidget(
                 uri: path,
                 bytes: null,
-                fotoPathHash: usuari.fotoPathHash!,
+                fotoPathHash: widget.usuari.fotoPathHash!,
                 radius: 30,
               );
             },
