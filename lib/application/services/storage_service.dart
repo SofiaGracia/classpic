@@ -17,7 +17,7 @@ class StorageService {
   StorageService(this.ref);
 
   Future<String> getBaseDirectory() async {
-    final dirBase = await ref.read(uriProvider.notifier).getUri();
+    final dirBase = await ref.read(UriProvider.notifier).getUri();
     if (dirBase == null) {
       throw Exception("No directory selected");
     }
@@ -71,7 +71,7 @@ class StorageService {
     final fotoVella = await PlatformChannel.readBytesFromSafUri(uriFotoVella!);
 
     //Guardem primer la foto a la nova ubi
-    final uri = await ref.read(uriProvider.notifier).getUri();
+    final uri = await ref.read(UriProvider.notifier).getUri();
     final guardada = await PlatformChannel.savePhoto(
         uri: uri!, id: niaAlumne, tipusUsuari: "Alumnes", grup: cursNou,bytes: fotoVella!);
 

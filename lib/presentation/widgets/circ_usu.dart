@@ -37,7 +37,7 @@ class _CircleUserState extends ConsumerState<CicleUser> {
 
   Future<void> _obriCamera(BuildContext context) async {
     try {
-      final uri = await ref.read(uriProvider.notifier).getUri();
+      final uri = await ref.read(UriProvider.notifier).getUri();
       print(uri);
       if (uri == null) throw DirectoriBaseNoTriat();
 

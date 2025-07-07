@@ -162,7 +162,7 @@ class _CreateEditUserScreenState<T extends Usuari>
 
     if (foto != null) {
       //Guardem la foto
-      final uri = await ref.read(uriProvider.notifier).getUri();
+      final uri = await ref.read(UriProvider.notifier).getUri();
       final guardada = await PlatformChannel.savePhoto(
           uri: uri!,
           id: idGuardaUsuari,
@@ -184,7 +184,7 @@ class _CreateEditUserScreenState<T extends Usuari>
     } else if ((uriImageUser != null) && (idActual != idGuardaUsuari)) {
       //Este cas és quan no s'ha fet una foto nova però sí que s'ha canviat el id, per tant hem de renombrar-la
 
-      final uri = await ref.read(uriProvider.notifier).getUri();
+      final uri = await ref.read(UriProvider.notifier).getUri();
 
       await PlatformChannel.renameFile(
           uri: uri!,
@@ -250,7 +250,7 @@ class _CreateEditUserScreenState<T extends Usuari>
       }
     }
 
-    final uri = await ref.read(uriProvider.notifier).getUri();
+    final uri = await ref.read(UriProvider.notifier).getUri();
 
     if (uri == null) {
       _mostrarDialogUri();

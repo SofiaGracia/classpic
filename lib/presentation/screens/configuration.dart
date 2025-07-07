@@ -7,6 +7,7 @@ import 'package:xml_fotos/presentation/widgets/radio_storage.dart';
 import 'package:xml_fotos/presentation/widgets/uri_widget.dart';
 
 import '../../application/services/storage_service.dart';
+import 'manage_broken_images.dart';
 
 class ConfigurationScreen extends ConsumerStatefulWidget {
   //final DirectoriFotos seleccio;
@@ -61,6 +62,17 @@ class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
                 const SizedBox(height: 16),
                 ImageConfigurationWidget(),
                 UriWidget(),
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GestioFotosTrencadesScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text('Gestió errors'),
+                ),
               ],
             ),
           ),

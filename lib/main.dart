@@ -8,7 +8,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final container = ProviderContainer();
-  final uri = await container.read(uriProvider.future); // força el build()
+  final uri = await container.read(UriProvider.future); // força el build()
   runApp(const ProviderScope(child: MyApp()));
 }
 
