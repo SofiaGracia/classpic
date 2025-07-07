@@ -8,7 +8,6 @@ import '../../domain/models/usuari.dart';
 import '../providers/alumne_notifier.dart';
 import '../providers/professor_notifier.dart';
 import '../screens/create_edit_user_screen.dart';
-import '../screens/new_edit_user.dart';
 
 class NewUserR<T extends Usuari> extends ConsumerWidget {
   final bool isAlumne;

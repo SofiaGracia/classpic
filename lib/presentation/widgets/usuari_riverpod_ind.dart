@@ -20,7 +20,6 @@ import '../providers/cursos_notifier.dart';
 import '../providers/prof_widget.dart';
 import '../screens/camera_camera.dart';
 import '../screens/create_edit_user_screen.dart';
-import '../screens/new_edit_user.dart';
 import 'foto_usuari.dart';
 
 class UsuariWidgetRInd extends ConsumerStatefulWidget {

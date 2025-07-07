@@ -22,7 +22,7 @@ class ImportController extends _$ImportController {
     try {
 
       //Necessite un directori base per a crear l'estructura de carpetes dels cursos dels alumnes importats
-      final baseDir = await ref.read(uriProvider.notifier).getUri();
+      final baseDir = await ref.read(UriProvider.notifier).getUri();
 
       if (baseDir == null) {
         throw DirectoriBaseNoTriat();

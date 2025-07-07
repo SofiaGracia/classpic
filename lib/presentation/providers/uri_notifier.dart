@@ -65,6 +65,6 @@ class UriNotifier extends AsyncNotifier<String?> {
 
 }
 
-final uriProvider = AsyncNotifierProvider<UriNotifier, String?>(
+final UriProvider = AsyncNotifierProvider<UriNotifier, String?>(
       () => UriNotifier(),
 );

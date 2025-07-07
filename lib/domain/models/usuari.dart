@@ -1,3 +1,6 @@
+import '../entities/alumne.dart';
+import '../entities/professor.dart';
+
 abstract class Usuari {
 
   String get usuId;
@@ -30,4 +33,6 @@ abstract class Usuari {
 
   @override
   int get hashCode => Object.hash(usuId, nom, c1, c2, fotoPathHash, hasFoto, runtimeType);
+
+  int? get idDB => this is Alumne? (this as Alumne).id : (this as Professor).id;
 }

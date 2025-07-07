@@ -12,7 +12,7 @@ class UriGuard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uriAsync = ref.watch(uriProvider);
+    final uriAsync = ref.watch(UriProvider);
 
     return uriAsync.when(
       data: (uri) {
