@@ -32,6 +32,7 @@ class FotosTrencadesNotifier extends Notifier<List<Usuari>> {
     state = [...nous];
   }
 }
+
 final fotosTrencadesProvider =
     NotifierProvider<FotosTrencadesNotifier, List<Usuari>>(
   () => FotosTrencadesNotifier(),
