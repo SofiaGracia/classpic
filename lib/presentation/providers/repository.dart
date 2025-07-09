@@ -7,25 +7,27 @@ import '../../data/repository/alumne_db.dart';
 import '../../data/repository/professor_db.dart';
 
 //ALUMNE
-final alumneDaoProvider = FutureProvider<AlumneDao>((ref) async {
+/*final alumneDaoProvider = FutureProvider<AlumneDao>((ref) async {
   final dbService = DatabaseService();
   await dbService.connectaDB();
   return dbService.alumneDao;
-});
+});*/
 
 final repositoryAlumneDBProvider = FutureProvider<RepositoryAlumneDB>((ref) async {
-  final dao = await ref.watch(alumneDaoProvider.future);
+  //final dao = await ref.watch(alumneDaoProvider.future);
+  final dao = DatabaseService().alumneDao;
   return RepositoryAlumneDB(alumneDao: dao);
 });
 
 //PROFESSOR
-final professorDaoProvider = FutureProvider<ProfessorDao>((ref) async {
+/*final professorDaoProvider = FutureProvider<ProfessorDao>((ref) async {
   final dbService = DatabaseService();
   await dbService.connectaDB();
   return dbService.professorDao;
-});
+});*/
 
 final repositoryProfessorDBProvider = FutureProvider<RepositoryProfessorDB>((ref) async {
-  final dao = await ref.watch(professorDaoProvider.future);
+  //final dao = await ref.watch(professorDaoProvider.future);
+  final dao = DatabaseService().professorDao;
   return RepositoryProfessorDB(professorDao: dao);
 });
