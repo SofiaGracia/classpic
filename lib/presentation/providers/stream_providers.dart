@@ -5,6 +5,9 @@ import 'package:xml_fotos/presentation/providers/repository.dart';
 /*final professorsIdsStreamProvider = StreamProvider<Set<int>>((ref) {
 
   final repo = ref.watch(repositoryProfessorDBProvider);
-  //return repo.dao.observeAlumneIds().map((ids) => ids.toSet());
-  return repo
-});*/
+
+
+  //return repo.professor.observeAlumneIds().map((ids) => ids.toSet());
+
+});
+*/

@@ -13,7 +13,7 @@ import '../../data/repository/professor_db.dart';
   return dbService.alumneDao;
 });*/
 
-final repositoryAlumneDBProvider = FutureProvider<RepositoryAlumneDB>((ref) async {
+final repositoryAlumneDBProvider = Provider<RepositoryAlumneDB>((ref) {
   //final dao = await ref.watch(alumneDaoProvider.future);
   final dao = DatabaseService().alumneDao;
   return RepositoryAlumneDB(alumneDao: dao);
@@ -26,7 +26,7 @@ final repositoryAlumneDBProvider = FutureProvider<RepositoryAlumneDB>((ref) asyn
   return dbService.professorDao;
 });*/
 
-final repositoryProfessorDBProvider = FutureProvider<RepositoryProfessorDB>((ref) async {
+final repositoryProfessorDBProvider = Provider<RepositoryProfessorDB>((ref) {
   //final dao = await ref.watch(professorDaoProvider.future);
   final dao = DatabaseService().professorDao;
   return RepositoryProfessorDB(professorDao: dao);

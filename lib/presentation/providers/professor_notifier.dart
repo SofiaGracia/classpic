@@ -10,8 +10,8 @@ part 'professor_notifier.g.dart';
 @riverpod
 class ProfessorNotifier extends _$ProfessorNotifier {
 
-  Future<RepositoryProfessorDB> get _repo async =>
-      await ref.watch(repositoryProfessorDBProvider.future);
+  RepositoryProfessorDB get _repo =>
+      ref.watch(repositoryProfessorDBProvider);
 
   @override
   Future<List<Professor>> build() async {
