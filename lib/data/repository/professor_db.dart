@@ -47,4 +47,8 @@ class RepositoryProfessorDB {
   Future<void> editarProfessorsDB(List<Professor> professors) async {
     await _professorDao.updateProfessors(professors);
   }
+
+  Stream<List<int>> observeIdsProfessors() {
+    return _professorDao.observeIdsProfessors();
+  }
 }
