@@ -8,7 +8,7 @@ import 'package:xml_fotos/shared/utils/constants.dart';
 import '../../../domain/entities/student.dart';
 import '../../../domain/entities/course.dart';
 import '../../../presentation/providers/cursos_notifier.dart';
-import '../../repository/curs_db.dart';
+import '../../repository/course_db.dart';
 
 class RepositoryAlumneXml {
 

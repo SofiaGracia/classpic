@@ -8,6 +8,7 @@ import '../../domain/entities/course.dart';
 import '../../shared/utils/dialog.dart';
 import '../providers/alumne_notifier.dart';
 import '../screens/llista_3.dart';
+import '../screens/llista_stream.dart';
 import '../screens/llista_usuaris_riverpod.dart';
 import 'counter.dart';
 
@@ -61,10 +62,8 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => LlistaUsuarisR<Student>(
+                    builder: (context) => LlistaUsuarisStream<Student>(
                       curs: curs,
-                      isAlumne: true,
-                      initialLlista: llistaUsuaris,
                     ),
                   ),
                 );

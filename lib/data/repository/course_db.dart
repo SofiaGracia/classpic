@@ -1,58 +1,55 @@
 import 'package:flutter/cupertino.dart';
 
-import '../datasources/db/dao/curs_dao.dart';
+import '../datasources/db/dao/course_dao.dart';
 import '../../domain/entities/course.dart';
 
-class RepositoryCursDB {
-  final CursDao _cursDao;
+class CourseRepository {
+  final CourseDao _dao;
 
-  RepositoryCursDB({
-    required CursDao cursDao,
-  }) : _cursDao = cursDao;
+  CourseRepository(this._dao);
 
-  //Potser carregar tots els cursos
   Future<List<Course>> carregarCursosDB() async {
-    final cursos = await _cursDao.findAllCursos();
+    final cursos = await _dao.findAllCourses();
     return cursos;
   }
 
   Future<Course?> carregaCursDB(int id) async {
-    return await _cursDao.findCursById(id);
+    return await _dao.findCourseById(id);
   }
 
   Future<Course?> findCursNom(String nom) async {
-    return await _cursDao.findCursByNom(nom);
+    return await _dao.findCourseByName(nom);
   }
 
   Future<Course> insertarCursDB(Course curs) async {
-    final id = await _cursDao.insertCurs(curs);
+    final id = await _dao.insertCourse(curs);
     return curs.copyWith(id: id);
   }
 
   Future<void> inserirCursosDB(List<Course> cursos) async {
-    await _cursDao.insertCursos(cursos);
+    await _dao.insertCourses(cursos);
   }
 
   Future<void> imprimirCursosDB() async {
-    final cursos = await _cursDao.findAllCursos();
+    final cursos = await _dao.findAllCourses();
     for (var c in cursos) {
       debugPrint('${c.id}: ${c.name}');
     }
   }
 
   Future<void> eliminarCursDB(Course curs) async {
-    await _cursDao.deleteCurs(curs);
+    await _dao.deleteCourse(curs);
   }
 
   Future<void> eliminarCursosDB(List<Course> cursos) async {
-    await _cursDao.deleteCursos(cursos);
+    await _dao.deleteCourses(cursos);
   }
 
   Future<void> buidarCursosBD() async {
-    await _cursDao.buidarCursos();
+    await _dao.deleteCoursesAndItsContent();
   }
 
   Future<void> editarCursDB(Course curs) async {
-    await _cursDao.updateCurs(curs);
+    await _dao.updateCurs(curs);
   }
 }

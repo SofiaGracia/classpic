@@ -76,7 +76,7 @@ class _$AppDatabase extends AppDatabase {
 
   TeacherDao? _teacherDaoInstance;
 
-  CursDao? _cursDaoInstance;
+  CourseDao? _courseDaoInstance;
 
   Future<sqflite.Database> open(
     String path,
@@ -125,8 +125,8 @@ class _$AppDatabase extends AppDatabase {
   }
 
   @override
-  CursDao get cursDao {
-    return _cursDaoInstance ??= _$CursDao(database, changeListener);
+  CourseDao get courseDao {
+    return _courseDaoInstance ??= _$CourseDao(database, changeListener);
   }
 }
 
@@ -482,8 +482,8 @@ class _$TeacherDao extends TeacherDao {
   }
 }
 
-class _$CursDao extends CursDao {
-  _$CursDao(
+class _$CourseDao extends CourseDao {
+  _$CourseDao(
     this.database,
     this.changeListener,
   )   : _queryAdapter = QueryAdapter(database),
@@ -518,50 +518,50 @@ class _$CursDao extends CursDao {
   final DeletionAdapter<Course> _courseDeletionAdapter;
 
   @override
-  Future<List<Course>> findAllCursos() async {
-    return _queryAdapter.queryList('SELECT * FROM cursos',
+  Future<List<Course>> findAllCourses() async {
+    return _queryAdapter.queryList('SELECT * FROM course',
         mapper: (Map<String, Object?> row) =>
             Course(id: row['id'] as int?, name: row['name'] as String));
   }
 
   @override
-  Stream<List<String>> findAllCursosNom() {
-    return _queryAdapter.queryListStream('SELECT nom FROM cursos',
+  Stream<List<String>> findAllCoursesName() {
+    return _queryAdapter.queryListStream('SELECT nom FROM course',
         mapper: (Map<String, Object?> row) => row.values.first as String,
-        queryableName: 'cursos',
+        queryableName: 'course',
         isView: false);
   }
 
   @override
-  Future<Course?> findCursById(int id) async {
-    return _queryAdapter.query('SELECT * FROM cursos WHERE id = ?1',
+  Future<Course?> findCourseById(int id) async {
+    return _queryAdapter.query('SELECT * FROM course WHERE id = ?1',
         mapper: (Map<String, Object?> row) =>
             Course(id: row['id'] as int?, name: row['name'] as String),
         arguments: [id]);
   }
 
   @override
-  Future<Course?> findCursByNom(String nom) async {
-    return _queryAdapter.query('SELECT * FROM cursos WHERE nom = ?1',
+  Future<Course?> findCourseByName(String name) async {
+    return _queryAdapter.query('SELECT * FROM course WHERE name = ?1',
         mapper: (Map<String, Object?> row) =>
             Course(id: row['id'] as int?, name: row['name'] as String),
-        arguments: [nom]);
+        arguments: [name]);
   }
 
   @override
-  Future<void> buidarCursos() async {
-    await _queryAdapter.queryNoReturn('DELETE FROM cursos');
+  Future<void> deleteCoursesAndItsContent() async {
+    await _queryAdapter.queryNoReturn('DELETE FROM course');
   }
 
   @override
-  Future<int> insertCurs(Course curs) {
+  Future<int> insertCourse(Course curs) {
     return _courseInsertionAdapter.insertAndReturnId(
         curs, OnConflictStrategy.ignore);
   }
 
   @override
-  Future<void> insertCursos(List<Course> cursos) async {
-    await _courseInsertionAdapter.insertList(cursos, OnConflictStrategy.abort);
+  Future<void> insertCourses(List<Course> courses) async {
+    await _courseInsertionAdapter.insertList(courses, OnConflictStrategy.abort);
   }
 
   @override
@@ -570,12 +570,12 @@ class _$CursDao extends CursDao {
   }
 
   @override
-  Future<void> deleteCurs(Course curs) async {
+  Future<void> deleteCourse(Course curs) async {
     await _courseDeletionAdapter.delete(curs);
   }
 
   @override
-  Future<void> deleteCursos(List<Course> cursos) async {
-    await _courseDeletionAdapter.deleteList(cursos);
+  Future<void> deleteCourses(List<Course> courses) async {
+    await _courseDeletionAdapter.deleteList(courses);
   }
 }
