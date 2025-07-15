@@ -10,43 +10,45 @@ class TeacherRepository {
   TeacherRepository(this._dao);
 
   Future<Teacher?> carregaProfessorDB(int id) async{
-    return await _dao.findProfessorById(id);
+    return await _dao.findTeacherById(id);
   }
 
   Future<Teacher?> carregaProfessorDBbyDni(String dni) async{
-    return await _dao.findProfessorByDni(dni);
+    return await _dao.findTeacherByDni(dni);
   }
 
   Future<List<Teacher>> carregaProfessorsDB() async {
-    final professors = await _dao.findAllProfessors();
+    final professors = await _dao.findAllTeachers();
     return professors;
   }
 
+  Stream<List<int>> observeIdsTeacher() => _dao.observeIdsTeacher();
+
   Future<void> insertarProfessorDB(Teacher professor) async {
-    await _dao.insertProfessor(professor);
+    await _dao.insertTeacher(professor);
   }
 
   Future<void> insertarProfessorsDB(List<Teacher> professors) async {
-    await _dao.insertProfessors(professors);
+    await _dao.insertTeachers(professors);
   }
 
   Future<void> eliminarProfessorDB(Teacher professor) async {
-    await _dao.deleteProfessor(professor);
+    await _dao.deleteTeacher(professor);
   }
 
   Future<void> eliminarProfessorsDB(List<Teacher> professors) async {
-    await _dao.deleteProfessors(professors);
+    await _dao.deleteTeachers(professors);
   }
 
   Future<void> editarProfessorDB(Teacher professor) async {
-    await _dao.updateProfessor(professor);
+    await _dao.updateTeacher(professor);
   }
 
   Future<void> editarProfessorsDB(List<Teacher> professors) async {
-    await _dao.updateProfessors(professors);
+    await _dao.updateTeachers(professors);
   }
 
   Stream<List<String>> observeIdsProfessors() {
-    return _dao.observeIdsProfessors();
+    return _dao.observeIdsTeacher();
   }
 }

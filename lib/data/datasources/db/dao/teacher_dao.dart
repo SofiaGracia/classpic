@@ -1,52 +1,49 @@
-// dao/person_dao.dart
 
 import 'package:floor/floor.dart';
 
 import '../../../../domain/entities/teacher.dart';
 
-//DAO per gestionar operacions amb la taula de professors.
-// Inclou insercions, actualitzacions, eliminacions i consultes.
 @dao
 abstract class TeacherDao {
 
-  @Query('SELECT COUNT(*) FROM professors')
-  Future<int?> countProfessors();
+  @Query('SELECT COUNT(*) FROM teacher')
+  Future<int?> countTeachers();
 
-  @Query('SELECT * FROM professors')
-  Future<List<Teacher>> findAllProfessors();
+  @Query('SELECT * FROM teacher')
+  Future<List<Teacher>> findAllTeachers();
 
-  @Query('SELECT nom FROM professors')
-  Stream<List<String>> findAllProfessorsNom();
+  @Query('SELECT name FROM teacher')
+  Stream<List<String>> findAllTeachersName();
 
-  @Query('SELECT * FROM professors WHERE fotoFilename IS NOT NULL')
-  Future<List<Teacher>> findProfessorsWithFoto();
+  //@Query('SELECT * FROM teacher WHERE fotoFilename IS NOT NULL')
+  //Future<List<Teacher>> findTeachersWithPhoto();
 
-  @Query('SELECT * FROM professors WHERE id = :id')
-  Future<Teacher?> findProfessorById(int id);
+  @Query('SELECT * FROM teacher WHERE id = :id')
+  Future<Teacher?> findTeacherById(int id);
 
   //STREAM DE IDS DE PROFESSORS
-  @Query('SELECT dni FROM professors')
-  Stream<List<String>> observeIdsProfessors();
+  @Query('SELECT id FROM teacher')
+  Stream<List<int>> observeIdsTeacher();
 
-  @Query('SELECT * FROM professors WHERE dni = :dni')
-  Future<Teacher?> findProfessorByDni(String dni);
+  @Query('SELECT * FROM teacher WHERE dni = :dni')
+  Future<Teacher?> findTeacherByDni(String dni);
 
   @insert
-  Future<void> insertProfessor(Teacher professor);
+  Future<void> insertTeacher(Teacher professor);
 
   //@Insert(onConflict: OnConflictStrategy.ignore)
   @insert
-  Future<void> insertProfessors(List<Teacher> professors);
+  Future<void> insertTeachers(List<Teacher> professors);
 
   @delete
-  Future<void> deleteProfessor(Teacher professor);
+  Future<void> deleteTeacher(Teacher professor);
 
   @delete
-  Future<void> deleteProfessors(List<Teacher> professors);
+  Future<void> deleteTeachers(List<Teacher> professors);
 
   @update
-  Future<void> updateProfessor(Teacher professor);
+  Future<void> updateTeacher(Teacher professor);
 
   @update
-  Future<void> updateProfessors(List<Teacher> professor);
+  Future<void> updateTeachers(List<Teacher> professor);
 }
