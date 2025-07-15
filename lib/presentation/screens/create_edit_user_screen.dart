@@ -8,8 +8,8 @@ import 'package:xml_fotos/shared/utils/constants.dart';
 import '../../application/services/codi_generator.dart';
 import '../../application/services/saf_methods.dart';
 import '../../domain/entities/alumne.dart';
-import '../../domain/models/usuari.dart';
-import '../../domain/models/usuari_factory.dart';
+import '../../domain/models/user.dart';
+import '../../domain/models/user_factory.dart';
 import '../../shared/utils/validator.dart';
 import '../providers/cursos_notifier.dart';
 import '../providers/uri_notifier.dart';
@@ -18,7 +18,7 @@ import '../widgets/foto_usuari.dart';
 import '../widgets/uri_dialog.dart';
 import 'camera_camera.dart';
 
-class CreateEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
+class CreateEditUserScreen<T extends User> extends ConsumerStatefulWidget {
   final T? usuari;
 
   //Referent a curs
@@ -44,7 +44,7 @@ class CreateEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
       _CreateEditUserScreenState<T>();
 }
 
-class _CreateEditUserScreenState<T extends Usuari>
+class _CreateEditUserScreenState<T extends User>
     extends ConsumerState<CreateEditUserScreen> {
   //FORMULARI:
     final _formKey = GlobalKey<FormState>();
@@ -57,7 +57,7 @@ class _CreateEditUserScreenState<T extends Usuari>
   late TextEditingController cognom2Controller;
 
   //VARIABLES:
-  Usuari? usuari;
+  User? usuari;
   late bool isAlumne;
   Uri? uriImageUser;
   String? fotoPathHash;
@@ -83,7 +83,7 @@ class _CreateEditUserScreenState<T extends Usuari>
     //VARIABLES:
     isAlumne = widget.isAlumne;
     uriImageUser = widget.uriImageUser;
-    fotoPathHash = usuari?.fotoPathHash;
+    fotoPathHash = usuari?.photoPathHash;
     fotoPathHashAGuardar =
         fotoPathHash ?? DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -98,9 +98,9 @@ class _CreateEditUserScreenState<T extends Usuari>
 
     //FORMULARI:
     idController = TextEditingController(text: widget.codiUsuari);
-    nomController = TextEditingController(text: usuari?.nom ?? '');
-    cognom1Controller = TextEditingController(text: usuari?.c1 ?? '');
-    cognom2Controller = TextEditingController(text: usuari?.c2 ?? '');
+    nomController = TextEditingController(text: usuari?.name ?? '');
+    cognom1Controller = TextEditingController(text: usuari?.s1 ?? '');
+    cognom2Controller = TextEditingController(text: usuari?.s2 ?? '');
   }
 
   bool _validarId() {
@@ -113,8 +113,8 @@ class _CreateEditUserScreenState<T extends Usuari>
     return true;
   }
 
-  Usuari crearUsuariGeneric() {
-    final nouUsuari = UsuariFactory.create(
+  User crearUsuariGeneric() {
+    final nouUsuari = UserFactory.create(
       isAlumne: isAlumne,
       usuId: idGuardaUsuari,
       nom: nomController.text.trim(),
@@ -172,7 +172,7 @@ class _CreateEditUserScreenState<T extends Usuari>
 
       if (guardada) {
         usuariNou.hasFoto = true;
-        usuariNou.fotoPathHash =
+        usuariNou.photoPathHash =
             DateTime.now().millisecondsSinceEpoch.toString();
       }
 
@@ -290,7 +290,7 @@ class _CreateEditUserScreenState<T extends Usuari>
                 key: idFieldKey,
                 controller: idController,
                 validator: (text) => Validator.validarUsuId(
-                    idController.text, ref, isAlumne, usuari?.usuId),
+                    idController.text, ref, isAlumne, usuari?.uId),
                 textCapitalization: TextCapitalization.characters,
                 decoration: InputDecoration(
                   labelText: "Identificador (NIA o DNI)",

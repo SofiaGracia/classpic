@@ -4,12 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/domain/models/has_foto_extension.dart';
-import 'package:xml_fotos/domain/models/usuari.dart';
+import 'package:xml_fotos/domain/models/user.dart';
 import 'package:xml_fotos/presentation/widgets/uri_dialog.dart';
 
 import '../../application/services/saf_methods.dart';
 import '../../domain/entities/alumne.dart';
-import '../../domain/entities/professor.dart';
+import '../../domain/entities/teacher.dart';
 import '../../domain/errors/import.dart';
 import '../providers/uri_notifier.dart';
 import '../screens/camera_camera.dart';
@@ -18,8 +18,8 @@ import 'foto_usuari.dart';
 enum CicleUserStates { none, waiting, charged}
 
 class CicleUser extends ConsumerStatefulWidget {
-  final Usuari usuari;
-  final Future<void> Function(Usuari usu) onUpdate;
+  final User usuari;
+  final Future<void> Function(User usu) onUpdate;
 
   const CicleUser({super.key, required this.usuari, required this.onUpdate});
 
@@ -28,7 +28,7 @@ class CicleUser extends ConsumerStatefulWidget {
 }
 
 class _CicleUserState extends ConsumerState<CicleUser> {
-  late Usuari usuari;
+  late User usuari;
   Uri? fotoUri;
   late CicleUserStates _state;
 
@@ -54,7 +54,7 @@ class _CicleUserState extends ConsumerState<CicleUser> {
 
       final guardada = await PlatformChannel.savePhoto(
         uri: uri,
-        id: usuari.usuId,
+        id: usuari.uId,
         tipusUsuari: usuari is Alumne ? 'Alumnes' : 'Professors',
         grup: usuari is Alumne ? (usuari as Alumne).grup : null,
         bytes: resultat,
@@ -90,7 +90,7 @@ class _CicleUserState extends ConsumerState<CicleUser> {
       hasFoto: uri != null,
       fotoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
     )
-        : (usuari as Professor).copyWith(
+        : (usuari as Teacher).copyWith(
       hasFoto: uri != null,
       fotoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
     );
@@ -120,7 +120,7 @@ class _CicleUserState extends ConsumerState<CicleUser> {
           fill = FotoUsuariWidget(
             uri: fotoUri!,
             bytes: null,
-            fotoPathHash: widget.usuari.fotoPathHash!,
+            fotoPathHash: widget.usuari.photoPathHash!,
             radius: 30,
           );
         }

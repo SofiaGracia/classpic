@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/repository.dart';
-import '../../domain/entities/professor.dart';
+import '../../domain/entities/teacher.dart';
 import '../providers/professor_notifier.dart';
 import 'alumne_notifier.dart';
 

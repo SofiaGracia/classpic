@@ -2,7 +2,7 @@
 
 import 'package:floor/floor.dart';
 
-import '../../../../domain/entities/professor.dart';
+import '../../../../domain/entities/teacher.dart';
 
 //DAO per gestionar operacions amb la taula de professors.
 // Inclou insercions, actualitzacions, eliminacions i consultes.
@@ -13,40 +13,40 @@ abstract class ProfessorDao {
   Future<int?> countProfessors();
 
   @Query('SELECT * FROM professors')
-  Future<List<Professor>> findAllProfessors();
+  Future<List<Teacher>> findAllProfessors();
 
   @Query('SELECT nom FROM professors')
   Stream<List<String>> findAllProfessorsNom();
 
   @Query('SELECT * FROM professors WHERE fotoFilename IS NOT NULL')
-  Future<List<Professor>> findProfessorsWithFoto();
+  Future<List<Teacher>> findProfessorsWithFoto();
 
   @Query('SELECT * FROM professors WHERE id = :id')
-  Future<Professor?> findProfessorById(int id);
+  Future<Teacher?> findProfessorById(int id);
 
   //STREAM DE IDS DE PROFESSORS
   @Query('SELECT dni FROM professors')
   Stream<List<String>> observeIdsProfessors();
 
   @Query('SELECT * FROM professors WHERE dni = :dni')
-  Future<Professor?> findProfessorByDni(String dni);
+  Future<Teacher?> findProfessorByDni(String dni);
 
   @insert
-  Future<void> insertProfessor(Professor professor);
+  Future<void> insertProfessor(Teacher professor);
 
   //@Insert(onConflict: OnConflictStrategy.ignore)
   @insert
-  Future<void> insertProfessors(List<Professor> professors);
+  Future<void> insertProfessors(List<Teacher> professors);
 
   @delete
-  Future<void> deleteProfessor(Professor professor);
+  Future<void> deleteProfessor(Teacher professor);
 
   @delete
-  Future<void> deleteProfessors(List<Professor> professors);
+  Future<void> deleteProfessors(List<Teacher> professors);
 
   @update
-  Future<void> updateProfessor(Professor professor);
+  Future<void> updateProfessor(Teacher professor);
 
   @update
-  Future<void> updateProfessors(List<Professor> professor);
+  Future<void> updateProfessors(List<Teacher> professor);
 }

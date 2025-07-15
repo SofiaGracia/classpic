@@ -31,10 +31,10 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
     final actualitzat = alu.copyWith(
       id: alu.id,
       nia: nou.nia,
-      nom: nou.nom,
-      c1: nou.c1,
-      c2: nou.c2,
-      fotoPathHash: nou.fotoPathHash,
+      nom: nou.name,
+      c1: nou.s1,
+      c2: nou.s2,
+      fotoPathHash: nou.photoPathHash,
       hasFoto: nou.hasFoto
     );
 
@@ -51,7 +51,7 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
       actualitzat.grup = nou.grup;
     }
 
-    if(alu.fotoPathHash != nou.fotoPathHash){
+    if(alu.photoPathHash != nou.photoPathHash){
       cridarGlobal = true;
     }
 

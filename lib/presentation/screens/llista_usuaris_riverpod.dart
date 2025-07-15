@@ -6,8 +6,8 @@ import 'package:xml_fotos/presentation/widgets/new_user.dart';
 import 'package:xml_fotos/presentation/widgets/usuari_riverpod_ind.dart';
 
 import '../../domain/entities/alumne.dart';
-import '../../domain/entities/professor.dart';
-import '../../domain/models/usuari.dart';
+import '../../domain/entities/teacher.dart';
+import '../../domain/models/user.dart';
 import '../providers/professor_notifier.dart';
 /*
 class LlistaUsuarisR<T extends Usuari> extends ConsumerStatefulWidget {

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/domain/models/usuari.dart';
+import 'package:xml_fotos/domain/models/user.dart';
 import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
 
 import '../../application/services/saf_methods.dart';
 import '../../application/services/storage_service.dart';
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/curs.dart';
-import '../../domain/entities/professor.dart';
+import '../../domain/entities/teacher.dart';
 import '../providers/alumne_notifier.dart';
 import '../providers/stream_providers.dart';
 import '../widgets/new_user.dart';
 import '../widgets/usuari_riverpod_ind.dart';
 
-class LlistaUsuarisStream<T extends Usuari> extends ConsumerWidget {
+class LlistaUsuarisStream<T extends User> extends ConsumerWidget {
   final bool isAlumne;
   final Curs? curs;
 
@@ -28,7 +28,7 @@ class LlistaUsuarisStream<T extends Usuari> extends ConsumerWidget {
     return isAlumne? 'Alumnes de ${curs!.nom}': 'Professors';
   }
 
-  Future<List<T>> _carregaLlista<T extends Usuari>(
+  Future<List<T>> _carregaLlista<T extends User>(
       WidgetRef ref, bool isAlumne, int? cursId) {
     if (isAlumne) {
       return ref
@@ -47,16 +47,16 @@ class LlistaUsuarisStream<T extends Usuari> extends ConsumerWidget {
         title: Text((_getTitol())),
       ),
       body: fill,
-      floatingActionButton: ref == null ? null : NewUserR<Usuari>(
+      floatingActionButton: ref == null ? null : NewUserR<User>(
         onCreate: (u) async {
           if (u is Alumne) {
             await ref.read(alumnesNotifierProvider.notifier).inserirAlumne(u);
           } else {
-            await ref.read(professorNotifierProvider.notifier).inserirProfessor(u as Professor);
+            await ref.read(professorNotifierProvider.notifier).inserirProfessor(u as Teacher);
           }
         },
         cursId: isAlumne? curs!.id! : null,
-        getId: (u) => isAlumne ? (u as Alumne).nia : (u as Professor).dni,
+        getId: (u) => isAlumne ? (u as Alumne).nia : (u as Teacher).dni,
         isAlumne: isAlumne,
       ),
     );
@@ -75,7 +75,7 @@ class LlistaUsuarisStream<T extends Usuari> extends ConsumerWidget {
                 await ref.read(StorageServiceProvider).eliminaFoto(uriAlumne!);
               }
             } else {
-              await ref.read(professorNotifierProvider.notifier).eliminarProfessor(u as Professor);
+              await ref.read(professorNotifierProvider.notifier).eliminarProfessor(u as Teacher);
               if (u.hasFoto){
                 final uriProf = await PlatformChannel.getFotoProfessorUri(u.dni);
                 await ref.read(StorageServiceProvider).eliminaFoto(uriProf!);

@@ -1,5 +1,5 @@
 import 'package:floor/floor.dart';
-import 'package:xml_fotos/domain/models/usuari.dart';
+import 'package:xml_fotos/domain/models/user.dart';
 
 import 'curs.dart';
 
@@ -14,7 +14,7 @@ import 'curs.dart';
     )
   ],
 )
-class Alumne extends Usuari {
+class Alumne extends User {
   static const String estatMatriculat = 'M';
 
   @PrimaryKey(autoGenerate: true)
@@ -23,7 +23,7 @@ class Alumne extends Usuari {
   String nia;
 
   @override
-  String get usuId => nia;
+  String get uId => nia;
 
   late String? grup;
 
@@ -39,7 +39,7 @@ class Alumne extends Usuari {
     String? fotoPathHash,
     this.cursId,
     required bool hasFoto
-  }) : super(nom: nom, c1: c1, c2: c2, fotoPathHash: fotoPathHash, hasFoto: hasFoto);
+  }) : super(name: nom, s1: c1, s2: c2, photoPathHash: fotoPathHash, hasFoto: hasFoto);
 
   Alumne copyWith({
     int? id,
@@ -55,11 +55,11 @@ class Alumne extends Usuari {
     return Alumne(
       id: id ?? this.id,
       nia: nia ?? this.nia,
-      nom: nom ?? this.nom,
-      c1: c1 ?? this.c1,
-      c2: c2 ?? this.c2,
+      nom: nom ?? this.name,
+      c1: c1 ?? this.s1,
+      c2: c2 ?? this.s2,
       grup: grup ?? this.grup,
-      fotoPathHash: fotoPathHash ?? this.fotoPathHash,
+      fotoPathHash: fotoPathHash ?? this.photoPathHash,
       cursId: cursId ?? this.cursId,
       hasFoto: hasFoto ?? this.hasFoto
     );

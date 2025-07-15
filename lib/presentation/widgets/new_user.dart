@@ -4,14 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
 
 import '../../application/services/codi_generator.dart';
-import '../../domain/models/usuari.dart';
+import '../../domain/models/user.dart';
 import '../providers/alumne_notifier.dart';
 import '../providers/professor_notifier.dart';
 import '../screens/create_edit_user_screen.dart';
 
-class NewUserR<T extends Usuari> extends ConsumerWidget {
+class NewUserR<T extends User> extends ConsumerWidget {
   final bool isAlumne;
-  final Future<void> Function(Usuari usuari) onCreate;
+  final Future<void> Function(User usuari) onCreate;
   final int? cursId;
   final String Function(T usuari) getId;
 
@@ -65,7 +65,7 @@ class NewUserR<T extends Usuari> extends ConsumerWidget {
           ),
         );*/
 
-        final nouUsuari = await Navigator.push<Usuari>(
+        final nouUsuari = await Navigator.push<User>(
           context,
           MaterialPageRoute(
             builder: (_) => CreateEditUserScreen<T>(

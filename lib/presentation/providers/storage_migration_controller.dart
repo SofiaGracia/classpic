@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
 import '../../application/services/storage_service.dart';
 import '../../data/repository/user.dart';
-import '../../domain/models/usuari.dart';
+import '../../domain/models/user.dart';
 import '../../shared/utils/dialog.dart';
 /*
 enum StorageMigrationStatus {

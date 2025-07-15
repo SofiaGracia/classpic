@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:xml/xml.dart';
 
 import '../../../application/services/codi_generator.dart';
-import '../../../domain/entities/professor.dart';
+import '../../../domain/entities/teacher.dart';
 import '../../../shared/utils/constants.dart';
 
 class RepositoryProfessorXml {
@@ -10,9 +10,9 @@ class RepositoryProfessorXml {
 
   RepositoryProfessorXml({required this.doc});
 
-  Future<List<Professor>> carregaLlistaProfessorsXml() async {
+  Future<List<Teacher>> carregaLlistaProfessorsXml() async {
     //Retornarem una llista de professors
-    List<Professor> llistaProfessors = [];
+    List<Teacher> llistaProfessors = [];
 
     try {
       final profesNode = doc.findAllElements('docentes').first;
@@ -27,7 +27,7 @@ class RepositoryProfessorXml {
         if (profDni != null && profNom != null && profC1 != null) {
           final idDni = CodiGenerator.normalitzaIdentificador(profDni);
 
-          Professor profAInsertar = Professor(
+          Teacher profAInsertar = Teacher(
               dni: idDni,
               nom: profNom,
               c1: profC1,

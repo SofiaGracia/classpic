@@ -7,37 +7,37 @@ import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
 import 'package:xml_fotos/presentation/providers/repository.dart';
 
 import '../../data/repository/professor_db.dart';
-import '../../domain/entities/professor.dart';
+import '../../domain/entities/teacher.dart';
 
 // usuari_notifier.dart
 class ProfWidgetNotifier
-    extends AutoDisposeFamilyAsyncNotifier<Professor, int> {
+    extends AutoDisposeFamilyAsyncNotifier<Teacher, int> {
   late final int id;
 
   RepositoryProfessorDB get _repo =>
       ref.watch(repositoryProfessorDBProvider);
 
   @override
-  FutureOr<Professor> build(int arg) async {
+  FutureOr<Teacher> build(int arg) async {
     id = arg;
     final repo = await _repo;
     final professor = await repo.carregaProfessorDB(id);
     return professor!;
   }
 
-  Future<void> actualitza(Professor nou) async {
-    final prof = state.value as Professor;
+  Future<void> actualitza(Teacher nou) async {
+    final prof = state.value as Teacher;
     final actualitzat = prof.copyWith(
       id: prof.id,
       dni: nou.dni,
-      nom: nou.nom,
-      c1: nou.c1,
-      c2: nou.c2,
-      fotoPathHash: nou.fotoPathHash,
+      nom: nou.name,
+      c1: nou.s1,
+      c2: nou.s2,
+      fotoPathHash: nou.photoPathHash,
       hasFoto: nou.hasFoto
     );
 
-    if (prof.fotoPathHash != nou.fotoPathHash) {
+    if (prof.photoPathHash != nou.photoPathHash) {
       ref.read(professorNotifierProvider.notifier).actualitza(actualitzat);
     } else {
       final repo = await _repo;
@@ -48,4 +48,4 @@ class ProfWidgetNotifier
 }
 
 final professorWidgetNotifierProvider = AsyncNotifierProvider.autoDispose
-    .family<ProfWidgetNotifier, Professor, int>(ProfWidgetNotifier.new);
+    .family<ProfWidgetNotifier, Teacher, int>(ProfWidgetNotifier.new);

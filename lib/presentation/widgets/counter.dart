@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/models/usuari.dart';
+import '../../domain/models/user.dart';
 
-class CounterWidget<T extends Usuari> extends ConsumerWidget {
+class CounterWidget<T extends User> extends ConsumerWidget {
   final ProviderListenable<AsyncValue<List<T>>> provider;
 
   const CounterWidget({

@@ -34,7 +34,7 @@ class GestioFotosTrencadesScreen extends ConsumerWidget {
                 final seleccionat = seleccionats.contains(usuari.idDB);
                 return CheckboxListTile(
                   value: seleccionat,
-                  title: Text(usuari.nom),
+                  title: Text(usuari.name),
                   subtitle: const Text('Foto no trobada'),
                   onChanged: (_) {
                     ref.read(usuarisSeleccionatsProvider.notifier).update((set) {
