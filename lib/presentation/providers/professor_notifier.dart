@@ -1,17 +1,17 @@
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:xml_fotos/presentation/providers/repository.dart';
+import 'package:xml_fotos/presentation/providers/teacher/repository.dart';
 
 import '../../domain/entities/teacher.dart';
-import '../../data/repository/professor_db.dart';
+import '../../data/repository/teacher.dart';
 
 part 'professor_notifier.g.dart';
 
 @riverpod
 class ProfessorNotifier extends _$ProfessorNotifier {
 
-  RepositoryProfessorDB get _repo =>
-      ref.watch(repositoryProfessorDBProvider);
+  TeacherRepository get _repo =>
+      ref.watch(teacherRepositoryProvider);
 
   @override
   Future<List<Teacher>> build() async {

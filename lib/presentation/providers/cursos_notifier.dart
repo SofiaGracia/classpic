@@ -10,7 +10,7 @@ part 'cursos_notifier.g.dart';
 
 final cursDaoProvider = FutureProvider<CursDao>((ref) async {
   final dbService = DatabaseService();
-  await dbService.connectaDB();
+  await dbService.connectDB();
   return dbService.cursDao;
 });
 

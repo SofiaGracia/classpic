@@ -1,9 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:xml_fotos/presentation/providers/alu_widget.dart';
-import 'package:xml_fotos/presentation/providers/repository.dart';
-
+import 'package:xml_fotos/presentation/providers/student/repository.dart';
 import '../../domain/entities/student.dart';
-import '../../data/repository/alumne_db.dart';
+import '../../data/repository/student.dart';
 
 part 'alumne_notifier.g.dart';
 
@@ -27,8 +26,8 @@ Future<List<Student>> alumnesFiltratsCurs(
 @riverpod
 class AlumnesNotifier extends _$AlumnesNotifier {
 
-  RepositoryAlumneDB get _repo  =>
-      ref.watch(repositoryAlumneDBProvider);
+  StudentRepository get _repo  =>
+      ref.watch(studentRepositoryProvider);
 
   @override
   Future<List<Student>> build() async {

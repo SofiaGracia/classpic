@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/presentation/providers/db/database.dart';
 import 'package:xml_fotos/presentation/providers/stream_providers.dart';
 import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 import 'package:xml_fotos/presentation/screens/configuration.dart';
@@ -11,8 +12,18 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final container = ProviderContainer();
-  final uri = await container.read(UriProvider.future); // força el build()
-  runApp(const ProviderScope(child: MyApp()));
+  final uri = await container.read(UriProvider.future); // force build()
+
+  final db = await DatabaseService().connectDB();
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        appDatabaseProvider.overrideWithValue(db),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends ConsumerWidget {

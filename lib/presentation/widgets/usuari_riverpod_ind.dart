@@ -108,14 +108,14 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
 
       provider = ref.read(
           alumneWidgetNotifierProvider((widget.usuari as Student).id!)
-              .notifier); //Notifier individual per a alumne
+              .notifier); //Notifier individual per a student
     } else {
       usuariAsync = ref.watch(
           professorWidgetNotifierProvider((widget.usuari as Teacher).id!));
 
       provider = ref.read(
           professorWidgetNotifierProvider((widget.usuari as Teacher).id!)
-              .notifier); //Notifier individual per a professor
+              .notifier); //Notifier individual per a teacher
     }
 
     return usuariAsync.when(

@@ -24,13 +24,13 @@ class StorageService {
     return dirBase;
   }
 
-  /// Obté el path de la carpeta d’un alumne concret
+  /// Obté el path de la carpeta d’un student concret
   Future<String> getPathAlumne(String nomCurs, String niaAlumne) async {
     final baseDir = await getBaseDirectory();
     return '$baseDir/$alumnesFolder/$nomCurs/$niaAlumne.jpg';
   }
 
-  /// Obté el path de la foto d’un professor concret
+  /// Obté el path de la foto d’un teacher concret
   Future<String> getPathProfessor(String dniProf) async {
     final baseDir = await getBaseDirectory();
     return '$baseDir/$professorsFolder/$dniProf.jpg';
@@ -41,7 +41,7 @@ class StorageService {
     return '$baseDir/$alumnesFolder/$nomCurs';
   }
 
-  /// Obté el path de la foto d’un professor concret
+  /// Obté el path de la foto d’un teacher concret
   Future<String> getDirProfessor(String nomProfessor) async {
     final baseDir = await getBaseDirectory();
     return '$baseDir/$professorsFolder';

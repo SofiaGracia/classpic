@@ -7,7 +7,7 @@ import '../../../../domain/entities/student.dart';
 /// DAO per gestionar operacions amb la taula d’alumnes.
 /// Inclou insercions, actualitzacions, eliminacions i consultes.
 @dao
-abstract class AlumneDao {
+abstract class StudentDao {
 
   @Query('SELECT COUNT(*) FROM alumnes')
   Future<int?> countAlumnes();
