@@ -18,17 +18,11 @@ abstract class StudentDao {
   @Query('SELECT name FROM student')
   Stream<List<String>> findAllStudentsName();
 
-  //@Query('SELECT * FROM student WHERE fotoFilename IS NOT NULL')
-  //Future<List<Student>> findStudentsWithFoto();
-
-  //@Query('SELECT * FROM Student WHERE nia = :nia')
-  //Stream<Student?> findStudentByNia(int id);
+  @Query('SELECT id FROM teacher WHERE id IS NOT NULL AND courseId = :courseId')
+  Stream<List<int?>> observeTeacherIdsByCourse(int courseId);
 
   @Query('SELECT * FROM student WHERE id = :id')
   Future<Student?> findStudentById(int id);
-  
-  //STREAM D'IDS
-  //@Query('SELECT id FROM students')
 
   @Query('SELECT * FROM student WHERE nia = :nia')
   Future<Student?> findStudentByNia(String nia);

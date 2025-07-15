@@ -24,7 +24,6 @@ class MenuScreenR extends ConsumerStatefulWidget {
 }
 
 class _MenuScreenRState extends ConsumerState<MenuScreenR> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,9 +73,9 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                   StatusButtonR(
                       text: 'Professors',
                       onPressed: () async {
-
                         final llistaUsuaris = await ref
-                            .read(professorNotifierProvider.notifier)//Utilitzem el read()
+                            .read(professorNotifierProvider
+                                .notifier) //Utilitzem el read()
                             .getProfessorsSenseModificarState();
 
                         /*Navigator.push(
@@ -93,7 +92,6 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => LlistaUsuarisStream<Teacher>(
-                              isAlumne: false,
                               curs: null,
                             ),
                           ),
