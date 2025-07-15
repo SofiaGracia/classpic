@@ -28,7 +28,7 @@ class ProfessorNotifier extends _$ProfessorNotifier {
   }
 
   Future<List<Professor>> getProfessorsSenseModificarState() async {
-    final repo = await _repo;
+    final repo = _repo;
     return repo.carregaProfessorsDB();
   }
 

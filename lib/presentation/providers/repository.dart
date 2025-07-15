@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/presentation/providers/stream_providers.dart';
 
 import '../../data/datasources/db/dao/alumne_dao.dart';
 import '../../data/datasources/db/dao/professor_dao.dart';
@@ -26,8 +27,12 @@ final repositoryAlumneDBProvider = Provider<RepositoryAlumneDB>((ref) {
   return dbService.professorDao;
 });*/
 
-final repositoryProfessorDBProvider = Provider<RepositoryProfessorDB>((ref) {
-  //final dao = await ref.watch(professorDaoProvider.future);
+/*final repositoryProfessorDBProvider = Provider<RepositoryProfessorDB>((ref) {
   final dao = DatabaseService().professorDao;
+  return RepositoryProfessorDB(professorDao: dao);
+});*/
+
+final repositoryProfessorDBProvider = Provider<RepositoryProfessorDB>((ref) {
+  final dao = ref.watch(professorDaoProvider);
   return RepositoryProfessorDB(professorDao: dao);
 });

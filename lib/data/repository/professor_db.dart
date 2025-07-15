@@ -48,7 +48,7 @@ class RepositoryProfessorDB {
     await _professorDao.updateProfessors(professors);
   }
 
-  Stream<List<int>> observeIdsProfessors() {
+  Stream<List<String>> observeIdsProfessors() {
     return _professorDao.observeIdsProfessors();
   }
 }

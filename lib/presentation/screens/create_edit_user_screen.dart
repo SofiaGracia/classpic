@@ -47,7 +47,7 @@ class CreateEditUserScreen<T extends Usuari> extends ConsumerStatefulWidget {
 class _CreateEditUserScreenState<T extends Usuari>
     extends ConsumerState<CreateEditUserScreen> {
   //FORMULARI:
-  final _formKey = GlobalKey<FormState>();
+    final _formKey = GlobalKey<FormState>();
   final idFieldKey = GlobalKey<FormFieldState>();
 
   // Controladors pels camps del formulari
