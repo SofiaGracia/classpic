@@ -14,8 +14,8 @@ class ProfWidgetNotifier
     extends AutoDisposeFamilyAsyncNotifier<Professor, int> {
   late final int id;
 
-  Future<RepositoryProfessorDB> get _repo async =>
-      await ref.watch(repositoryProfessorDBProvider.future);
+  RepositoryProfessorDB get _repo =>
+      ref.watch(repositoryProfessorDBProvider);
 
   @override
   FutureOr<Professor> build(int arg) async {

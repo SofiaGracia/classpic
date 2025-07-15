@@ -62,17 +62,6 @@ class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
                 const SizedBox(height: 16),
                 ImageConfigurationWidget(),
                 UriWidget(),
-                ElevatedButton(
-                  onPressed: () async {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => GestioFotosTrencadesScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text('Gestió errors'),
-                ),
               ],
             ),
           ),

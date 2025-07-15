@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/domain/models/has_foto_extension.dart';
 import 'package:xml_fotos/domain/models/usuari.dart';
 import 'package:xml_fotos/presentation/widgets/uri_dialog.dart';
 
@@ -14,108 +15,125 @@ import '../providers/uri_notifier.dart';
 import '../screens/camera_camera.dart';
 import 'foto_usuari.dart';
 
-class CicleUser extends ConsumerStatefulWidget {
+enum CicleUserStates { none, waiting, charged}
 
+class CicleUser extends ConsumerStatefulWidget {
   final Usuari usuari;
   final Future<void> Function(Usuari usu) onUpdate;
 
   const CicleUser({super.key, required this.usuari, required this.onUpdate});
 
   @override
-  ConsumerState<CicleUser> createState() => _CircleUserState();
+  ConsumerState<CicleUser> createState() => _CicleUserState();
 }
 
-class _CircleUserState extends ConsumerState<CicleUser> {
-
+class _CicleUserState extends ConsumerState<CicleUser> {
   late Usuari usuari;
+  Uri? fotoUri;
+  late CicleUserStates _state;
 
   @override
   void initState() {
     super.initState();
     usuari = widget.usuari;
+    _state = CicleUserStates.waiting;
+    _carregaFoto();
   }
 
   Future<void> _obriCamera(BuildContext context) async {
     try {
       final uri = await ref.read(UriProvider.notifier).getUri();
-      print(uri);
       if (uri == null) throw DirectoriBaseNoTriat();
-
 
       final resultat = await Navigator.push<Uint8List?>(
         context,
-        MaterialPageRoute(
-          builder: (context) => CameraPage(
-          ),
-        ),
+        MaterialPageRoute(builder: (_) => const CameraPage()),
       );
 
-      if (resultat == null) {
-        return;
-      }
+      if (resultat == null) return;
 
-      final guardada = await PlatformChannel.savePhoto(uri: uri, id: widget.usuari.usuId, tipusUsuari: widget.usuari is Alumne ? 'Alumnes' : 'Professors' , grup: widget.usuari is Alumne ? (widget.usuari as Alumne).grup : null, bytes: resultat);
+      final guardada = await PlatformChannel.savePhoto(
+        uri: uri,
+        id: usuari.usuId,
+        tipusUsuari: usuari is Alumne ? 'Alumnes' : 'Professors',
+        grup: usuari is Alumne ? (usuari as Alumne).grup : null,
+        bytes: resultat,
+      );
 
       if (guardada == true) {
-        final actualitzat = widget.usuari is Alumne
-            ? (widget.usuari as Alumne).copyWith(
-          fotoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
-          hasFoto: true
-        )
-            : (widget.usuari as Professor).copyWith(
-          fotoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
-            hasFoto: true
-        );
-
-        await widget.onUpdate(actualitzat);
+        await _carregaFoto(); // Tornem a carregar
       }
     } catch (e) {
       if (e is DirectoriBaseNoTriat) {
-        showDialog(context: context, builder: (_) => UriDialog(navigates: true));
+        showDialog(
+          context: context,
+          builder: (_) => const UriDialog(navigates: true),
+        );
       }
     }
   }
 
+  Future<void> _carregaFoto() async {
+    setState(() {
+      _state = CicleUserStates.waiting;
+    });
+
+    final uri = await usuari.getFotoUri;
+
+    setState(() {
+      fotoUri = uri;
+      _state = uri == null ? CicleUserStates.none : CicleUserStates.charged;
+    });
+
+    final actualitzat = usuari is Alumne
+        ? (usuari as Alumne).copyWith(
+      hasFoto: uri != null,
+      fotoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
+    )
+        : (usuari as Professor).copyWith(
+      hasFoto: uri != null,
+      fotoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
+    );
+
+    await widget.onUpdate(actualitzat);
+  }
+
   @override
   Widget build(BuildContext context) {
+    Widget fill;
+
+    switch (_state) {
+      case CicleUserStates.none:
+        fill = const Icon(Icons.person, size: 30);
+        break;
+      case CicleUserStates.waiting:
+        fill = const SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        );
+        break;
+      case CicleUserStates.charged:
+        if (fotoUri == null) {
+          fill = const Icon(Icons.person, size: 20);
+        } else {
+          fill = FotoUsuariWidget(
+            uri: fotoUri!,
+            bytes: null,
+            fotoPathHash: widget.usuari.fotoPathHash!,
+            radius: 30,
+          );
+        }
+        break;
+    }
 
     return GestureDetector(
-      onTap: () async {
-        _obriCamera(context);
-      },
+      onTap: () => _obriCamera(context),
       child: CircleAvatar(
-          radius: 30,
-          backgroundColor: Colors.grey.shade200,
-          child: FutureBuilder<Uri?>(
-            future: widget.usuari is Alumne
-                ? PlatformChannel.getFotoAlumneUri(
-                (widget.usuari as Alumne).grup!,
-                widget.usuari.usuId)
-                : PlatformChannel.getFotoProfessorUri(
-                widget.usuari.usuId),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState ==
-                  ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              }
-              if (snapshot.hasError) {
-                return const Icon(Icons.error);
-              }
-
-              final path = snapshot.data;
-
-              if (path == null) {
-                return const Icon(Icons.person);
-              }
-
-              return FotoUsuariWidget(
-                uri: path,
-                bytes: null,
-                fotoPathHash: widget.usuari.fotoPathHash!,
-                radius: 30,
-              );
-            },
-          )),
+        radius: 30,
+        backgroundColor: Colors.grey.shade200,
+        child: fill,
+      ),
     );
   }
 }

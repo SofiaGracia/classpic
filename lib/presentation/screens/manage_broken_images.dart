@@ -7,7 +7,6 @@ import '../providers/broken_images.dart';
 /// Provider per saber quins usuaris ha seleccionat l'usuari
 final usuarisSeleccionatsProvider = StateProvider<Set<int>>((ref) => {});
 
-
 /// Opcions d'acció possibles
 enum AccioFotos { esborraReferencia, esborraUsuari }
 
@@ -19,8 +18,8 @@ class GestioFotosTrencadesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final usuaris = ref.watch(fotosTrencadesProvider);
-    //final seleccionats = ref.watch(usuarisSeleccionatsProvider);
-    //final accio = ref.watch(accioSeleccionadaProvider);
+    final seleccionats = ref.watch(usuarisSeleccionatsProvider);
+    final accio = ref.watch(accioSeleccionadaProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Gestió de fotos trencades')),
@@ -32,7 +31,7 @@ class GestioFotosTrencadesScreen extends ConsumerWidget {
           Expanded(
             child: ListView(
               children: usuaris.map((usuari) {
-                final seleccionat = usuaris.contains(usuari.idDB);
+                final seleccionat = seleccionats.contains(usuari.idDB);
                 return CheckboxListTile(
                   value: seleccionat,
                   title: Text(usuari.nom),
@@ -57,7 +56,7 @@ class GestioFotosTrencadesScreen extends ConsumerWidget {
             title: const Text('Esborra només les referències'),
             leading: Radio<AccioFotos>(
               value: AccioFotos.esborraReferencia,
-              groupValue: AccioFotos.esborraReferencia,
+              groupValue: accio,
               onChanged: (value) => ref.read(accioSeleccionadaProvider.notifier).state = value!,
             ),
           ),
@@ -65,7 +64,7 @@ class GestioFotosTrencadesScreen extends ConsumerWidget {
             title: const Text('Esborra els usuaris completament'),
             leading: Radio<AccioFotos>(
               value: AccioFotos.esborraUsuari,
-              groupValue: AccioFotos.esborraReferencia,
+              groupValue: accio,
               onChanged: (value) => ref.read(accioSeleccionadaProvider.notifier).state = value!,
             ),
           ),
@@ -82,7 +81,7 @@ class GestioFotosTrencadesScreen extends ConsumerWidget {
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () async {
-                    //final seleccionats = ref.read(usuarisSeleccionatsProvider);
+                    final seleccionats = ref.read(usuarisSeleccionatsProvider);
                     final accio = ref.read(accioSeleccionadaProvider);
                     final usuaris = ref.read(fotosTrencadesProvider);
 

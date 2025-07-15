@@ -27,8 +27,8 @@ Future<List<Alumne>> alumnesFiltratsCurs(
 @riverpod
 class AlumnesNotifier extends _$AlumnesNotifier {
 
-  Future<RepositoryAlumneDB> get _repo async =>
-      await ref.watch(repositoryAlumneDBProvider.future);
+  RepositoryAlumneDB get _repo  =>
+      ref.watch(repositoryAlumneDBProvider);
 
   @override
   Future<List<Alumne>> build() async {

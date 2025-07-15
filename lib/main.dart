@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/presentation/providers/stream_providers.dart';
 import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 import 'package:xml_fotos/presentation/screens/configuration.dart';
 import 'package:xml_fotos/presentation/screens/splash.dart';
+
+import 'data/datasources/db/database_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +20,8 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+    ref.watch(databaseProvider);
     return MaterialApp(
       title: 'Flutter Demo',
       routes: {

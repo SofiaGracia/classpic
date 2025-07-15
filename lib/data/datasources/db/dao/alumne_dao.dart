@@ -26,6 +26,9 @@ abstract class AlumneDao {
 
   @Query('SELECT * FROM alumnes WHERE id = :id')
   Future<Alumne?> findAlumneById(int id);
+  
+  //STREAM D'IDS
+  //@Query('SELECT id FROM alumnes')
 
   @Query('SELECT * FROM alumnes WHERE nia = :nia')
   Future<Alumne?> findAlumneByNia(String nia);

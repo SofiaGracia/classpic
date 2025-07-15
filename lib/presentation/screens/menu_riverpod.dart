@@ -14,6 +14,7 @@ import '../../domain/entities/professor.dart';
 import '../widgets/uri_widget.dart';
 import 'configuration.dart';
 import 'llista_3.dart';
+import 'llista_stream.dart';
 
 class MenuScreenR extends ConsumerStatefulWidget {
   const MenuScreenR({super.key});
@@ -78,13 +79,22 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                             .read(professorNotifierProvider.notifier)//Utilitzem el read()
                             .getProfessorsSenseModificarState();
 
-                        Navigator.push(
+                        /*Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => LlistaUsuarisR<Professor>(
                               isAlumne: false,
                               curs: null,
                               initialLlista: llistaUsuaris,
+                            ),
+                          ),
+                        );*/
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LlistaUsuarisStream<Professor>(
+                              isAlumne: false,
+                              curs: null,
                             ),
                           ),
                         );

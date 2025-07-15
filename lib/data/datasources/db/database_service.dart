@@ -26,6 +26,7 @@ class DatabaseService {
   AlumneDao get alumneDao => _alumneDao;
   ProfessorDao get professorDao => _professorDao;
   CursDao get cursDao => _cursDao;
+  AppDatabase? get db => _db;
 
   // Connectar-se a la base de dades
   Future<AppDatabase> connectaDB() async {

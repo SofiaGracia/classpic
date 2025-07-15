@@ -6,7 +6,7 @@ import '../../presentation/providers/repository.dart';
 import '../datasources/db/dao/alumne_dao.dart';
 import '../datasources/db/dao/professor_dao.dart';
 import '../datasources/db/database.dart';
-
+/*
 final userRepositoryProvider = FutureProvider<UserRepository>((ref) async {
   // Usa els DAOs ja exposats
   final alumneDao = await ref.watch(alumneDaoProvider.future);
@@ -40,4 +40,4 @@ class UserRepository {
     final llistaProfessors = await professorDao.findProfessorsWithFoto();
     return llistaProfessors;
   }
-}
+}*/

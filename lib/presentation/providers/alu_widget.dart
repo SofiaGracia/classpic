@@ -11,8 +11,9 @@ import 'alumne_notifier.dart';
 class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
   late final int id;
 
-  Future<RepositoryAlumneDB> get _repo async =>
-      await ref.watch(repositoryAlumneDBProvider.future);
+
+  RepositoryAlumneDB get _repo  =>
+      ref.watch(repositoryAlumneDBProvider);
 
   @override
   FutureOr<Alumne> build(int arg) async {
