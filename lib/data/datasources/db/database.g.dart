@@ -222,6 +222,16 @@ class _$StudentDao extends StudentDao {
   }
 
   @override
+  Stream<List<int?>> observeTeacherIdsByCourse(int courseId) {
+    return _queryAdapter.queryListStream(
+        'SELECT id FROM teacher WHERE id IS NOT NULL AND courseId = ?1',
+        mapper: (Map<String, Object?> row) => row.values.first as int,
+        arguments: [courseId],
+        queryableName: 'teacher',
+        isView: false);
+  }
+
+  @override
   Future<Student?> findStudentById(int id) async {
     return _queryAdapter.query('SELECT * FROM student WHERE id = ?1',
         mapper: (Map<String, Object?> row) => Student(

@@ -27,6 +27,8 @@ class StudentRepository {
     return alumnes;
   }
 
+  Stream<List<int?>> observeTeacherIdsByCourse(int courseId) => _dao.observeTeacherIdsByCourse(courseId);
+
   Future<void> insertStudents(List<Student> students) async {
     await _dao.insertStudents(students);
   }
