@@ -26,5 +26,5 @@ final professorsIdsStreamProvider = StreamProvider<List<String>>((ref) async* {
   print('DB connectada: ${dbService.db != null}');
   final dao = dbService.teacherDao;
   print('Dao de professors: ${dbService.teacherDao != null}');
-  yield* dao.observeIdsProfessors();
+  yield* dao.observeIdsTeacher();
 });
