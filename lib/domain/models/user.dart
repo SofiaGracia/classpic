@@ -14,6 +14,14 @@ abstract class User {
   // Used to count how many users have photo
   bool get hasFoto;
 
+  void set photoPathHash(String? hashPassed) {
+    photoPathHash = hashPassed;
+  }
+
+  void set hasFoto(bool valuePassed) {
+    hasFoto = valuePassed;
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;

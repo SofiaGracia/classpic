@@ -10,12 +10,10 @@ import '../../data/repository/professor_db.dart';
 import '../../domain/entities/teacher.dart';
 
 // usuari_notifier.dart
-class ProfWidgetNotifier
-    extends AutoDisposeFamilyAsyncNotifier<Teacher, int> {
+class ProfWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Teacher, int> {
   late final int id;
 
-  RepositoryProfessorDB get _repo =>
-      ref.watch(repositoryProfessorDBProvider);
+  RepositoryProfessorDB get _repo => ref.watch(repositoryProfessorDBProvider);
 
   @override
   FutureOr<Teacher> build(int arg) async {
@@ -28,14 +26,13 @@ class ProfWidgetNotifier
   Future<void> actualitza(Teacher nou) async {
     final prof = state.value as Teacher;
     final actualitzat = prof.copyWith(
-      id: prof.id,
-      dni: nou.dni,
-      name: nou.name,
-      c1: nou.s1,
-      c2: nou.s2,
-      fotoPathHash: nou.photoPathHash,
-      hasFoto: nou.hasFoto
-    );
+        id: prof.id,
+        dni: nou.dni,
+        name: nou.name,
+        s1: nou.s1,
+        s2: nou.s2,
+        photoPathHash: nou.photoPathHash,
+        hasFoto: nou.hasFoto);
 
     if (prof.photoPathHash != nou.photoPathHash) {
       ref.read(professorNotifierProvider.notifier).actualitza(actualitzat);

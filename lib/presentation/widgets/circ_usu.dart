@@ -88,11 +88,11 @@ class _CicleUserState extends ConsumerState<CicleUser> {
     final actualitzat = usuari is Student
         ? (usuari as Student).copyWith(
       hasFoto: uri != null,
-      fotoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
+      photoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
     )
         : (usuari as Teacher).copyWith(
       hasFoto: uri != null,
-      fotoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
+      photoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
     );
 
     await widget.onUpdate(actualitzat);

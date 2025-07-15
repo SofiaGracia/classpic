@@ -116,12 +116,12 @@ class _CreateEditUserScreenState<T extends User>
   User crearUsuariGeneric() {
     final nouUsuari = UserFactory.create(
       isAlumne: isAlumne,
-      usuId: idGuardaUsuari,
+      uId: idGuardaUsuari,
       name: nomController.text.trim(),
-      c1: cognom1Controller.text.trim(),
-      c2: cognom2Controller.text.trim(),
+      s1: cognom1Controller.text.trim(),
+      s2: cognom2Controller.text.trim(),
       hasFoto: uriImageUser == null ? false : true,
-      fotoPathHash: fotoPathHash,
+      photoPathHash: fotoPathHash,
     );
     return nouUsuari;
   }

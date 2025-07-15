@@ -11,9 +11,7 @@ import 'alumne_notifier.dart';
 class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Student, int> {
   late final int id;
 
-
-  RepositoryAlumneDB get _repo  =>
-      ref.watch(repositoryAlumneDBProvider);
+  RepositoryAlumneDB get _repo => ref.watch(repositoryAlumneDBProvider);
 
   @override
   FutureOr<Student> build(int arg) async {
@@ -24,19 +22,17 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Student, int> {
   }
 
   Future<void> actualitza(Student nou) async {
-
     var cridarGlobal = false;
 
     final alu = state.value as Student;
     final actualitzat = alu.copyWith(
-      id: alu.id,
-      nia: nou.nia,
-      name: nou.name,
-      c1: nou.s1,
-      c2: nou.s2,
-      fotoPathHash: nou.photoPathHash,
-      hasFoto: nou.hasFoto
-    );
+        id: alu.id,
+        nia: nou.nia,
+        name: nou.name,
+        s1: nou.s1,
+        s2: nou.s2,
+        photoPathHash: nou.photoPathHash,
+        hasFoto: nou.hasFoto);
 
     //Si se li ha canviat el path de la foto
     // (abans no tenia i ara sí també hem de cridar al mètode de la llista global)
@@ -45,24 +41,25 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Student, int> {
     //Comparem el cursId nou i el vell per si canvia
     //si canvia és que ha canviat de grup i hem de cridar al mètode actualitza de la llista global
 
-    if(alu.courseId != nou.courseId){
+    if (alu.courseId != nou.courseId) {
       cridarGlobal = true;
       actualitzat.courseId = nou.courseId;
       actualitzat.group = nou.group;
     }
 
-    if(alu.photoPathHash != nou.photoPathHash){
+    if (alu.photoPathHash != nou.photoPathHash) {
       cridarGlobal = true;
     }
 
-    if(cridarGlobal){
+    if (cridarGlobal) {
       ref.read(alumnesNotifierProvider.notifier).actualitza(actualitzat);
-    }else{
+    } else {
       final repo = await _repo;
       final alumneEditat = await repo.editarAlumneDB(actualitzat);
     }
     state = AsyncData(actualitzat);
   }
 }
+
 final alumneWidgetNotifierProvider = AsyncNotifierProvider.autoDispose
     .family<AluWidgetNotifier, Student, int>(AluWidgetNotifier.new);
