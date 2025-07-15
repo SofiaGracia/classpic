@@ -1,6 +1,6 @@
 import 'package:xml_fotos/domain/models/user.dart';
 
-import '../entities/alumne.dart';
+import '../entities/student.dart';
 import '../entities/teacher.dart';
 
 class UserFactory {
@@ -14,7 +14,7 @@ class UserFactory {
     String? photoPathHash,
   }) {
     if (isAlumne) {
-      return Alumne(
+      return Student(
           nia: uId,
           name: name,
           s1: s1,

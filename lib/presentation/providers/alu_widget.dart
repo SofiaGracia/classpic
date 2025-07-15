@@ -5,10 +5,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:xml_fotos/presentation/providers/repository.dart';
 
 import '../../data/repository/alumne_db.dart';
-import '../../domain/entities/alumne.dart';
+import '../../domain/entities/student.dart';
 import 'alumne_notifier.dart';
 
-class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
+class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Student, int> {
   late final int id;
 
 
@@ -16,22 +16,22 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
       ref.watch(repositoryAlumneDBProvider);
 
   @override
-  FutureOr<Alumne> build(int arg) async {
+  FutureOr<Student> build(int arg) async {
     id = arg;
     final repo = await _repo;
     final alu = await repo.carregaAlumneDB(id);
     return alu!;
   }
 
-  Future<void> actualitza(Alumne nou) async {
+  Future<void> actualitza(Student nou) async {
 
     var cridarGlobal = false;
 
-    final alu = state.value as Alumne;
+    final alu = state.value as Student;
     final actualitzat = alu.copyWith(
       id: alu.id,
       nia: nou.nia,
-      nom: nou.name,
+      name: nou.name,
       c1: nou.s1,
       c2: nou.s2,
       fotoPathHash: nou.photoPathHash,
@@ -45,10 +45,10 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
     //Comparem el cursId nou i el vell per si canvia
     //si canvia és que ha canviat de grup i hem de cridar al mètode actualitza de la llista global
 
-    if(alu.cursId != nou.cursId){
+    if(alu.courseId != nou.courseId){
       cridarGlobal = true;
-      actualitzat.cursId = nou.cursId;
-      actualitzat.grup = nou.grup;
+      actualitzat.courseId = nou.courseId;
+      actualitzat.group = nou.group;
     }
 
     if(alu.photoPathHash != nou.photoPathHash){
@@ -65,4 +65,4 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Alumne, int> {
   }
 }
 final alumneWidgetNotifierProvider = AsyncNotifierProvider.autoDispose
-    .family<AluWidgetNotifier, Alumne, int>(AluWidgetNotifier.new);
+    .family<AluWidgetNotifier, Student, int>(AluWidgetNotifier.new);

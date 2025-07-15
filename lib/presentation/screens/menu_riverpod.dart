@@ -9,7 +9,7 @@ import 'package:xml_fotos/presentation/screens/llista_cursos.dart';
 import 'package:xml_fotos/presentation/widgets/counter.dart';
 import 'package:xml_fotos/presentation/widgets/status_button_riverpod.dart';
 
-import '../../domain/entities/alumne.dart';
+import '../../domain/entities/student.dart';
 import '../../domain/entities/teacher.dart';
 import '../widgets/uri_widget.dart';
 import 'configuration.dart';
@@ -62,7 +62,7 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                       },
                       provider: alumnesNotifierProvider),
                   const SizedBox(width: 8),
-                  CounterWidget<Alumne>(
+                  CounterWidget<Student>(
                     provider: alumnesNotifierProvider,
                   ),
                 ],

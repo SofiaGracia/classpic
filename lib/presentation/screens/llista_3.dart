@@ -7,8 +7,8 @@ import 'package:xml_fotos/presentation/widgets/new_user.dart';
 import 'package:xml_fotos/presentation/widgets/usuari_riverpod_ind.dart';
 
 import '../../application/services/saf_methods.dart';
-import '../../domain/entities/alumne.dart';
-import '../../domain/entities/curs.dart';
+import '../../domain/entities/student.dart';
+import '../../domain/entities/course.dart';
 import '../../domain/entities/teacher.dart';
 import '../../domain/models/user.dart';
 import '../../shared/utils/constants.dart';
@@ -17,7 +17,7 @@ import '../providers/professor_notifier.dart';
 
 class LlistaUsuarisR<T extends User> extends ConsumerWidget {
   final bool isAlumne;
-  final Curs? curs;
+  final Course? curs;
   final List<T>? initialLlista; // llista passada opcionalment
 
   const LlistaUsuarisR({
@@ -28,7 +28,7 @@ class LlistaUsuarisR<T extends User> extends ConsumerWidget {
   });
 
   String _getTitol(){
-    return isAlumne? 'Alumnes de ${curs!.nom}': 'Professors';
+    return isAlumne? 'Alumnes de ${curs!.name}': 'Professors';
   }
 
   @override
@@ -77,10 +77,10 @@ class LlistaUsuarisR<T extends User> extends ConsumerWidget {
           return UsuariWidgetRInd(
             usuari: usuari,
             onDelete: (u) async {
-              if (u is Alumne) {
+              if (u is Student) {
                 await ref.read(alumnesNotifierProvider.notifier).eliminarAlumne(u);
                 if (u.hasFoto){
-                  final uriAlumne = await PlatformChannel.getFotoAlumneUri(u.grup!, u.nia);
+                  final uriAlumne = await PlatformChannel.getFotoAlumneUri(u.group!, u.nia);
                   await ref.read(StorageServiceProvider).eliminaFoto(uriAlumne!);
                 }
               } else {
@@ -96,14 +96,14 @@ class LlistaUsuarisR<T extends User> extends ConsumerWidget {
       ),
       floatingActionButton: NewUserR<User>(
         onCreate: (u) async {
-          if (u is Alumne) {
+          if (u is Student) {
             await ref.read(alumnesNotifierProvider.notifier).inserirAlumne(u);
           } else {
             await ref.read(professorNotifierProvider.notifier).inserirProfessor(u as Teacher);
           }
         },
         cursId: isAlumne? curs!.id! : null,
-        getId: (u) => isAlumne ? (u as Alumne).nia : (u as Teacher).dni,
+        getId: (u) => isAlumne ? (u as Student).nia : (u as Teacher).dni,
         isAlumne: isAlumne,
       ),
     );

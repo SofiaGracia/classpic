@@ -4,7 +4,7 @@ import 'package:xml_fotos/data/repository/curs_db.dart';
 import 'package:xml_fotos/data/datasources/db/database_service.dart';
 
 import '../../data/datasources/db/dao/curs_dao.dart';
-import '../../domain/entities/curs.dart';
+import '../../domain/entities/course.dart';
 
 part 'cursos_notifier.g.dart';
 
@@ -25,7 +25,7 @@ class CursosNotifier extends _$CursosNotifier {
   Future<RepositoryCursDB> get _repo async => await ref.watch(repositoryCursDBProvider.future);
 
   @override
-  Future<List<Curs>> build() async {
+  Future<List<Course>> build() async {
     final repo = await _repo;
     return repo.carregarCursosDB();//Incicialitzem l'estat
   }
@@ -40,35 +40,35 @@ class CursosNotifier extends _$CursosNotifier {
     }
   }
 
-  Future<List<Curs>> getCursosSenseModificarState() async {
+  Future<List<Course>> getCursosSenseModificarState() async {
     final repo = await _repo;
     return repo.carregarCursosDB();
   }
 
-  Future<Curs?> getCursSenseModificarState(int cursId) async {
+  Future<Course?> getCursSenseModificarState(int cursId) async {
     final repo = await _repo;
     return repo.carregaCursDB(cursId);
   }
 
-  Future<Curs?> getCursPerNom(String nom) async {
+  Future<Course?> getCursPerNom(String nom) async {
     final repo = await _repo;
     return repo.findCursNom(nom);
   }
 
-  Future<bool> checkCurs(Curs curs) async {
+  Future<bool> checkCurs(Course curs) async {
     final repo = await _repo;
     final actuals = await repo.carregarCursosDB();
-    final nomNormalitzat = curs.nom.trim().toLowerCase();
+    final nomNormalitzat = curs.name.trim().toLowerCase();
 
-    return actuals.any((c) => c.nom.trim().toLowerCase() == nomNormalitzat);
+    return actuals.any((c) => c.name.trim().toLowerCase() == nomNormalitzat);
   }
 
   //Inserir nou curs
-  Future<void> inserirCurs(Curs curs) async {
+  Future<void> inserirCurs(Course curs) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       if (await checkCurs(curs)) {
-        throw Exception('Ja existeix un curs amb el nom "${curs.nom}".');
+        throw Exception('Ja existeix un curs amb el nom "${curs.name}".');
       }
       final repo = await _repo;
       final actuals = await repo.carregarCursosDB();
@@ -77,7 +77,7 @@ class CursosNotifier extends _$CursosNotifier {
     });
   }
 
-  Future<void> inserirCursos(List<Curs> cursos) async {
+  Future<void> inserirCursos(List<Course> cursos) async {
     try {
       final repo = await _repo;
       await repo.inserirCursosDB(cursos);
@@ -89,7 +89,7 @@ class CursosNotifier extends _$CursosNotifier {
     }
   }
 
-  Future<void> eliminarCurs(Curs curs) async {
+  Future<void> eliminarCurs(Course curs) async {
 
     try{
       final repo = await _repo;
@@ -101,7 +101,7 @@ class CursosNotifier extends _$CursosNotifier {
     }
   }
 
-  Future<void> eliminarCursos(List<Curs> cursos) async {
+  Future<void> eliminarCursos(List<Course> cursos) async {
 
     //Vull fer-ho de esta manera:
     try {
@@ -123,16 +123,16 @@ class CursosNotifier extends _$CursosNotifier {
     try {
       final repo = await _repo;
       await repo.buidarCursosBD(); // Elimina de la BD
-      state = AsyncData(<Curs>[]);   // Reflecteix-ho a l’estat
+      state = AsyncData(<Course>[]);   // Reflecteix-ho a l’estat
     } catch (e, st) {
       state = AsyncError(e, st);     // Gestiona errors
     }
   }
 
-  Future<Curs?> actualitza(Curs cursActualitzat) async {
+  Future<Course?> actualitza(Course cursActualitzat) async {
     try {
       if (await checkCurs(cursActualitzat)) {
-        throw Exception('Ja existeix un curs amb el nom "${cursActualitzat.nom}".');
+        throw Exception('Ja existeix un curs amb el nom "${cursActualitzat.name}".');
       }
 
       final actuals = await getCursosSenseModificarState();

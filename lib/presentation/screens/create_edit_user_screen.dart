@@ -7,7 +7,7 @@ import 'package:xml_fotos/shared/utils/constants.dart';
 
 import '../../application/services/codi_generator.dart';
 import '../../application/services/saf_methods.dart';
-import '../../domain/entities/alumne.dart';
+import '../../domain/entities/student.dart';
 import '../../domain/models/user.dart';
 import '../../domain/models/user_factory.dart';
 import '../../shared/utils/validator.dart';
@@ -117,7 +117,7 @@ class _CreateEditUserScreenState<T extends User>
     final nouUsuari = UserFactory.create(
       isAlumne: isAlumne,
       usuId: idGuardaUsuari,
-      nom: nomController.text.trim(),
+      name: nomController.text.trim(),
       c1: cognom1Controller.text.trim(),
       c2: cognom2Controller.text.trim(),
       hasFoto: uriImageUser == null ? false : true,
@@ -126,7 +126,7 @@ class _CreateEditUserScreenState<T extends User>
     return nouUsuari;
   }
 
-  Future<void> _moureFotoSiCal(Alumne usuariNou, String grupNou) async {
+  Future<void> _moureFotoSiCal(Student usuariNou, String grupNou) async {
     if (!usuariNou.hasFoto) return;
 
     final grupAntic = cursAmbQueShaFetLaFoto;
@@ -195,19 +195,19 @@ class _CreateEditUserScreenState<T extends User>
     }
 
     String? nomCurs;
-    if (usuariNou is Alumne) {
+    if (usuariNou is Student) {
       int? idCurs;
 
       final cursTrobat = await ref
           .read(cursosNotifierProvider.notifier)
           .getCursPerNom(nomCursSeleccionat!);
 
-      nomCurs = cursTrobat!.nom;
+      nomCurs = cursTrobat!.name;
       idCurs = cursTrobat.id;
 
       //Assignem a l'usuari nou el curs corresponent
-      usuariNou.grup = nomCurs;
-      usuariNou.cursId = idCurs;
+      usuariNou.group = nomCurs;
+      usuariNou.courseId = idCurs;
 
       await _moureFotoSiCal(usuariNou, nomCursSeleccionat!);
     }
@@ -246,7 +246,7 @@ class _CreateEditUserScreenState<T extends User>
           .getCursPerNom(nomCursSeleccionat!);
 
       if (cursTrobat != null) {
-        cursFoto = cursTrobat.nom;
+        cursFoto = cursTrobat.name;
       }
     }
 

@@ -5,8 +5,8 @@ import 'package:xml_fotos/application/services/codi_generator.dart';
 import 'package:xml_fotos/data/datasources/xml/xml.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
 
-import '../../../domain/entities/alumne.dart';
-import '../../../domain/entities/curs.dart';
+import '../../../domain/entities/student.dart';
+import '../../../domain/entities/course.dart';
 import '../../../presentation/providers/cursos_notifier.dart';
 import '../../repository/curs_db.dart';
 
@@ -20,23 +20,23 @@ class RepositoryAlumneXml {
 
   //I alomillor esta funció no deuria ni estar ací i deuria estar en
   //repositoryAlumne o el provider d'Alumne
-  Future<List<Alumne>> assignaIdCursAlsAlumnes(
-      List<Alumne> alumnes, List<Curs> cursosBD) async {
+  Future<List<Student>> assignaIdCursAlsAlumnes(
+      List<Student> alumnes, List<Course> cursosBD) async {
     return alumnes.map((alumne) {
       final curs = cursosBD.firstWhere(
-              (c) => c.nom == alumne.grup,
-          orElse: () => throw Exception("Curs no trobat: ${alumne.grup}"));
+              (c) => c.name == alumne.group,
+          orElse: () => throw Exception("Curs no trobat: ${alumne.group}"));
       return alumne.copyWith(cursId: curs.id);
     }).toList();
   }
 
   Map<String, dynamic> parseAlumnesFromXml(XmlDocument doc) {
-    final alumnes = <Alumne>[];
+    final alumnes = <Student>[];
     Set<String> cursosUnics = Set();
     final alumnesNode = doc.findAllElements('alumnos').first;
     for (final alu in alumnesNode.findElements('alumno')) {
       final mat = alu.getAttribute('estado_matricula');
-      if (mat == Alumne.estatMatriculat) {
+      if (mat == Student.enrollmentStatus) {
         final aluNia = alu.getAttribute('NIA');
         final aluNom = alu.getAttribute('nombre');
         final aluC1 = alu.getAttribute('apellido1');
@@ -51,12 +51,12 @@ class RepositoryAlumneXml {
 
           final idNia = CodiGenerator.normalitzaIdentificador(aluNia);
 
-          alumnes.add(Alumne(
+          alumnes.add(Student(
             nia: idNia,
-            nom: aluNom,
+            name: aluNom,
             c1: aluC1,
             c2: aluC2,
-            grup: aluGrup,
+            group: aluGrup,
             fotoPathHash: DateTime.now()
                 .millisecondsSinceEpoch
                 .toString(),

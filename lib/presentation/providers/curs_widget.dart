@@ -4,20 +4,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/services/storage_service.dart';
 import '../../data/repository/curs_db.dart';
-import '../../domain/entities/curs.dart';
+import '../../domain/entities/course.dart';
 import 'cursos_notifier.dart';
 
 final cursWidgetNotifierProvider = AsyncNotifierProvider.autoDispose
-    .family<CursWidgetNotifier, Curs, int>(CursWidgetNotifier.new);
+    .family<CursWidgetNotifier, Course, int>(CursWidgetNotifier.new);
 
-class CursWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Curs, int> {
+class CursWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Course, int> {
   late final int id;
 
   Future<RepositoryCursDB> get _repo async =>
       await ref.watch(repositoryCursDBProvider.future);
 
   @override
-  FutureOr<Curs> build(int arg) async {
+  FutureOr<Course> build(int arg) async {
     id = arg;
     final repo = await _repo;
     final curs = await repo.carregaCursDB(id);
@@ -29,7 +29,7 @@ class CursWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Curs, int> {
 
       //Ací també s'actualitza el nom del grup en els alumnes d'eixe grup.
       //pq canviem el nom però no l'id del curs
-      final curs = state.value as Curs;
+      final curs = state.value as Course;
       final actualitzat = curs.copyWith(id: curs.id, nom: nouNom);
 
 

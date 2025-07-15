@@ -10,7 +10,7 @@ import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 import 'package:xml_fotos/presentation/widgets/circ_usu.dart';
 import 'package:xml_fotos/presentation/widgets/uri_dialog.dart';
 
-import '../../domain/entities/alumne.dart';
+import '../../domain/entities/student.dart';
 import '../../domain/entities/teacher.dart';
 import '../../domain/models/user.dart';
 import '../../application/services/storage_service.dart';
@@ -40,18 +40,18 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
   var nomDelGrupActual = null;
 
   Future<User?> _editarUsuari(User usuari) async {
-    final imageUser = usuari is Alumne
-        ? await PlatformChannel.getFotoAlumneUri(usuari.grup!, usuari.uId)
+    final imageUser = usuari is Student
+        ? await PlatformChannel.getFotoAlumneUri(usuari.group!, usuari.uId)
         : await PlatformChannel.getFotoProfessorUri(usuari.uId);
 
-    if (usuari is Alumne) {
+    if (usuari is Student) {
       final cursos = await ref
           .read(cursosNotifierProvider.notifier)
           .getCursosSenseModificarState();
 
       nomDelGrupActual = cursos
-          .firstWhere((c) => c.id.toString() == usuari.cursId.toString())
-          .nom;
+          .firstWhere((c) => c.id.toString() == usuari.courseId.toString())
+          .name;
     }
 
     final nouUsuari = await Navigator.push<User>(
@@ -59,35 +59,35 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
       MaterialPageRoute(
         builder: (_) => CreateEditUserScreen(
           usuari: usuari,
-          isAlumne: usuari is Alumne?,
-          cursId: usuari is Alumne ? usuari.cursId : null,
+          isAlumne: usuari is Student?,
+          cursId: usuari is Student ? usuari.courseId : null,
           cursNom: nomDelGrupActual,
-          codiUsuari: usuari is Alumne ? usuari.nia : (usuari as Teacher).dni,
+          codiUsuari: usuari is Student ? usuari.nia : (usuari as Teacher).dni,
           uriImageUser: imageUser,
         ),
       ),
     );
 
     final usuariARetornar;
-    if (usuari is Alumne) {
-      final alu = (nouUsuari as Alumne);
+    if (usuari is Student) {
+      final alu = (nouUsuari as Student);
       usuariARetornar = (usuari).copyWith(
         id: usuari.id,
         nia: alu.nia,
-        nom: alu.name,
+        name: alu.name,
         c1: alu.s1,
         c2: alu.s2,
         fotoPathHash: alu.photoPathHash,
         hasFoto: alu.hasFoto,
-        grup: alu.grup,
-        cursId: alu.cursId,
+        grup: alu.group,
+        cursId: alu.courseId,
       );
     } else {
       final prof = (nouUsuari as Teacher);
       usuariARetornar = (usuari as Teacher).copyWith(
         id: usuari.id,
         dni: prof.dni,
-        nom: prof.name,
+        name: prof.name,
         c1: prof.s1,
         c2: prof.s2,
         hasFoto: prof.hasFoto,
@@ -102,12 +102,12 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
     late final AsyncValue<User> usuariAsync;
     late final dynamic provider;
 
-    if (widget.usuari is Alumne) {
+    if (widget.usuari is Student) {
       usuariAsync = ref
-          .watch(alumneWidgetNotifierProvider((widget.usuari as Alumne).id!));
+          .watch(alumneWidgetNotifierProvider((widget.usuari as Student).id!));
 
       provider = ref.read(
-          alumneWidgetNotifierProvider((widget.usuari as Alumne).id!)
+          alumneWidgetNotifierProvider((widget.usuari as Student).id!)
               .notifier); //Notifier individual per a alumne
     } else {
       usuariAsync = ref.watch(
@@ -145,7 +145,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       Text(
-                        '${usuari is Alumne ? usuari.nia : (usuari as Teacher).dni}',
+                        '${usuari is Student ? usuari.nia : (usuari as Teacher).dni}',
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                     ],

@@ -47,7 +47,7 @@ class NewUserR<T extends User> extends ConsumerWidget {
 
           nomDelGrupActual = cursos
               .firstWhere((c) => c.id.toString() == cursId.toString())
-              .nom;
+              .name;
         }
 
         /*final nouUsuari = await Navigator.push<Usuari>(

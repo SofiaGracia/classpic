@@ -2,7 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:xml_fotos/presentation/providers/alu_widget.dart';
 import 'package:xml_fotos/presentation/providers/repository.dart';
 
-import '../../domain/entities/alumne.dart';
+import '../../domain/entities/student.dart';
 import '../../data/repository/alumne_db.dart';
 
 part 'alumne_notifier.g.dart';
@@ -10,14 +10,14 @@ part 'alumne_notifier.g.dart';
 
 //Contador d'alumnes de cada Curs
 @riverpod
-Future<List<Alumne>> alumnesFiltratsCurs(
+Future<List<Student>> alumnesFiltratsCurs(
     AlumnesFiltratsCursRef ref, int? cursId) async {
   final asyncValue = ref.watch(alumnesNotifierProvider);
 
   return asyncValue.when(
     data: (alumnes) {
       if (cursId == null) return alumnes;
-      return alumnes.where((a) => a.cursId == cursId).toList();
+      return alumnes.where((a) => a.courseId == cursId).toList();
     },
     loading: () => [],
     error: (err, stack) => throw err,
@@ -31,7 +31,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
       ref.watch(repositoryAlumneDBProvider);
 
   @override
-  Future<List<Alumne>> build() async {
+  Future<List<Student>> build() async {
     final repo = await _repo;
     return repo.carregaAlumnesDB();
   }
@@ -48,7 +48,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     }
   }
 
-  Future<void> inserirAlumnes(List<Alumne> alumnes) async {
+  Future<void> inserirAlumnes(List<Student> alumnes) async {
     try {
       final repo = await _repo;
       await repo.inserirAlumnesDB(alumnes);
@@ -60,7 +60,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     }
   }
 
-  Future<void> inserirAlumne(Alumne alumne) async {
+  Future<void> inserirAlumne(Student alumne) async {
     try {
       final repo = await _repo;
 
@@ -78,7 +78,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     }
   }
 
-  Future<void> eliminarAlumne(Alumne alumne) async {
+  Future<void> eliminarAlumne(Student alumne) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repo = await _repo;
@@ -88,7 +88,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     });
   }
 
-  Future<void> eliminarAlumnes(List<Alumne> alumnes) async {
+  Future<void> eliminarAlumnes(List<Student> alumnes) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repo = await _repo;
@@ -100,7 +100,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     });
   }
 
-  Future<void> editarAlumne(Alumne alumne) async {
+  Future<void> editarAlumne(Student alumne) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repo = await _repo;
@@ -112,7 +112,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     });
   }
 
-  Future<void> editarAlumnes(List<Alumne> alumnes) async {
+  Future<void> editarAlumnes(List<Student> alumnes) async {
     try {
       final repo = await _repo;
 
@@ -122,7 +122,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
 
       final idsEditats = alumnes.map((a) => a.id).toSet();
 
-      final List<Alumne> actualitzats = [];
+      final List<Student> actualitzats = [];
 
       for (final a in actuals) {
         if (idsEditats.contains(a.id)) {
@@ -139,17 +139,17 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     }
   }
 
-  Future<List<Alumne>> getAlumnesSenseModificarState() async {
+  Future<List<Student>> getAlumnesSenseModificarState() async {
     final repo = await _repo;
     return repo.carregaAlumnesDB();
   }
 
-  Future<List<Alumne>> getAlumnesPerCurs(int id) async {
+  Future<List<Student>> getAlumnesPerCurs(int id) async {
     final repo = await _repo;
     return repo.carregaAlumnesPerCursDB(id);
   }
 
-  Future<void> actualitza(Alumne usuariActualitzat) async {
+  Future<void> actualitza(Student usuariActualitzat) async {
     try {
       final actuals = state.requireValue;
 
