@@ -10,7 +10,7 @@ import 'package:xml_fotos/presentation/widgets/counter.dart';
 import 'package:xml_fotos/presentation/widgets/status_button_riverpod.dart';
 
 import '../../domain/entities/alumne.dart';
-import '../../domain/entities/professor.dart';
+import '../../domain/entities/teacher.dart';
 import '../widgets/uri_widget.dart';
 import 'configuration.dart';
 import 'llista_3.dart';
@@ -92,7 +92,7 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LlistaUsuarisStream<Professor>(
+                            builder: (context) => LlistaUsuarisStream<Teacher>(
                               isAlumne: false,
                               curs: null,
                             ),
@@ -101,7 +101,7 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                       },
                       provider: professorNotifierProvider),
                   const SizedBox(width: 8),
-                  CounterWidget<Professor>(
+                  CounterWidget<Teacher>(
                     provider: professorNotifierProvider,
                   ),
                 ],

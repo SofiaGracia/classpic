@@ -9,13 +9,13 @@ import 'package:xml_fotos/presentation/widgets/usuari_riverpod_ind.dart';
 import '../../application/services/saf_methods.dart';
 import '../../domain/entities/alumne.dart';
 import '../../domain/entities/curs.dart';
-import '../../domain/entities/professor.dart';
-import '../../domain/models/usuari.dart';
+import '../../domain/entities/teacher.dart';
+import '../../domain/models/user.dart';
 import '../../shared/utils/constants.dart';
 import '../providers/provider_id.dart';
 import '../providers/professor_notifier.dart';
 
-class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
+class LlistaUsuarisR<T extends User> extends ConsumerWidget {
   final bool isAlumne;
   final Curs? curs;
   final List<T>? initialLlista; // llista passada opcionalment
@@ -84,7 +84,7 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
                   await ref.read(StorageServiceProvider).eliminaFoto(uriAlumne!);
                 }
               } else {
-                await ref.read(professorNotifierProvider.notifier).eliminarProfessor(u as Professor);
+                await ref.read(professorNotifierProvider.notifier).eliminarProfessor(u as Teacher);
                 if (u.hasFoto){
                   final uriProf = await PlatformChannel.getFotoProfessorUri(u.dni);
                   await ref.read(StorageServiceProvider).eliminaFoto(uriProf!);
@@ -94,22 +94,22 @@ class LlistaUsuarisR<T extends Usuari> extends ConsumerWidget {
           );
         }).toList(),
       ),
-      floatingActionButton: NewUserR<Usuari>(
+      floatingActionButton: NewUserR<User>(
         onCreate: (u) async {
           if (u is Alumne) {
             await ref.read(alumnesNotifierProvider.notifier).inserirAlumne(u);
           } else {
-            await ref.read(professorNotifierProvider.notifier).inserirProfessor(u as Professor);
+            await ref.read(professorNotifierProvider.notifier).inserirProfessor(u as Teacher);
           }
         },
         cursId: isAlumne? curs!.id! : null,
-        getId: (u) => isAlumne ? (u as Alumne).nia : (u as Professor).dni,
+        getId: (u) => isAlumne ? (u as Alumne).nia : (u as Teacher).dni,
         isAlumne: isAlumne,
       ),
     );
   }
 
-  Future<List<T>> _carregaLlista<T extends Usuari>(
+  Future<List<T>> _carregaLlista<T extends User>(
       WidgetRef ref, bool isAlumne, int? cursId) {
     if (isAlumne) {
       return ref

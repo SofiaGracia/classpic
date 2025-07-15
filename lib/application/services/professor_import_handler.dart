@@ -58,7 +58,7 @@ class ProfessorImportHandler{
         for(final p in pEliminar){
 
           // Hi ha que trobar el path correcte
-          final uriFotoProf = await PlatformChannel.getFotoProfessorUri(p.usuId);
+          final uriFotoProf = await PlatformChannel.getFotoProfessorUri(p.uId);
           if(uriFotoProf != null){
             fotoPaths.add(uriFotoProf);
           }

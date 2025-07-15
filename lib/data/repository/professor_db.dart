@@ -1,7 +1,7 @@
 
 import 'package:xml_fotos/data/datasources/db/dao/professor_dao.dart';
 
-import '../../domain/entities/professor.dart';
+import '../../domain/entities/teacher.dart';
 
 class RepositoryProfessorDB {
 
@@ -11,40 +11,40 @@ class RepositoryProfessorDB {
     required ProfessorDao professorDao,
   }) : _professorDao = professorDao;
 
-  Future<Professor?> carregaProfessorDB(int id) async{
+  Future<Teacher?> carregaProfessorDB(int id) async{
     return await _professorDao.findProfessorById(id);
   }
 
-  Future<Professor?> carregaProfessorDBbyDni(String dni) async{
+  Future<Teacher?> carregaProfessorDBbyDni(String dni) async{
     return await _professorDao.findProfessorByDni(dni);
   }
 
-  Future<List<Professor>> carregaProfessorsDB() async {
+  Future<List<Teacher>> carregaProfessorsDB() async {
     final professors = await _professorDao.findAllProfessors();
     return professors;
   }
 
-  Future<void> insertarProfessorDB(Professor professor) async {
+  Future<void> insertarProfessorDB(Teacher professor) async {
     await _professorDao.insertProfessor(professor);
   }
 
-  Future<void> insertarProfessorsDB(List<Professor> professors) async {
+  Future<void> insertarProfessorsDB(List<Teacher> professors) async {
     await _professorDao.insertProfessors(professors);
   }
 
-  Future<void> eliminarProfessorDB(Professor professor) async {
+  Future<void> eliminarProfessorDB(Teacher professor) async {
     await _professorDao.deleteProfessor(professor);
   }
 
-  Future<void> eliminarProfessorsDB(List<Professor> professors) async {
+  Future<void> eliminarProfessorsDB(List<Teacher> professors) async {
     await _professorDao.deleteProfessors(professors);
   }
 
-  Future<void> editarProfessorDB(Professor professor) async {
+  Future<void> editarProfessorDB(Teacher professor) async {
     await _professorDao.updateProfessor(professor);
   }
 
-  Future<void> editarProfessorsDB(List<Professor> professors) async {
+  Future<void> editarProfessorsDB(List<Teacher> professors) async {
     await _professorDao.updateProfessors(professors);
   }
 

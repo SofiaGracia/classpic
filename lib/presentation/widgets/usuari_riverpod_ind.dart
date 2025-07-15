@@ -11,8 +11,8 @@ import 'package:xml_fotos/presentation/widgets/circ_usu.dart';
 import 'package:xml_fotos/presentation/widgets/uri_dialog.dart';
 
 import '../../domain/entities/alumne.dart';
-import '../../domain/entities/professor.dart';
-import '../../domain/models/usuari.dart';
+import '../../domain/entities/teacher.dart';
+import '../../domain/models/user.dart';
 import '../../application/services/storage_service.dart';
 import '../../shared/utils/constants.dart';
 import '../../shared/utils/dialog.dart';
@@ -23,8 +23,8 @@ import '../screens/create_edit_user_screen.dart';
 import 'foto_usuari.dart';
 
 class UsuariWidgetRInd extends ConsumerStatefulWidget {
-  final Usuari usuari;
-  final Future<void> Function(Usuari usuari) onDelete;
+  final User usuari;
+  final Future<void> Function(User usuari) onDelete;
 
   const UsuariWidgetRInd({
     super.key,
@@ -39,10 +39,10 @@ class UsuariWidgetRInd extends ConsumerStatefulWidget {
 class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
   var nomDelGrupActual = null;
 
-  Future<Usuari?> _editarUsuari(Usuari usuari) async {
+  Future<User?> _editarUsuari(User usuari) async {
     final imageUser = usuari is Alumne
-        ? await PlatformChannel.getFotoAlumneUri(usuari.grup!, usuari.usuId)
-        : await PlatformChannel.getFotoProfessorUri(usuari.usuId);
+        ? await PlatformChannel.getFotoAlumneUri(usuari.grup!, usuari.uId)
+        : await PlatformChannel.getFotoProfessorUri(usuari.uId);
 
     if (usuari is Alumne) {
       final cursos = await ref
@@ -54,7 +54,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
           .nom;
     }
 
-    final nouUsuari = await Navigator.push<Usuari>(
+    final nouUsuari = await Navigator.push<User>(
       context,
       MaterialPageRoute(
         builder: (_) => CreateEditUserScreen(
@@ -62,7 +62,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
           isAlumne: usuari is Alumne?,
           cursId: usuari is Alumne ? usuari.cursId : null,
           cursNom: nomDelGrupActual,
-          codiUsuari: usuari is Alumne ? usuari.nia : (usuari as Professor).dni,
+          codiUsuari: usuari is Alumne ? usuari.nia : (usuari as Teacher).dni,
           uriImageUser: imageUser,
         ),
       ),
@@ -74,24 +74,24 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
       usuariARetornar = (usuari).copyWith(
         id: usuari.id,
         nia: alu.nia,
-        nom: alu.nom,
-        c1: alu.c1,
-        c2: alu.c2,
-        fotoPathHash: alu.fotoPathHash,
+        nom: alu.name,
+        c1: alu.s1,
+        c2: alu.s2,
+        fotoPathHash: alu.photoPathHash,
         hasFoto: alu.hasFoto,
         grup: alu.grup,
         cursId: alu.cursId,
       );
     } else {
-      final prof = (nouUsuari as Professor);
-      usuariARetornar = (usuari as Professor).copyWith(
+      final prof = (nouUsuari as Teacher);
+      usuariARetornar = (usuari as Teacher).copyWith(
         id: usuari.id,
         dni: prof.dni,
-        nom: prof.nom,
-        c1: prof.c1,
-        c2: prof.c2,
+        nom: prof.name,
+        c1: prof.s1,
+        c2: prof.s2,
         hasFoto: prof.hasFoto,
-        fotoPathHash: prof.fotoPathHash,
+        fotoPathHash: prof.photoPathHash,
       );
     }
     return usuariARetornar;
@@ -99,7 +99,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
 
   @override
   Widget build(BuildContext context) {
-    late final AsyncValue<Usuari> usuariAsync;
+    late final AsyncValue<User> usuariAsync;
     late final dynamic provider;
 
     if (widget.usuari is Alumne) {
@@ -111,10 +111,10 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
               .notifier); //Notifier individual per a alumne
     } else {
       usuariAsync = ref.watch(
-          professorWidgetNotifierProvider((widget.usuari as Professor).id!));
+          professorWidgetNotifierProvider((widget.usuari as Teacher).id!));
 
       provider = ref.read(
-          professorWidgetNotifierProvider((widget.usuari as Professor).id!)
+          professorWidgetNotifierProvider((widget.usuari as Teacher).id!)
               .notifier); //Notifier individual per a professor
     }
 
@@ -137,15 +137,15 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${usuari.c1} ${usuari.c2}',
+                        '${usuari.s1} ${usuari.s2}',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(
-                        '${usuari.nom}',
+                        '${usuari.name}',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       Text(
-                        '${usuari is Alumne ? usuari.nia : (usuari as Professor).dni}',
+                        '${usuari is Alumne ? usuari.nia : (usuari as Teacher).dni}',
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                     ],

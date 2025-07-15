@@ -56,7 +56,7 @@ class Validator {
     );
 
     final idJaExisteix =
-    llistaExistents.any((usuari) => usuari.usuId == valor && (id == null || id != valor));
+    llistaExistents.any((usuari) => usuari.uId == valor && (id == null || id != valor));
 
     if(idJaExisteix){
       return 'Ja existeix un usuari amb aquest ID.';

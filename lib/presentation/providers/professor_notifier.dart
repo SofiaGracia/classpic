@@ -2,7 +2,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:xml_fotos/presentation/providers/repository.dart';
 
-import '../../domain/entities/professor.dart';
+import '../../domain/entities/teacher.dart';
 import '../../data/repository/professor_db.dart';
 
 part 'professor_notifier.g.dart';
@@ -14,7 +14,7 @@ class ProfessorNotifier extends _$ProfessorNotifier {
       ref.watch(repositoryProfessorDBProvider);
 
   @override
-  Future<List<Professor>> build() async {
+  Future<List<Teacher>> build() async {
     final repo = await _repo;
     return repo.carregaProfessorsDB();
   }
@@ -27,12 +27,12 @@ class ProfessorNotifier extends _$ProfessorNotifier {
     });
   }
 
-  Future<List<Professor>> getProfessorsSenseModificarState() async {
+  Future<List<Teacher>> getProfessorsSenseModificarState() async {
     final repo = _repo;
     return repo.carregaProfessorsDB();
   }
 
-  Future<void> inserirProfessor(Professor professor) async {
+  Future<void> inserirProfessor(Teacher professor) async {
 
     try{
       final repo = await _repo;
@@ -46,7 +46,7 @@ class ProfessorNotifier extends _$ProfessorNotifier {
     }
   }
 
-  Future<void> inserirProfessors(List<Professor> professors) async {
+  Future<void> inserirProfessors(List<Teacher> professors) async {
     try{
       final repo = await _repo;
       await repo.insertarProfessorsDB(professors);
@@ -59,7 +59,7 @@ class ProfessorNotifier extends _$ProfessorNotifier {
     }
   }
 
-  Future<void> eliminarProfessor(Professor professor) async {
+  Future<void> eliminarProfessor(Teacher professor) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repo = await _repo;
@@ -69,7 +69,7 @@ class ProfessorNotifier extends _$ProfessorNotifier {
     });
   }
 
-  Future<void> eliminarProfessors(List<Professor> professors) async {
+  Future<void> eliminarProfessors(List<Teacher> professors) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repo = await _repo;
@@ -87,7 +87,7 @@ class ProfessorNotifier extends _$ProfessorNotifier {
 
   //Exemple d’actualització de la llista global amb canvi d’un usuari:
   // Aquest mètode l’has d’executar des del UsuariNotifier quan fas un canvi local.
-  Future<void> actualitza(Professor usuariActualitzat) async {
+  Future<void> actualitza(Teacher usuariActualitzat) async {
     try {
       final actuals = state.requireValue;
 

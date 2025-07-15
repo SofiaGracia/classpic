@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/alumne.dart';
-import '../../domain/entities/professor.dart';
+import '../../domain/entities/teacher.dart';
 import '../../presentation/providers/repository.dart';
 import '../datasources/db/dao/alumne_dao.dart';
 import '../datasources/db/dao/professor_dao.dart';
