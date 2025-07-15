@@ -13,13 +13,9 @@ import '../../repository/curs_db.dart';
 class RepositoryAlumneXml {
 
   late XmlDocument doc;
-  //late CursosNotifier cursosNotifier;
 
-  //RepositoryAlumneXml({required this.doc, required this.cursosNotifier});
   RepositoryAlumneXml({required this.doc});
 
-  //I alomillor esta funció no deuria ni estar ací i deuria estar en
-  //repositoryAlumne o el provider d'Alumne
   Future<List<Student>> assignaIdCursAlsAlumnes(
       List<Student> alumnes, List<Course> cursosBD) async {
     return alumnes.map((alumne) {
@@ -54,10 +50,10 @@ class RepositoryAlumneXml {
           alumnes.add(Student(
             nia: idNia,
             name: aluNom,
-            c1: aluC1,
-            c2: aluC2,
+            s1: aluC1,
+            s2: aluC2,
             group: aluGrup,
-            fotoPathHash: DateTime.now()
+              photoPathHash: DateTime.now()
                 .millisecondsSinceEpoch
                 .toString(),
             hasFoto: false

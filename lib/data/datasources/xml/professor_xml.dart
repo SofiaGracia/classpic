@@ -30,9 +30,9 @@ class RepositoryProfessorXml {
           Teacher profAInsertar = Teacher(
               dni: idDni,
               name: profNom,
-              c1: profC1,
-              c2: profC2,
-              fotoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
+              s1: profC1,
+              s2: profC2,
+              photoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
               hasFoto: false);
           llistaProfessors.add(profAInsertar);
         }

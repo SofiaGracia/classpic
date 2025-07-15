@@ -75,9 +75,9 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
         id: usuari.id,
         nia: alu.nia,
         name: alu.name,
-        c1: alu.s1,
-        c2: alu.s2,
-        fotoPathHash: alu.photoPathHash,
+        s1: alu.s1,
+        s2: alu.s2,
+        photoPathHash: alu.photoPathHash,
         hasFoto: alu.hasFoto,
         grup: alu.group,
         cursId: alu.courseId,
@@ -88,10 +88,10 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
         id: usuari.id,
         dni: prof.dni,
         name: prof.name,
-        c1: prof.s1,
-        c2: prof.s2,
+        s1: prof.s1,
+        s2: prof.s2,
         hasFoto: prof.hasFoto,
-        fotoPathHash: prof.photoPathHash,
+        photoPathHash: prof.photoPathHash,
       );
     }
     return usuariARetornar;
