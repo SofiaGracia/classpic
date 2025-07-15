@@ -7,7 +7,7 @@ import 'course.dart';
   tableName: 'student',
   foreignKeys: [
     ForeignKey(
-      childColumns: ['coursId'],
+      childColumns: ['courseId'],
       parentColumns: ['id'],
       entity: Course,
       onDelete: ForeignKeyAction.setNull,

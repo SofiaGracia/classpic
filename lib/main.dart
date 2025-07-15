@@ -32,7 +32,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    ref.watch(databaseProvider);
+    //ref.watch(databaseProvider);
     return MaterialApp(
       title: 'Flutter Demo',
       routes: {

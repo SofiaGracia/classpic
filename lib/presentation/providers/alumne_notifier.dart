@@ -32,14 +32,14 @@ class AlumnesNotifier extends _$AlumnesNotifier {
   @override
   Future<List<Student>> build() async {
     final repo = await _repo;
-    return repo.carregaAlumnesDB();
+    return repo.findAllStudents();
   }
 
   /// Recarrega tota la llista des de la base de dades
   Future<void> carregarAlumnes() async {
     try {
       final repo = await _repo;
-      final actualitzats = await repo.carregaAlumnesDB();
+      final actualitzats = await repo.findAllStudents();
 
       state = AsyncData(actualitzats);
     } catch (e, st) {
@@ -50,9 +50,9 @@ class AlumnesNotifier extends _$AlumnesNotifier {
   Future<void> inserirAlumnes(List<Student> alumnes) async {
     try {
       final repo = await _repo;
-      await repo.inserirAlumnesDB(alumnes);
+      await repo.insertStudents(alumnes);
 
-      final actualitzats = await repo.carregaAlumnesDB();
+      final actualitzats = await repo.findAllStudents();
       state = AsyncData(actualitzats);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -63,11 +63,11 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     try {
       final repo = await _repo;
 
-      final idNou = await repo.insertarAlumneDB(alumne); // ara tens l’id
+      final idNou = await repo.insertStudent(alumne); // ara tens l’id
       final alumneComplet = alumne.copyWith(id: idNou);
 
       // Opcionalment actualitza l'estat global o el individual
-      final actualitzats = await repo.carregaAlumnesDB();
+      final actualitzats = await repo.findAllStudents();
       state = AsyncData(actualitzats);
 
       // Espera a que el nou notifier es construïsca correctament
@@ -81,7 +81,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repo = await _repo;
-      await repo.eliminarAlumneDB(alumne);
+      await repo.deleteStudent(alumne);
       final actuals = state.requireValue;
       return actuals.where((e) => e != alumne).toList();
     });
@@ -91,7 +91,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repo = await _repo;
-      await repo.eliminarAlumnesDB(alumnes);
+      await repo.deleteStudents(alumnes);
       final actuals = state.requireValue; // Obtenim els alumnes actuals
       final niaAEliminar = alumnes.map((a) => a.nia).toSet();
 
@@ -103,7 +103,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repo = await _repo;
-      await repo.editarAlumneDB(alumne);
+      await repo.updateStudent(alumne);
       final actuals = state.requireValue;
       final nous =
           actuals.map((e) => e.nia == alumne.nia ? alumne : e).toList();
@@ -115,7 +115,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
     try {
       final repo = await _repo;
 
-      await repo.editarAlumnesDB(alumnes);
+      await repo.updateStudents(alumnes);
 
       final actuals = state.requireValue;
 
@@ -140,12 +140,12 @@ class AlumnesNotifier extends _$AlumnesNotifier {
 
   Future<List<Student>> getAlumnesSenseModificarState() async {
     final repo = await _repo;
-    return repo.carregaAlumnesDB();
+    return repo.findAllStudents();
   }
 
   Future<List<Student>> getAlumnesPerCurs(int id) async {
     final repo = await _repo;
-    return repo.carregaAlumnesPerCursDB(id);
+    return repo.getStudentsByCurs(id);
   }
 
   Future<void> actualitza(Student usuariActualitzat) async {
@@ -155,7 +155,7 @@ class AlumnesNotifier extends _$AlumnesNotifier {
       state = const AsyncLoading();
 
       final repo = await _repo;
-      await repo.editarAlumneDB(usuariActualitzat);
+      await repo.updateStudent(usuariActualitzat);
 
       final actualitzats = actuals.map((alumne) {
         return alumne.id == usuariActualitzat.id ? usuariActualitzat : alumne;
@@ -169,6 +169,6 @@ class AlumnesNotifier extends _$AlumnesNotifier {
 
   Future<bool> existeixNia(String codi) async {
     final repo = await _repo;
-    return await repo.carregaAlumneDBbyNia(codi) != null;
+    return await repo.findStudentByNia(codi) != null;
   }
 }
