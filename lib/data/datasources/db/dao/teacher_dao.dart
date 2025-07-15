@@ -7,7 +7,7 @@ import '../../../../domain/entities/teacher.dart';
 //DAO per gestionar operacions amb la taula de professors.
 // Inclou insercions, actualitzacions, eliminacions i consultes.
 @dao
-abstract class ProfessorDao {
+abstract class TeacherDao {
 
   @Query('SELECT COUNT(*) FROM professors')
   Future<int?> countProfessors();

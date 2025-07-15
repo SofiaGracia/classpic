@@ -62,7 +62,7 @@ class _CreateEditUserScreenState<T extends User>
   Uri? uriImageUser;
   String? fotoPathHash;
 
-  //Si l'usuari nou a editar o crear és alumne:
+  //Si l'usuari nou a editar o crear és student:
   String? nomCursActual;
   String? nomCursSeleccionat;
 

@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/student.dart';
 import '../../domain/entities/teacher.dart';
 import '../../presentation/providers/repository.dart';
-import '../datasources/db/dao/alumne_dao.dart';
-import '../datasources/db/dao/professor_dao.dart';
+import '../datasources/db/dao/student_dao.dart';
+import '../datasources/db/dao/teacher_dao.dart';
 import '../datasources/db/database.dart';
 /*
 final userRepositoryProvider = FutureProvider<UserRepository>((ref) async {

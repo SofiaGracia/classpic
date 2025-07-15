@@ -2,16 +2,16 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:xml_fotos/presentation/providers/repository.dart';
+import 'package:xml_fotos/presentation/providers/student/repository.dart';
 
-import '../../data/repository/alumne_db.dart';
+import '../../data/repository/student.dart';
 import '../../domain/entities/student.dart';
 import 'alumne_notifier.dart';
 
 class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Student, int> {
   late final int id;
 
-  RepositoryAlumneDB get _repo => ref.watch(repositoryAlumneDBProvider);
+  StudentRepository get _repo => ref.watch(studentRepositoryProvider);
 
   @override
   FutureOr<Student> build(int arg) async {

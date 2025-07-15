@@ -4,16 +4,16 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
-import 'package:xml_fotos/presentation/providers/repository.dart';
+import 'package:xml_fotos/presentation/providers/teacher/repository.dart';
 
-import '../../data/repository/professor_db.dart';
+import '../../data/repository/teacher.dart';
 import '../../domain/entities/teacher.dart';
 
 // usuari_notifier.dart
 class ProfWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Teacher, int> {
   late final int id;
 
-  RepositoryProfessorDB get _repo => ref.watch(repositoryProfessorDBProvider);
+  TeacherRepository get _repo => ref.watch(teacherRepositoryProvider);
 
   @override
   FutureOr<Teacher> build(int arg) async {
