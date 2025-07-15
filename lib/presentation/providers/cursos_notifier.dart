@@ -1,28 +1,34 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
-import 'package:xml_fotos/data/repository/curs_db.dart';
+import 'package:xml_fotos/data/repository/course_db.dart';
 import 'package:xml_fotos/data/datasources/db/database_service.dart';
+import 'package:xml_fotos/presentation/providers/db/database.dart';
 
-import '../../data/datasources/db/dao/curs_dao.dart';
+import '../../data/datasources/db/dao/course_dao.dart';
 import '../../domain/entities/course.dart';
 
 part 'cursos_notifier.g.dart';
 
-final cursDaoProvider = FutureProvider<CursDao>((ref) async {
+/*final cursDaoProvider = FutureProvider<CourseDao>((ref) async {
   final dbService = DatabaseService();
   await dbService.connectDB();
   return dbService.cursDao;
 });
 
-final repositoryCursDBProvider = FutureProvider<RepositoryCursDB>((ref) async {
+final repositoryCursDBProvider = FutureProvider<CourseRepository>((ref) async {
   final dao = await ref.watch(cursDaoProvider.future);
-  return RepositoryCursDB(cursDao: dao);
+  return CourseRepository(cursDao: dao);
+});*/
+
+final courseRepositoryProvider = Provider<CourseRepository>((ref) {
+  final db = ref.watch(appDatabaseProvider);
+  return CourseRepository(db.courseDao);
 });
 
 @riverpod
 class CursosNotifier extends _$CursosNotifier {
 
-  Future<RepositoryCursDB> get _repo async => await ref.watch(repositoryCursDBProvider.future);
+  Future<CourseRepository> get _repo async => await ref.watch(courseRepositoryProvider);
 
   @override
   Future<List<Course>> build() async {

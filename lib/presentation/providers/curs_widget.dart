@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/services/storage_service.dart';
-import '../../data/repository/curs_db.dart';
+import '../../data/repository/course_db.dart';
 import '../../domain/entities/course.dart';
 import 'cursos_notifier.dart';
 
@@ -13,8 +13,8 @@ final cursWidgetNotifierProvider = AsyncNotifierProvider.autoDispose
 class CursWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Course, int> {
   late final int id;
 
-  Future<RepositoryCursDB> get _repo async =>
-      await ref.watch(repositoryCursDBProvider.future);
+  Future<CourseRepository> get _repo async =>
+      await ref.watch(courseRepositoryProvider);
 
   @override
   FutureOr<Course> build(int arg) async {

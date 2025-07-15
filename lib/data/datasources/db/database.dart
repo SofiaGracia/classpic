@@ -9,7 +9,7 @@ import '../../../domain/entities/student.dart';
 import '../../../domain/entities/course.dart';
 import '../../../domain/entities/teacher.dart';
 import 'dao/student_dao.dart';
-import 'dao/curs_dao.dart';
+import 'dao/course_dao.dart';
 import 'dao/teacher_dao.dart';
 
 part 'database.g.dart'; // the generated code will be there
@@ -18,5 +18,5 @@ part 'database.g.dart'; // the generated code will be there
 abstract class AppDatabase extends FloorDatabase {
   StudentDao get studentDao;
   TeacherDao get teacherDao;
-  CursDao get cursDao;
+  CourseDao get courseDao;
 }

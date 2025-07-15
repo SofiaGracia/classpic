@@ -1,4 +1,4 @@
-import 'package:xml_fotos/data/datasources/db/dao/curs_dao.dart';
+import 'package:xml_fotos/data/datasources/db/dao/course_dao.dart';
 
 import 'dao/student_dao.dart';
 import 'dao/teacher_dao.dart';
@@ -10,7 +10,7 @@ class DatabaseService {
   // References to the DAOs
   late StudentDao _studentDao;
   late TeacherDao _teacherDao;
-  late CursDao _cursDao;
+  late CourseDao _courseDao;
 
   // Private instance for the singleton
   static final DatabaseService _instance = DatabaseService._internal();
@@ -25,7 +25,7 @@ class DatabaseService {
 
   StudentDao get studentDao => _studentDao;
   TeacherDao get teacherDao => _teacherDao;
-  CursDao get cursDao => _cursDao;
+  CourseDao get courseDao => _courseDao;
   AppDatabase? get db => _db;
 
   // Connect to the database
@@ -37,7 +37,7 @@ class DatabaseService {
           .build();
       _studentDao = _db!.studentDao;
       _teacherDao = _db!.teacherDao;
-      _cursDao = _db!.cursDao;
+      _courseDao = _db!.courseDao;
       return _db!;
     } catch (e) {
       throw Exception("Error while connecting to the database: $e");
