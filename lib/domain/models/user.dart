@@ -1,4 +1,4 @@
-import '../entities/alumne.dart';
+import '../entities/student.dart';
 import '../entities/teacher.dart';
 
 abstract class User {
@@ -31,5 +31,5 @@ abstract class User {
   @override
   int get hashCode => Object.hash(uId, name, s1, s2, photoPathHash, hasFoto, runtimeType);
 
-  int? get idDB => this is Alumne ? (this as Alumne).id : (this as Teacher).id;
+  int? get idDB => this is Student ? (this as Student).id : (this as Teacher).id;
 }

@@ -29,7 +29,7 @@ class RepositoryProfessorXml {
 
           Teacher profAInsertar = Teacher(
               dni: idDni,
-              nom: profNom,
+              name: profNom,
               c1: profC1,
               c2: profC2,
               fotoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),

@@ -5,8 +5,8 @@ import 'dart:async';
 import 'package:floor/floor.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
-import '../../../domain/entities/alumne.dart';
-import '../../../domain/entities/curs.dart';
+import '../../../domain/entities/student.dart';
+import '../../../domain/entities/course.dart';
 import '../../../domain/entities/teacher.dart';
 import 'dao/alumne_dao.dart';
 import 'dao/curs_dao.dart';
@@ -14,9 +14,7 @@ import 'dao/professor_dao.dart';
 
 part 'database.g.dart'; // the generated code will be there
 
-//Defineix l’esquema de la base de dades SQLite de l’app,
-// amb les entitats i DAOs que utilitzarà Floor per generar automàticament el codi d’accés a dades.
-@Database(version: 23, entities: [Alumne, Teacher, Curs])
+@Database(version: 23, entities: [Student, Teacher, Course])
 abstract class AppDatabase extends FloorDatabase {
   AlumneDao get alumneDao;
   ProfessorDao get professorDao;

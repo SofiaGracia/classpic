@@ -6,7 +6,7 @@ import 'package:xml_fotos/presentation/widgets/curs.dart';
 import 'package:xml_fotos/presentation/widgets/new_curs_riverpod.dart';
 
 import '../../application/services/storage_service.dart';
-import '../../domain/entities/curs.dart';
+import '../../domain/entities/course.dart';
 import '../providers/cursos_notifier.dart';
 
 class CursosScreen extends ConsumerStatefulWidget {
@@ -17,7 +17,7 @@ class CursosScreen extends ConsumerStatefulWidget {
 }
 
 class _CursosScreenState extends ConsumerState<CursosScreen> {
-  List<Curs> _cursos = [];
+  List<Course> _cursos = [];
 
   @override
   void initState(){

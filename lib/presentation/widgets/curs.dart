@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/curs_widget.dart';
 
-import '../../domain/entities/alumne.dart';
-import '../../domain/entities/curs.dart';
+import '../../domain/entities/student.dart';
+import '../../domain/entities/course.dart';
 import '../../shared/utils/dialog.dart';
 import '../providers/alumne_notifier.dart';
 import '../screens/llista_3.dart';
@@ -16,10 +16,10 @@ import 'counter.dart';
 final cursEnEdicioProvider = StateProvider<int?>((ref) => null);
 
 class CursWidget extends ConsumerStatefulWidget {
-  final Curs cursPassat;
+  final Course cursPassat;
   final bool seleccionat;
   final VoidCallback? onLongPress;
-  final Future<void> Function(Curs curs) onDelete;
+  final Future<void> Function(Course curs) onDelete;
 
   const CursWidget({
     required this.cursPassat,
@@ -35,18 +35,18 @@ class CursWidget extends ConsumerStatefulWidget {
 class _CursWidgetState extends ConsumerState<CursWidget> {
   bool isEditing = false;
   late TextEditingController _controller;
-  late Curs curs;
+  late Course curs;
 
   @override
   void initState() {
     super.initState();
     curs = widget.cursPassat;
-    _controller = TextEditingController(text: widget.cursPassat.nom);
+    _controller = TextEditingController(text: widget.cursPassat.name);
   }
 
   @override
   Widget build(BuildContext context) {
-    _controller = TextEditingController(text: widget.cursPassat.nom);
+    _controller = TextEditingController(text: widget.cursPassat.name);
     final curs = widget.cursPassat; // ús directe
     final cursAsync = ref.watch(cursWidgetNotifierProvider(curs.id!));
     final cursNot = ref.read(cursWidgetNotifierProvider(curs.id!).notifier);
@@ -61,7 +61,7 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => LlistaUsuarisR<Alumne>(
+                    builder: (context) => LlistaUsuarisR<Student>(
                       curs: curs,
                       isAlumne: true,
                       initialLlista: llistaUsuaris,
@@ -76,11 +76,11 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
                         autofocus: true,
                         onSubmitted: (_) => _guardarNom(cursNot),
                       )
-                    : Text(curs.nom),
+                    : Text(curs.name),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CounterWidget<Alumne>(
+                    CounterWidget<Student>(
                       provider: alumnesFiltratsCursProvider(curs.id),
                     ),
                     IconButton(
@@ -161,7 +161,7 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
 
   Future<void> _guardarNom(CursWidgetNotifier controller) async {
     final nouNom = _controller.text.trim();
-    if (nouNom.isEmpty || nouNom == curs.nom) return;
+    if (nouNom.isEmpty || nouNom == curs.name) return;
 
     try {
       //Comprovar que existeix el nom abans d'actualitzar-lo
@@ -182,7 +182,7 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
           SnackBar(content: Text('Error al renombrar la carpeta: $e')),
         );
       }
-      _controller.text = curs.nom;
+      _controller.text = curs.name;
     }
   }
 

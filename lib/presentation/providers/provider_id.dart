@@ -14,7 +14,7 @@ final alumnesIdsProvider = Provider.family<Set<int>, int>((ref, cursId) {
   final asyncAlumnes = ref.watch(alumnesNotifierProvider);
   return asyncAlumnes.when(
     data: (alumnes) {
-      final alumnesFiltrats = alumnes.where((a) => a.cursId == cursId).toList();
+      final alumnesFiltrats = alumnes.where((a) => a.courseId == cursId).toList();
       return alumnesFiltrats.map((a) => a.id!).toSet();
     },
     loading: () => <int>{},

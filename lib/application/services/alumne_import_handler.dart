@@ -6,8 +6,8 @@ import 'package:xml_fotos/application/services/saf_methods.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
 
-import '../../domain/entities/alumne.dart';
-import '../../domain/entities/curs.dart';
+import '../../domain/entities/student.dart';
+import '../../domain/entities/course.dart';
 import '../../presentation/providers/alumne_notifier.dart';
 import '../../presentation/providers/cursos_notifier.dart';
 import '../../data/datasources/xml/alumne_xml.dart';
@@ -34,7 +34,7 @@ class AlumneImportHandler {
     final repo = RepositoryAlumneXml(doc: doc);
     final parsed = repo.parseAlumnesFromXml(doc);
 
-    final alumnesXml = parsed['alumnes'] as List<Alumne>;
+    final alumnesXml = parsed['alumnes'] as List<Student>;
     final cursosXml = parsed['cursos'] as Set<String>;
 
     if (alumnesDB.isEmpty) {
@@ -51,9 +51,9 @@ class AlumneImportHandler {
   }
 
   /// Importació inicial: crea cursos, carpetes i assigna alumnes
-  Future<List<Alumne>> _importaPrimeraVegada(
+  Future<List<Student>> _importaPrimeraVegada(
       RepositoryAlumneXml repo,
-      List<Alumne> alumnesXml,
+      List<Student> alumnesXml,
       Set<String> cursosXml,
       ) async {
     try{
@@ -68,7 +68,7 @@ class AlumneImportHandler {
       await DirStrucService.creaEstructuraAlumnes(cursosXml);
 
       // Insereix els cursos a la base de dades
-      final cursos = cursosXml.map((nom) => Curs(nom: nom)).toList();
+      final cursos = cursosXml.map((nom) => Course(name: nom)).toList();
       await cursosNot.inserirCursos(cursos);
       // Obté els cursos actuals per poder assignar l’ID del curs als alumnes
       final cursosDB = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
@@ -80,10 +80,10 @@ class AlumneImportHandler {
   }
 
   /// Actualitza alumnes i estructura de carpetes segons el contingut XML
-  Future<List<Alumne>?> actualitzaAlumnes(
+  Future<List<Student>?> actualitzaAlumnes(
       RepositoryAlumneXml repo,
-      List<Alumne> alumnesXml,
-      List<Alumne> alumnesDB,
+      List<Student> alumnesXml,
+      List<Student> alumnesDB,
       Set<String> cursosXml,
       ) async {
     try {
@@ -91,22 +91,22 @@ class AlumneImportHandler {
       final cursosNot = ref.read(cursosNotifierProvider.notifier);
 
       // Prepara cursos nous i existents
-      final cursosNous = cursosXml.map((nom) => Curs(nom: nom)).toList();
+      final cursosNous = cursosXml.map((nom) => Course(name: nom)).toList();
       final cursosActuals = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
 
-      final nomsActuals = cursosActuals.map((c) => c.nom).toSet();
-      final cursosPerAfegir = cursosNous.where((nou) => !nomsActuals.contains(nou.nom)).toList();
+      final nomsActuals = cursosActuals.map((c) => c.name).toSet();
+      final cursosPerAfegir = cursosNous.where((nou) => !nomsActuals.contains(nou.name)).toList();
 
-      final nomsNous = cursosNous.map((c) => c.nom).toSet();
-      final cursosPerEsborrar = cursosActuals.where((actual) => !nomsNous.contains(actual.nom)).toList();
+      final nomsNous = cursosNous.map((c) => c.name).toSet();
+      final cursosPerEsborrar = cursosActuals.where((actual) => !nomsNous.contains(actual.name)).toList();
 
       //Esborrem i inserim
       await cursosNot.eliminarCursos(cursosPerEsborrar);
-      final nomsCursosABorrar = cursosPerEsborrar.map((c) => c.nom).toSet();
+      final nomsCursosABorrar = cursosPerEsborrar.map((c) => c.name).toSet();
       //Encara no esborrem els cursos pq necessitem passar les fotos
 
       await cursosNot.inserirCursos(cursosPerAfegir);
-      final nomsNousCursos = cursosPerAfegir.map((c) => c.nom).toSet();
+      final nomsNousCursos = cursosPerAfegir.map((c) => c.name).toSet();
       //Ací creariem els directoris nous
       //await storage.creaEstructuraAlumnes(nomsNousCursos);
       await DirStrucService.creaEstructuraAlumnes(nomsNousCursos);
@@ -116,8 +116,8 @@ class AlumneImportHandler {
       // Alumnes a inserir o editar
       final alumneNot = await ref.read(alumnesNotifierProvider.notifier);
       final alumnesDBMap = {for (final a in alumnesDB) a.nia: a};
-      final alumnesAInserir = <Alumne>[];
-      final alumnesAEditar = <Alumne>[];
+      final alumnesAInserir = <Student>[];
+      final alumnesAEditar = <Student>[];
       final alumnesNiesXml = alumnesXml.map((a) => a.nia).toSet();
 
       final alumnesXmlAmbId = await repo.assignaIdCursAlsAlumnes(alumnesXml, cursosActualitzats);
@@ -128,14 +128,14 @@ class AlumneImportHandler {
         final existent = alumnesDBMap[alum.nia];
         if (existent == null) {
           alumnesAInserir.add(alum);
-        } else if ((existent.cursId != alum.cursId )) {
+        } else if ((existent.courseId != alum.courseId )) {
 
           var alumneAmbCursCanviat;
           alumneAmbCursCanviat = alum.copyWith(id: existent.id);
 
           if(existent.hasFoto){
             alumneAmbCursCanviat = alum.copyWith(id: existent.id, hasFoto: existent.hasFoto);
-            alumnesACanviar.add(CanviDeCursAlumne(cursVell: existent.grup!, cursNou: alum.grup!, niaAlumne: existent.nia));
+            alumnesACanviar.add(CanviDeCursAlumne(cursVell: existent.group!, cursNou: alum.group!, niaAlumne: existent.nia));
             //alumneAmbCursCanviat = alum.copyWith(id: existent.id, fotoPathHash: existent.fotoPathHash);
           }
           alumnesAEditar.add(alumneAmbCursCanviat);
@@ -148,7 +148,7 @@ class AlumneImportHandler {
 
         List<Uri> fotoPaths = [];
         for(final a in alumnesAEliminar){
-          final uriFotoAlumne = await PlatformChannel.getFotoAlumneUri( a.grup!, a.nia);
+          final uriFotoAlumne = await PlatformChannel.getFotoAlumneUri( a.group!, a.nia);
 
           if(uriFotoAlumne != null){
             fotoPaths.add(uriFotoAlumne);

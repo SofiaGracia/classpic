@@ -8,7 +8,7 @@ import 'package:xml_fotos/domain/models/user.dart';
 import 'package:xml_fotos/presentation/widgets/uri_dialog.dart';
 
 import '../../application/services/saf_methods.dart';
-import '../../domain/entities/alumne.dart';
+import '../../domain/entities/student.dart';
 import '../../domain/entities/teacher.dart';
 import '../../domain/errors/import.dart';
 import '../providers/uri_notifier.dart';
@@ -55,8 +55,8 @@ class _CicleUserState extends ConsumerState<CicleUser> {
       final guardada = await PlatformChannel.savePhoto(
         uri: uri,
         id: usuari.uId,
-        tipusUsuari: usuari is Alumne ? 'Alumnes' : 'Professors',
-        grup: usuari is Alumne ? (usuari as Alumne).grup : null,
+        tipusUsuari: usuari is Student ? 'Alumnes' : 'Professors',
+        grup: usuari is Student ? (usuari as Student).group : null,
         bytes: resultat,
       );
 
@@ -85,8 +85,8 @@ class _CicleUserState extends ConsumerState<CicleUser> {
       _state = uri == null ? CicleUserStates.none : CicleUserStates.charged;
     });
 
-    final actualitzat = usuari is Alumne
-        ? (usuari as Alumne).copyWith(
+    final actualitzat = usuari is Student
+        ? (usuari as Student).copyWith(
       hasFoto: uri != null,
       fotoPathHash: DateTime.now().millisecondsSinceEpoch.toString(),
     )

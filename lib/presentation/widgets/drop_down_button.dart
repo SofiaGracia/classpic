@@ -33,7 +33,7 @@ class _DropDownCursosState extends ConsumerState<CursosDropdown> {
                 setState(() {
                   valorSeleccionat = cursSeleccionat.id.toString();
                 });
-                widget.onGrupSeleccionat(cursSeleccionat.nom);
+                widget.onGrupSeleccionat(cursSeleccionat.name);
               }
             },
             decoration: const InputDecoration(
@@ -43,7 +43,7 @@ class _DropDownCursosState extends ConsumerState<CursosDropdown> {
             items: cursos.map((c) {
               return DropdownMenuItem<String>(
                 value: c.id.toString(),
-                child: Text(c.nom),
+                child: Text(c.name),
               );
             }).toList(),
           );

@@ -6,8 +6,8 @@ import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
 
 import '../../application/services/saf_methods.dart';
 import '../../application/services/storage_service.dart';
-import '../../domain/entities/alumne.dart';
-import '../../domain/entities/curs.dart';
+import '../../domain/entities/student.dart';
+import '../../domain/entities/course.dart';
 import '../../domain/entities/teacher.dart';
 import '../providers/alumne_notifier.dart';
 import '../providers/stream_providers.dart';
@@ -16,7 +16,7 @@ import '../widgets/usuari_riverpod_ind.dart';
 
 class LlistaUsuarisStream<T extends User> extends ConsumerWidget {
   final bool isAlumne;
-  final Curs? curs;
+  final Course? curs;
 
   const LlistaUsuarisStream({
     super.key,
@@ -25,7 +25,7 @@ class LlistaUsuarisStream<T extends User> extends ConsumerWidget {
 });
 
   String _getTitol(){
-    return isAlumne? 'Alumnes de ${curs!.nom}': 'Professors';
+    return isAlumne? 'Alumnes de ${curs!.name}': 'Professors';
   }
 
   Future<List<T>> _carregaLlista<T extends User>(
@@ -49,14 +49,14 @@ class LlistaUsuarisStream<T extends User> extends ConsumerWidget {
       body: fill,
       floatingActionButton: ref == null ? null : NewUserR<User>(
         onCreate: (u) async {
-          if (u is Alumne) {
+          if (u is Student) {
             await ref.read(alumnesNotifierProvider.notifier).inserirAlumne(u);
           } else {
             await ref.read(professorNotifierProvider.notifier).inserirProfessor(u as Teacher);
           }
         },
         cursId: isAlumne? curs!.id! : null,
-        getId: (u) => isAlumne ? (u as Alumne).nia : (u as Teacher).dni,
+        getId: (u) => isAlumne ? (u as Student).nia : (u as Teacher).dni,
         isAlumne: isAlumne,
       ),
     );
@@ -68,10 +68,10 @@ class LlistaUsuarisStream<T extends User> extends ConsumerWidget {
         return UsuariWidgetRInd(
           usuari: usuari,
           onDelete: (u) async {
-            if (u is Alumne) {
+            if (u is Student) {
               await ref.read(alumnesNotifierProvider.notifier).eliminarAlumne(u);
               if (u.hasFoto){
-                final uriAlumne = await PlatformChannel.getFotoAlumneUri(u.grup!, u.nia);
+                final uriAlumne = await PlatformChannel.getFotoAlumneUri(u.group!, u.nia);
                 await ref.read(StorageServiceProvider).eliminaFoto(uriAlumne!);
               }
             } else {

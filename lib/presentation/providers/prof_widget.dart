@@ -30,7 +30,7 @@ class ProfWidgetNotifier
     final actualitzat = prof.copyWith(
       id: prof.id,
       dni: nou.dni,
-      nom: nou.name,
+      name: nou.name,
       c1: nou.s1,
       c2: nou.s2,
       fotoPathHash: nou.photoPathHash,
