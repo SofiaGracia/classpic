@@ -4,7 +4,7 @@ import 'package:xml_fotos/presentation/providers/repository.dart';
 import '../../data/datasources/db/dao/teacher_dao.dart';
 import '../../data/datasources/db/database_service.dart';
 import '../../data/repository/teacher.dart';
-
+/*
 final databaseProvider = FutureProvider<DatabaseService>((ref) async {
   final dbService = DatabaseService();
   await dbService.connectDB(); // Obrir base de dades
@@ -28,3 +28,4 @@ final professorsIdsStreamProvider = StreamProvider<List<String>>((ref) async* {
   print('Dao de professors: ${dbService.teacherDao != null}');
   yield* dao.observeIdsTeacher();
 });
+*/

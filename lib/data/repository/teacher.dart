@@ -22,7 +22,9 @@ class TeacherRepository {
     return professors;
   }
 
-  Stream<List<int>> observeIdsTeacher() => _dao.observeIdsTeacher();
+  Stream<List<Teacher>> getAllStreamedTeachers() => _dao.streamAllTeachers();
+
+  Stream<List<int?>> observeIdsTeacher() => _dao.observeIdsTeacher();
 
   Future<void> insertarProfessorDB(Teacher professor) async {
     await _dao.insertTeacher(professor);
@@ -46,9 +48,5 @@ class TeacherRepository {
 
   Future<void> editarProfessorsDB(List<Teacher> professors) async {
     await _dao.updateTeachers(professors);
-  }
-
-  Stream<List<String>> observeIdsProfessors() {
-    return _dao.observeIdsTeacher();
   }
 }

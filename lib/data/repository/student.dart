@@ -8,47 +8,47 @@ class StudentRepository {
 
   StudentRepository(this._dao);
 
-  Future<Student?> carregaAlumneDB(int id) async {
-    return await _dao.findAlumneById(id);
+  Future<Student?> findStudentById(int id) async {
+    return await _dao.findStudentById(id);
   }
 
   //Carregar student per nia
-  Future<Student?> carregaAlumneDBbyNia(String nia) async {
-    return await _dao.findAlumneByNia(nia);
+  Future<Student?> findStudentByNia(String nia) async {
+    return await _dao.findStudentByNia(nia);
   }
 
-  Future<List<Student>> carregaAlumnesDB() async {
-    final alumnes = await _dao.findAllAlumnes();
+  Future<List<Student>> findAllStudents() async {
+    final alumnes = await _dao.findAllStudents();
     return alumnes;
   }
 
-  Future<List<Student>> carregaAlumnesPerCursDB(int id) async {
-    final alumnes = await _dao.obtenirAlumnesDelCurs(id);
+  Future<List<Student>> getStudentsByCurs(int id) async {
+    final alumnes = await _dao.getStudentsByCurs(id);
     return alumnes;
   }
 
-  Future<void> inserirAlumnesDB(List<Student> alumnesAInserir) async {
-    await _dao.insertAlumnes(alumnesAInserir);
+  Future<void> insertStudents(List<Student> students) async {
+    await _dao.insertStudents(students);
   }
 
-  Future<int> insertarAlumneDB(Student alumne) async {
-    final id = await _dao.insertAlumne(alumne);
+  Future<int> insertStudent(Student student) async {
+    final id = await _dao.insertStudent(student);
     return id;
   }
 
-  Future<void> eliminarAlumneDB(Student alumne) async {
-    await _dao.deleteAlumne(alumne);
+  Future<void> deleteStudent(Student student) async {
+    await _dao.deleteStudent(student);
   }
 
-  Future<void> eliminarAlumnesDB(List<Student> alumnesABorrar) async {
-    await _dao.deleteAlumnes(alumnesABorrar);
+  Future<void> deleteStudents(List<Student> students) async {
+    await _dao.deleteStudents(students);
   }
 
-  Future<void> editarAlumneDB(Student alumne) async {
-    await _dao.updateAlumne(alumne);
+  Future<void> updateStudent(Student student) async {
+    await _dao.updateStudent(student);
   }
 
-  Future<void> editarAlumnesDB(List<Student> alumnes) async {
-    await _dao.updateAlumnes(alumnes);
+  Future<void> updateStudents(List<Student> students) async {
+    await _dao.updateStudents(students);
   }
 }

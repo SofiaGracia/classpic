@@ -11,6 +11,7 @@ import '../../domain/entities/course.dart';
 import '../../domain/entities/teacher.dart';
 import '../providers/alumne_notifier.dart';
 import '../providers/stream_providers.dart';
+import '../providers/teacher/stream.dart';
 import '../widgets/new_user.dart';
 import '../widgets/usuari_riverpod_ind.dart';
 
@@ -90,10 +91,10 @@ class LlistaUsuarisStream<T extends User> extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //Llegir el stream d'ids del provider d'ids
-    final idsAsync = ref.watch(professorsIdsStreamProvider);
+    final idsAsync = ref.watch(teacherIdStreamProvider);
 
     return idsAsync.when(
-      data: (ids) => Text('IDs: Tenim ids'),
+      data: (ids) => Text('El stream funciona'),
       loading: () => const CircularProgressIndicator(),
       error: (e, stack) => Text('Error: $e'),
     );

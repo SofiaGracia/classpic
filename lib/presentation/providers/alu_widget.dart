@@ -17,7 +17,7 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Student, int> {
   FutureOr<Student> build(int arg) async {
     id = arg;
     final repo = await _repo;
-    final alu = await repo.carregaAlumneDB(id);
+    final alu = await repo.findStudentById(id);
     return alu!;
   }
 
@@ -55,7 +55,7 @@ class AluWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Student, int> {
       ref.read(alumnesNotifierProvider.notifier).actualitza(actualitzat);
     } else {
       final repo = await _repo;
-      final alumneEditat = await repo.editarAlumneDB(actualitzat);
+      final alumneEditat = await repo.updateStudent(actualitzat);
     }
     state = AsyncData(actualitzat);
   }

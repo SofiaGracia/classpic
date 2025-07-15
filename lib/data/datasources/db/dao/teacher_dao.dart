@@ -22,8 +22,11 @@ abstract class TeacherDao {
   Future<Teacher?> findTeacherById(int id);
 
   //STREAM DE IDS DE PROFESSORS
-  @Query('SELECT id FROM teacher')
-  Stream<List<int>> observeIdsTeacher();
+  @Query('SELECT id FROM teacher WHERE id IS NOT NULL')
+  Stream<List<int?>> observeIdsTeacher();
+
+  @Query('SELECT * FROM teacher')
+  Stream<List<Teacher>> streamAllTeachers();
 
   @Query('SELECT * FROM teacher WHERE dni = :dni')
   Future<Teacher?> findTeacherByDni(String dni);

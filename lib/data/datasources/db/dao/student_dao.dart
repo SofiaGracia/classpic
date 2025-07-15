@@ -4,54 +4,54 @@ import 'package:floor/floor.dart';
 
 import '../../../../domain/entities/student.dart';
 
-/// DAO per gestionar operacions amb la taula d’alumnes.
+/// DAO per gestionar operacions amb la taula d’student.
 /// Inclou insercions, actualitzacions, eliminacions i consultes.
 @dao
 abstract class StudentDao {
 
-  @Query('SELECT COUNT(*) FROM alumnes')
-  Future<int?> countAlumnes();
+  @Query('SELECT COUNT(*) FROM student')
+  Future<int?> countStudents();
 
-  @Query('SELECT * FROM alumnes')
-  Future<List<Student>> findAllAlumnes();
+  @Query('SELECT * FROM student')
+  Future<List<Student>> findAllStudents();
 
-  @Query('SELECT nom FROM alumnes')
-  Stream<List<String>> findAllAlumnesNom();
+  @Query('SELECT name FROM student')
+  Stream<List<String>> findAllStudentsName();
 
-  @Query('SELECT * FROM alumnes WHERE fotoFilename IS NOT NULL')
-  Future<List<Student>> findAlumnesWithFoto();
+  //@Query('SELECT * FROM student WHERE fotoFilename IS NOT NULL')
+  //Future<List<Student>> findStudentsWithFoto();
 
-  //@Query('SELECT * FROM Alumne WHERE nia = :nia')
-  //Stream<Alumne?> findAlumneByNia(int id);
+  //@Query('SELECT * FROM Student WHERE nia = :nia')
+  //Stream<Student?> findStudentByNia(int id);
 
-  @Query('SELECT * FROM alumnes WHERE id = :id')
-  Future<Student?> findAlumneById(int id);
+  @Query('SELECT * FROM student WHERE id = :id')
+  Future<Student?> findStudentById(int id);
   
   //STREAM D'IDS
-  //@Query('SELECT id FROM alumnes')
+  //@Query('SELECT id FROM students')
 
-  @Query('SELECT * FROM alumnes WHERE nia = :nia')
-  Future<Student?> findAlumneByNia(String nia);
+  @Query('SELECT * FROM student WHERE nia = :nia')
+  Future<Student?> findStudentByNia(String nia);
 
-  @Query('SELECT * FROM alumnes WHERE cursId = :cursId')
-  Future<List<Student>> obtenirAlumnesDelCurs(int cursId);
+  @Query('SELECT * FROM student WHERE courseId = :courseId')
+  Future<List<Student>> getStudentsByCurs(int courseId);
 
   @insert
-  Future<int> insertAlumne(Student alumne);
+  Future<int> insertStudent(Student student);
 
   //@Insert(onConflict: OnConflictStrategy.ignore)
   @insert
-  Future<void> insertAlumnes(List<Student> alumnes);
+  Future<void> insertStudents(List<Student> students);
 
   @delete
-  Future<void> deleteAlumne(Student alumne);
+  Future<void> deleteStudent(Student student);
 
   @delete
-  Future<void> deleteAlumnes(List<Student> alumnes);
+  Future<void> deleteStudents(List<Student> students);
 
   @update
-  Future<void> updateAlumne(Student alumne);
+  Future<void> updateStudent(Student student);
 
   @update
-  Future<void> updateAlumnes(List<Student> alumnes);
+  Future<void> updateStudents(List<Student> students);
 }
