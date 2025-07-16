@@ -36,7 +36,7 @@ class ProfessorNotifier extends _$ProfessorNotifier {
 
     try{
       final repo = await _repo;
-      await repo.insertarProfessorDB(professor);
+      await repo.insertTeacher(professor);
 
       final actualitzats = await repo.carregaProfessorsDB();
       state = AsyncData(actualitzats);
@@ -63,7 +63,7 @@ class ProfessorNotifier extends _$ProfessorNotifier {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repo = await _repo;
-      await repo.eliminarProfessorDB(professor);
+      await repo.deleteTeacher(professor);
       final actuals = state.requireValue;
       return actuals.where((e) => e != professor).toList();
     });

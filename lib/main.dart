@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/db/database.dart';
-import 'package:xml_fotos/presentation/providers/stream_providers.dart';
 import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 import 'package:xml_fotos/presentation/screens/configuration.dart';
 import 'package:xml_fotos/presentation/screens/splash.dart';
@@ -32,9 +31,8 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    //ref.watch(databaseProvider);
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Classpic',
       routes: {
         '/config': (context) => ConfigurationScreen()
       },

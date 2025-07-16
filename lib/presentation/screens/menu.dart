@@ -5,7 +5,7 @@ import 'package:xml_fotos/application/services/storage_service.dart';
 import 'package:xml_fotos/presentation/providers/alumne_notifier.dart';
 import 'package:xml_fotos/presentation/providers/provider_id.dart';
 import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
-import 'package:xml_fotos/presentation/screens/llista_cursos.dart';
+import 'package:xml_fotos/presentation/screens/list_courses.dart';
 import 'package:xml_fotos/presentation/widgets/counter.dart';
 import 'package:xml_fotos/presentation/widgets/status_button_riverpod.dart';
 
@@ -13,23 +13,22 @@ import '../../domain/entities/student.dart';
 import '../../domain/entities/teacher.dart';
 import '../widgets/uri_widget.dart';
 import 'configuration.dart';
-import 'llista_3.dart';
-import 'llista_stream.dart';
+import 'users_list.dart';
 
-class MenuScreenR extends ConsumerStatefulWidget {
-  const MenuScreenR({super.key});
+class MenuScreen extends ConsumerStatefulWidget {
+  const MenuScreen({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _MenuScreenRState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _MenuScreenState();
 }
 
-class _MenuScreenRState extends ConsumerState<MenuScreenR> {
+class _MenuScreenState extends ConsumerState<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Menú',
+          'Menu',
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
@@ -45,7 +44,7 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
-              // Botó per a alumnes
+              // Button for students
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -55,7 +54,7 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CursosScreen(),
+                            builder: (context) => CoursesScreen(),
                           ),
                         );
                       },
@@ -66,32 +65,17 @@ class _MenuScreenRState extends ConsumerState<MenuScreenR> {
                   ),
                 ],
               ),
-              // Botó per a professors
+              // Button for teachers
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   StatusButtonR(
                       text: 'Professors',
                       onPressed: () async {
-                        final llistaUsuaris = await ref
-                            .read(professorNotifierProvider
-                                .notifier) //Utilitzem el read()
-                            .getProfessorsSenseModificarState();
-
-                        /*Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LlistaUsuarisR<Professor>(
-                              isAlumne: false,
-                              curs: null,
-                              initialLlista: llistaUsuaris,
-                            ),
-                          ),
-                        );*/
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LlistaUsuarisStream<Teacher>(
+                            builder: (context) => UsersListScreen<Teacher>(
                               curs: null,
                             ),
                           ),

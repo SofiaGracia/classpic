@@ -12,11 +12,11 @@ abstract class TeacherDao {
   @Query('SELECT * FROM teacher')
   Future<List<Teacher>> findAllTeachers();
 
+  @Query('SELECT id FROM teacher WHERE id IS NOT NULL')
+  Future<List<int>> getAllIdsTeacher();
+
   @Query('SELECT name FROM teacher')
   Stream<List<String>> findAllTeachersName();
-
-  //@Query('SELECT * FROM teacher WHERE fotoFilename IS NOT NULL')
-  //Future<List<Teacher>> findTeachersWithPhoto();
 
   @Query('SELECT * FROM teacher WHERE id = :id')
   Future<Teacher?> findTeacherById(int id);

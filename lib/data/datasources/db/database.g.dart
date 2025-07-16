@@ -222,6 +222,14 @@ class _$StudentDao extends StudentDao {
   }
 
   @override
+  Future<List<int>> getStudetsIdsByCourse(int courseId) async {
+    return _queryAdapter.queryList(
+        'SELECT id FROM student WHERE id IS NOT NULL AND courseId = ?1',
+        mapper: (Map<String, Object?> row) => row.values.first as int,
+        arguments: [courseId]);
+  }
+
+  @override
   Stream<List<int?>> observeTeacherIdsByCourse(int courseId) {
     return _queryAdapter.queryListStream(
         'SELECT id FROM teacher WHERE id IS NOT NULL AND courseId = ?1',
@@ -388,6 +396,13 @@ class _$TeacherDao extends TeacherDao {
             hasFoto: (row['hasFoto'] as int) != 0,
             s2: row['s2'] as String?,
             photoPathHash: row['photoPathHash'] as String?));
+  }
+
+  @override
+  Future<List<int>> getAllIdsTeacher() async {
+    return _queryAdapter.queryList(
+        'SELECT id FROM teacher WHERE id IS NOT NULL',
+        mapper: (Map<String, Object?> row) => row.values.first as int);
   }
 
   @override

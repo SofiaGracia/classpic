@@ -11,16 +11,16 @@ import '../../domain/entities/student.dart';
 import '../../domain/entities/course.dart';
 import '../../domain/entities/teacher.dart';
 import '../providers/alumne_notifier.dart';
+import '../providers/student/student_ids_async.dart';
 import '../providers/teacher/stream.dart';
+import '../providers/teacher/teachers_ids_async.dart';
 import '../widgets/new_user.dart';
 import '../widgets/usuari_riverpod_ind.dart';
 
-class LlistaUsuarisStream<T extends User> extends ConsumerWidget {
+class UsersListScreen<T extends User> extends ConsumerWidget {
   final Course? curs;
 
-  const LlistaUsuarisStream(
-      {super.key,
-      required this.curs});
+  const UsersListScreen({super.key, required this.curs});
 
   String _getTitol() {
     return curs != null ? 'Alumnes de ${curs!.name}' : 'Professors';
@@ -47,22 +47,18 @@ class LlistaUsuarisStream<T extends User> extends ConsumerWidget {
       floatingActionButton: ref == null
           ? null
           : NewUserR<User>(
-              onCreate: (u) async {
-                if (u is Student) {
-                  await ref
-                      .read(alumnesNotifierProvider.notifier)
-                      .inserirAlumne(u);
-                } else {
-                  await ref
-                      .read(professorNotifierProvider.notifier)
-                      .inserirProfessor(u as Teacher);
-                }
-              },
-              cursId: curs != null ? curs?.id : null,
-              getId: (u) =>
-                  curs != null ? (u as Student).nia : (u as Teacher).dni,
-              isAlumne: curs != null,
-            ),
+        onCreate: (u) async {
+          if (u is Student) {
+            await ref.read(studentIdsProvider(curs!.id!).notifier).addStudent(u);
+          } else {
+            await ref.read(asyncTeacherIdsProvider.notifier).addTeacher(u as Teacher);
+          }
+        },
+        cursId: curs != null ? curs?.id : null,
+        getId: (u) =>
+        curs != null ? (u as Student).nia : (u as Teacher).dni,
+        isAlumne: curs != null,
+      ),
     );
   }
 
@@ -70,47 +66,44 @@ class LlistaUsuarisStream<T extends User> extends ConsumerWidget {
     return llista.isEmpty
         ? Text('No hi ha usuaris')
         : ListView(
-            children: llista.map((usuari) {
-              return UsuariWidgetRInd(
-                usuari: usuari,
-                onDelete: (u) async {
-                  Uri? uriToDelete;
+      children: llista.map((usuari) {
+        return UsuariWidgetRInd(
+          usuari: usuari,
+          onDelete: (u) async {
+            Uri? uriToDelete;
 
-                  if (u is Student) {
-                    await ref
-                        .read(alumnesNotifierProvider.notifier)
-                        .eliminarAlumne(u);
-                    if (u.hasFoto) {
-                      final uriAlumne = await PlatformChannel.getFotoAlumneUri(
-                          u.group!, u.nia);
+            if (u is Student) {
+              await ref.read(studentIdsProvider(curs!.id!).notifier).removeStudent(u);
 
-                      uriToDelete = uriAlumne;
-                    }
-                  } else {
-                    await ref
-                        .read(professorNotifierProvider.notifier)
-                        .eliminarProfessor(u as Teacher);
-                    if (u.hasFoto) {
-                      final uriProf =
-                          await PlatformChannel.getFotoProfessorUri(u.dni);
+              if (u.hasFoto) {
+                final uriAlumne = await PlatformChannel.getFotoAlumneUri(
+                    u.group!, u.nia);
 
-                      uriToDelete = uriProf;
-                    }
+                uriToDelete = uriAlumne;
+              }
+            } else {
+              await ref.read(asyncTeacherIdsProvider.notifier).removeTeacher(u as Teacher);
+              if (u.hasFoto) {
+                final uriProf =
+                await PlatformChannel.getFotoProfessorUri(u.dni);
 
-                    if (uriToDelete != null) {
-                      await ref
-                          .read(StorageServiceProvider)
-                          .eliminaFoto(uriToDelete);
-                    }
-                  }
-                },
-              );
-            }).toList(),
-          );
+                uriToDelete = uriProf;
+              }
+
+              if (uriToDelete != null) {
+                await ref
+                    .read(StorageServiceProvider)
+                    .eliminaFoto(uriToDelete);
+              }
+            }
+          },
+        );
+      }).toList(),
+    );
   }
 
   Widget _buildLlistaAmbStream({
-    required AsyncValue<List<int?>> idsAsync,
+    required AsyncValue<List<int>> idsAsync,
     required Future<List<T>> Function() futureLlista,
     required WidgetRef ref,
   }) {
@@ -136,14 +129,14 @@ class LlistaUsuarisStream<T extends User> extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return curs != null
         ? _buildLlistaAmbStream(
-            idsAsync: ref.watch(studentIdStreamProvider(curs!.id)),
-            futureLlista: () => _carregaLlista(ref, curs!.id),
-            ref: ref,
-          )
+      idsAsync: ref.watch(studentIdsProvider(curs!.id!)),
+      futureLlista: () => _carregaLlista(ref, curs!.id),
+      ref: ref,
+    )
         : _buildLlistaAmbStream(
-            idsAsync: ref.watch(teacherIdStreamProvider),
-            futureLlista: () => _carregaLlista(ref, null),
-            ref: ref,
-          );
+      idsAsync: ref.watch(asyncTeacherIdsProvider),
+      futureLlista: () => _carregaLlista(ref, null),
+      ref: ref,
+    );
   }
 }

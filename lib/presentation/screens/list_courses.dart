@@ -9,24 +9,26 @@ import '../../application/services/storage_service.dart';
 import '../../domain/entities/course.dart';
 import '../providers/cursos_notifier.dart';
 
-class CursosScreen extends ConsumerStatefulWidget {
-  const CursosScreen({Key? key}) : super(key: key);
+class CoursesScreen extends ConsumerStatefulWidget {
+  const CoursesScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<CursosScreen> createState() => _CursosScreenState();
+  ConsumerState<CoursesScreen> createState() => _CoursesScreenState();
 }
 
-class _CursosScreenState extends ConsumerState<CursosScreen> {
+class _CoursesScreenState extends ConsumerState<CoursesScreen> {
   List<Course> _cursos = [];
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _loadLlista();
   }
 
   Future<void> _loadLlista() async {
-    final cursos = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
+    final cursos = await ref
+        .read(cursosNotifierProvider.notifier)
+        .getCursosSenseModificarState();
     setState(() {
       _cursos = cursos;
     });
