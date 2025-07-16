@@ -13,6 +13,10 @@ class CourseRepository {
     return cursos;
   }
 
+  Future<List<int>> getAllCoursesIds() async {
+    return await _dao.getAllCoursesIds();
+  }
+
   Future<Course?> carregaCursDB(int id) async {
     return await _dao.findCourseById(id);
   }

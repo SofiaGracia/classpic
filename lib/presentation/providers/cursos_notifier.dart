@@ -1,24 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:xml_fotos/application/services/storage_service.dart';
 import 'package:xml_fotos/data/repository/course_db.dart';
-import 'package:xml_fotos/data/datasources/db/database_service.dart';
 import 'package:xml_fotos/presentation/providers/db/database.dart';
 
-import '../../data/datasources/db/dao/course_dao.dart';
 import '../../domain/entities/course.dart';
 
 part 'cursos_notifier.g.dart';
 
-/*final cursDaoProvider = FutureProvider<CourseDao>((ref) async {
-  final dbService = DatabaseService();
-  await dbService.connectDB();
-  return dbService.cursDao;
-});
-
-final repositoryCursDBProvider = FutureProvider<CourseRepository>((ref) async {
-  final dao = await ref.watch(cursDaoProvider.future);
-  return CourseRepository(cursDao: dao);
-});*/
 
 final courseRepositoryProvider = Provider<CourseRepository>((ref) {
   final db = ref.watch(appDatabaseProvider);

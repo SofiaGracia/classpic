@@ -5,13 +5,12 @@ import 'package:xml_fotos/application/services/storage_service.dart';
 import 'package:xml_fotos/presentation/providers/alumne_notifier.dart';
 import 'package:xml_fotos/presentation/providers/provider_id.dart';
 import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
-import 'package:xml_fotos/presentation/screens/list_courses.dart';
+import 'package:xml_fotos/presentation/screens/courses_list.dart';
 import 'package:xml_fotos/presentation/widgets/counter.dart';
 import 'package:xml_fotos/presentation/widgets/status_button_riverpod.dart';
 
 import '../../domain/entities/student.dart';
 import '../../domain/entities/teacher.dart';
-import '../widgets/uri_widget.dart';
 import 'configuration.dart';
 import 'users_list.dart';
 
@@ -54,7 +53,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CoursesScreen(),
+                            builder: (context) => ListCoursesScreen(),
                           ),
                         );
                       },

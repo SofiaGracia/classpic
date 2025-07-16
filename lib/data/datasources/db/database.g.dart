@@ -556,6 +556,12 @@ class _$CourseDao extends CourseDao {
   }
 
   @override
+  Future<List<int>> getAllCoursesIds() async {
+    return _queryAdapter.queryList('SELECT id FROM course WHERE id IS NOT NULL',
+        mapper: (Map<String, Object?> row) => row.values.first as int);
+  }
+
+  @override
   Future<Course?> findCourseByName(String name) async {
     return _queryAdapter.query('SELECT * FROM course WHERE name = ?1',
         mapper: (Map<String, Object?> row) =>
