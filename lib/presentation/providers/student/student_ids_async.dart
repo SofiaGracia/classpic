@@ -33,6 +33,14 @@ class AsyncStudentsIdsNotifier extends FamilyAsyncNotifier<List<int>, int> {
       return _fetchIds(s.courseId!);
     });
   }
+
+  Future<void> updateStudentCourse(Student u, Student s) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _repo.updateStudent(u);
+      return _fetchIds(s.courseId!);
+    });
+  }
 }
 
 final studentIdsProvider =
