@@ -22,11 +22,18 @@ class TeacherRepository {
     return professors;
   }
 
+  //Get all the teacher's ids
+  Future<List<int>> getAllIdsTeacher() async {
+    final ids = await _dao.getAllIdsTeacher();
+    return ids;
+  }
+
+
   Stream<List<Teacher>> getAllStreamedTeachers() => _dao.streamAllTeachers();
 
   Stream<List<int?>> observeIdsTeacher() => _dao.observeIdsTeacher();
 
-  Future<void> insertarProfessorDB(Teacher professor) async {
+  Future<void> insertTeacher(Teacher professor) async {
     await _dao.insertTeacher(professor);
   }
 
@@ -34,7 +41,7 @@ class TeacherRepository {
     await _dao.insertTeachers(professors);
   }
 
-  Future<void> eliminarProfessorDB(Teacher professor) async {
+  Future<void> deleteTeacher(Teacher professor) async {
     await _dao.deleteTeacher(professor);
   }
 

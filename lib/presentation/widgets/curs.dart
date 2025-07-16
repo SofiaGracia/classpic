@@ -2,18 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/curs_widget.dart';
+import 'package:xml_fotos/presentation/screens/users_list.dart';
 
 import '../../domain/entities/student.dart';
 import '../../domain/entities/course.dart';
 import '../../shared/utils/dialog.dart';
 import '../providers/alumne_notifier.dart';
-import '../screens/llista_3.dart';
-import '../screens/llista_stream.dart';
-import '../screens/llista_usuaris_riverpod.dart';
 import 'counter.dart';
 
 //Creació d'un StateProvider global que guarda l'id del curs en edició
-//La veritat és que és brutal que ho puga fer el provider
 final cursEnEdicioProvider = StateProvider<int?>((ref) => null);
 
 class CursWidget extends ConsumerStatefulWidget {
@@ -62,7 +59,7 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => LlistaUsuarisStream<Student>(
+                    builder: (context) => UsersListScreen<Student>(
                       curs: curs,
                     ),
                   ),

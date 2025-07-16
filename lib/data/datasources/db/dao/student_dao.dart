@@ -18,6 +18,9 @@ abstract class StudentDao {
   @Query('SELECT name FROM student')
   Stream<List<String>> findAllStudentsName();
 
+  @Query('SELECT id FROM student WHERE id IS NOT NULL AND courseId = :courseId')
+  Future<List<int>> getStudetsIdsByCourse(int courseId);
+
   @Query('SELECT id FROM teacher WHERE id IS NOT NULL AND courseId = :courseId')
   Stream<List<int?>> observeTeacherIdsByCourse(int courseId);
 

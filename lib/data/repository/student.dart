@@ -22,6 +22,11 @@ class StudentRepository {
     return alumnes;
   }
 
+  Future<List<int>> getStudentsIdsByCourse(int courseId) async {
+    final ids = await _dao.getStudetsIdsByCourse(courseId);
+    return ids;
+  }
+
   Future<List<Student>> getStudentsByCurs(int id) async {
     final alumnes = await _dao.getStudentsByCurs(id);
     return alumnes;

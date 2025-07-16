@@ -10,7 +10,6 @@ import '../../application/services/storage_service.dart';
 import 'manage_broken_images.dart';
 
 class ConfigurationScreen extends ConsumerStatefulWidget {
-  //final DirectoriFotos seleccio;
 
   const ConfigurationScreen({super.key});
 
@@ -19,14 +18,12 @@ class ConfigurationScreen extends ConsumerStatefulWidget {
       _ConfigurationScreenState();
 }
 
-/// Pantalla amb opcions per importar dades d'alumnes o professors.
+/// Screen with options to import students or teachers
 class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
-  //late DirectoriFotos seleccioActual;
 
   @override
   void initState() {
     super.initState();
-    //seleccioActual = widget.seleccio;
   }
 
   @override
@@ -52,13 +49,12 @@ class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
-                //ImportButton per a Alumnes
+                //Student's ImportButton
                 ImportButton(isAlumne: true),
                 const SizedBox(height: 16),
-                //ImportButton per a Professors
+                //Teacher's ImportButton
                 ImportButton(isAlumne: false),
                 const SizedBox(height: 16),
-                //RadioStorage(seleccio: seleccioActual),
                 const SizedBox(height: 16),
                 ImageConfigurationWidget(),
                 UriWidget(),
