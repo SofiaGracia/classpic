@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/saf_methods.dart';
 
+import '../../domain/entities/course.dart';
 import '../../presentation/providers/uri_notifier.dart';
 import '../../shared/utils/constants.dart';
 
@@ -57,15 +58,22 @@ class StorageService {
     await PlatformChannel.eliminaFotos(uris);
   }
 
-  Future<void> esborraDirIContingut(List<String> paths) async {
-    final baseDir = await getBaseDirectory();
-    await PlatformChannel.esborraDirIContingut(baseDir, paths);
+  Future<String?> createCourseDir(List<Course> courses) async {
+    List<String> nameCourses = [];
+    courses.forEach((c) => nameCourses.add(c.name));
+    return await PlatformChannel.creaEstructuraAlu(nameCourses);
   }
 
-  Future<void> mouFotoAlumne(String cursVell, String cursNou, String niaAlumne) async {
+  Future<void> esborraDirIContingut(List<String> names) async {
+    final baseDir = await getBaseDirectory();
+    await PlatformChannel.esborraDirIContingut(baseDir, names);
+  }
 
+  Future<void> mouFotoAlumne(
+      String cursVell, String cursNou, String niaAlumne) async {
     //Obtenim la uri de la foto vella
-    final uriFotoVella = await PlatformChannel.getFotoAlumneUri(cursVell, niaAlumne);
+    final uriFotoVella =
+        await PlatformChannel.getFotoAlumneUri(cursVell, niaAlumne);
 
     //Passem de la uri de la foto vella a Uint8List amb readBytesFromSafUri i aixina obtenim la foto
     final fotoVella = await PlatformChannel.readBytesFromSafUri(uriFotoVella!);
@@ -73,9 +81,13 @@ class StorageService {
     //Guardem primer la foto a la nova ubi
     final uri = await ref.read(UriProvider.notifier).getUri();
     final guardada = await PlatformChannel.savePhoto(
-        uri: uri!, id: niaAlumne, tipusUsuari: "Alumnes", grup: cursNou,bytes: fotoVella!);
+        uri: uri!,
+        id: niaAlumne,
+        tipusUsuari: "Alumnes",
+        grup: cursNou,
+        bytes: fotoVella!);
 
-    if (guardada){
+    if (guardada) {
       await eliminaFoto(uriFotoVella);
     }
   }

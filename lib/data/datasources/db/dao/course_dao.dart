@@ -16,6 +16,9 @@ abstract class CourseDao {
   @Query('SELECT * FROM course WHERE id = :id')
   Future<Course?> findCourseById(int id);
 
+  @Query('SELECT id FROM course WHERE id IS NOT NULL')
+  Future<List<int>> getAllCoursesIds();
+
   @Query('SELECT * FROM course WHERE name = :name')
   Future<Course?> findCourseByName(String name);
 
