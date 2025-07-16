@@ -5,7 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/saf_methods.dart';
 import 'package:xml_fotos/domain/errors/import.dart';
-import 'package:xml_fotos/presentation/providers/alu_widget.dart';
+import 'package:xml_fotos/presentation/providers/student/student.dart';
 import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 import 'package:xml_fotos/presentation/widgets/circ_usu.dart';
 import 'package:xml_fotos/presentation/widgets/uri_dialog.dart';
@@ -17,7 +17,7 @@ import '../../application/services/storage_service.dart';
 import '../../shared/utils/constants.dart';
 import '../../shared/utils/dialog.dart';
 import '../providers/cursos_notifier.dart';
-import '../providers/prof_widget.dart';
+import '../providers/teacher/teacher.dart';
 import '../screens/camera_camera.dart';
 import '../screens/create_edit_user_screen.dart';
 import 'foto_usuari.dart';
@@ -104,17 +104,17 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
 
     if (widget.usuari is Student) {
       usuariAsync = ref
-          .watch(alumneWidgetNotifierProvider((widget.usuari as Student).id!));
+          .watch(studentWidgetNotifierProvider((widget.usuari as Student).id!));
 
       provider = ref.read(
-          alumneWidgetNotifierProvider((widget.usuari as Student).id!)
+          studentWidgetNotifierProvider((widget.usuari as Student).id!)
               .notifier); //Notifier individual per a student
     } else {
       usuariAsync = ref.watch(
-          professorWidgetNotifierProvider((widget.usuari as Teacher).id!));
+          teacherWidgetNotifierProvider((widget.usuari as Teacher).id!));
 
       provider = ref.read(
-          professorWidgetNotifierProvider((widget.usuari as Teacher).id!)
+          teacherWidgetNotifierProvider((widget.usuari as Teacher).id!)
               .notifier); //Notifier individual per a teacher
     }
 
@@ -129,7 +129,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                 // Foto de l'usuari
                 CicleUser(
                     usuari: usuari,
-                    onUpdate: (usu) => provider.actualitza(usu)),
+                    onUpdate: (usu) => provider.updateUser(usu)),
                 const SizedBox(width: 12),
                 // Dades del usuari
                 Expanded(
@@ -158,7 +158,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                     onPressed: () async {
                       final actualitzat = await _editarUsuari(usuari);
                       if (actualitzat != null) {
-                        provider.actualitza(actualitzat);
+                        provider.updateUser(actualitzat);
                       }
                     }),
                 IconButton(
