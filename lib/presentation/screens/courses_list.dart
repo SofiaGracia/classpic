@@ -3,10 +3,14 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
 import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
+import 'package:xml_fotos/shared/utils/constants.dart';
 
+import '../../application/services/saf_methods.dart';
 import '../../domain/entities/course.dart';
+import '../../shared/utils/dialog/uri.dart';
 import '../providers/course/courses_ids_async.dart';
 import '../providers/course/repository.dart';
+import '../providers/uri_notifier.dart';
 import '../widgets/curs.dart';
 import '../widgets/new_curs_riverpod.dart';
 
@@ -15,7 +19,7 @@ class ListCoursesScreen extends ConsumerWidget {
     return ref.read(courseRepositoryProvider).carregarCursosDB();
   }
 
-  Widget _buildScaffold(WidgetRef? ref, Widget fill) {
+  Widget _buildScaffold(BuildContext context, WidgetRef? ref, Widget fill) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Llistat de cursos'),
@@ -24,62 +28,81 @@ class ListCoursesScreen extends ConsumerWidget {
       floatingActionButton: NewCursR(
         provider: cursosNotifierProvider,
         onCreate: (c) async {
+          final uri = await ref?.read(UriProvider.notifier).getUri();
+
+          if (uri == null) {
+            DialogHelper.mostrarDialogUri(context, true);
+            return;
+          }
+
+          //Creem el directori
+          final res = await PlatformChannel.createFolder(
+              uri: uri, tipusUsuari: alumnesFolder, grup: c.name);
+          if (res == null || !res) {
+            DialogHelper.mostrarSnackBar(context, mesErrCreateFolder);
+            return;
+          }
+
           await ref?.read(coursesIdsProvider.notifier).addCourse(c);
-          //Si volem crear la carpeta del curs haurem de triar una carpeta d'emmagatzematge extern
-          //List<Course> coursesList = [];
-          //coursesList.add(c);
-          //final storage = ref?.read(StorageServiceProvider);
-          //await storage?.createCourseDir(coursesList);
         },
       ),
     );
   }
 
-  Widget _buildLlista(BuildContext context, WidgetRef ref, List<Course> llista) {
+  Widget _buildLlista(
+      BuildContext context, WidgetRef ref, List<Course> llista) {
     return llista.isEmpty
         ? Text('No hi ha cursos')
         : ListView(
-      children: llista.map((course) {
-        return CursWidget(
-          coursePassed: course,
-          onDelete: (c) async {
-            await ref.read(coursesIdsProvider.notifier).removeCourse(course);
-            List<String> courseNames = [];
-            courseNames.add(c.name);
-            await ref.read(StorageServiceProvider).esborraDirIContingut(courseNames);
-          },
-        );
-      }).toList(),
-    );
+            children: llista.map((course) {
+              return CursWidget(
+                coursePassed: course,
+                onDelete: (c) async {
+                  await ref
+                      .read(coursesIdsProvider.notifier)
+                      .removeCourse(course);
+                  List<String> courseNames = [];
+                  courseNames.add(c.name);
+                  await ref
+                      .read(StorageServiceProvider)
+                      .esborraDirIContingut(courseNames);
+                },
+              );
+            }).toList(),
+          );
   }
 
   Widget _buildLlistaAmbStream({
+    required BuildContext context,
     required AsyncValue<List<int>> idsAsync,
     required Future<List<Course>> Function() futureLlista,
     required WidgetRef ref,
   }) {
     return idsAsync.when(
-      data: (_) =>
-          FutureBuilder<List<Course>>(
-            future: futureLlista(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return _buildScaffold(
-                    ref, const Center(child: CircularProgressIndicator()));
-              }
-              return _buildScaffold(
-                  ref, _buildLlista(context, ref, snapshot.data!));
-            },
-          ),
-      error: (e, _) => _buildScaffold(null, Text('Error: $e')),
-      loading: () =>
-          _buildScaffold(ref, const Center(child: CircularProgressIndicator())),
+      data: (_) => FutureBuilder<List<Course>>(
+        future: futureLlista(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return _buildScaffold(
+                context, ref, const Center(child: CircularProgressIndicator()));
+          }
+          return _buildScaffold(
+              context, ref, _buildLlista(context, ref, snapshot.data!));
+        },
+      ),
+      error: (e, _) => _buildScaffold(context, null, Text('Error: $e')),
+      loading: () => _buildScaffold(
+          context, ref, const Center(child: CircularProgressIndicator())),
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final coursesAsync = ref.watch(coursesIdsProvider);
-    return _buildLlistaAmbStream(idsAsync: coursesAsync, futureLlista: () => _carregaLlista(ref), ref: ref);
+    return _buildLlistaAmbStream(
+        context: context,
+        idsAsync: coursesAsync,
+        futureLlista: () => _carregaLlista(ref),
+        ref: ref);
   }
 }

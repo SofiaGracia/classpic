@@ -5,6 +5,7 @@ import 'package:xml_fotos/domain/errors/import.dart';
 import 'package:xml_fotos/presentation/screens/configuration.dart';
 import 'package:xml_fotos/presentation/widgets/uri_dialog.dart';
 import 'package:xml_fotos/presentation/widgets/uri_guard.dart';
+import '../../shared/utils/dialog/uri.dart';
 import '../providers/import_controller.dart';
 
 class ImportButton extends ConsumerWidget {
@@ -29,11 +30,7 @@ class ImportButton extends ConsumerWidget {
                 error: (e, _) {
                   if (e is DirectoriBaseNoTriat) {
                     //return UriGuard(child: ConfigurationScreen());
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      showDialog(
-                          context: context,
-                          builder: (_) => UriDialog(navigates: false));
-                    });
+                    DialogHelper.mostrarDialogUri(context, false);
                   } else {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       ScaffoldMessenger.of(context).showSnackBar(

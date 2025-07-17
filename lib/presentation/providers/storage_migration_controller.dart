@@ -7,7 +7,7 @@ import 'package:xml_fotos/shared/utils/constants.dart';
 import '../../application/services/storage_service.dart';
 import '../../data/repository/user.dart';
 import '../../domain/models/user.dart';
-import '../../shared/utils/dialog.dart';
+import '../../shared/utils/dialog/delete.dart';
 /*
 enum StorageMigrationStatus {
   idle,

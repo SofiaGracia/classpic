@@ -232,6 +232,44 @@ class MainActivity : FlutterActivity() {
                         result.error("WRITE_ERROR", "Failed to delete image", false)
                     }
                 }
+
+                "createFolder" -> {
+                    val uriStr = call.argument<String>("uri")!!
+                    val appName = call.argument<String>("appName")!!
+                    val tipusUsuari = call.argument<String>("tipusUsuari")!!
+                    val grup = call.argument<List<String>>("grup")
+
+                    val baseUri = Uri.parse(uriStr)
+                    val appFolder = StorageHelper.getAppFolder(context, baseUri, appName)
+                    val destinacio = appFolder?.let { StorageHelper.getUserFolder(it, tipusUsuari, grup) }
+
+                    if (destinacio == null) {
+                        result.error("WRITE_ERROR", "Failed to create folder", false)
+                        return@setMethodCallHandler
+                    } else {
+                        result.success(true)
+                    }
+
+                }
+
+                "renameFolder" -> {
+                    val newName = call.argument<String>("newName")!!
+                    val uriStr = call.argument<String>("uri")!!
+                    val appName = call.argument<String>("appName")!!
+                    val tipusUsuari = call.argument<String>("tipusUsuari")!!
+                    val grup = call.argument<List<String>>("grup")
+
+                    val baseUri = Uri.parse(uriStr)
+                    val appFolder = StorageHelper.getAppFolder(context, baseUri, appName)
+                    val destinacio = appFolder?.let { StorageHelper.getUserFolder(it, tipusUsuari, grup) }
+
+                    if (destinacio == null) {
+                        result.error("NO_DEST", "Could not access/create destination", null)
+                        return@setMethodCallHandler
+                    } else {
+                        result.success("La carpeta antiga existeix")
+                    }
+                }
             }
         }
     }

@@ -6,7 +6,7 @@ import 'package:xml_fotos/presentation/screens/users_list.dart';
 
 import '../../domain/entities/student.dart';
 import '../../domain/entities/course.dart';
-import '../../shared/utils/dialog.dart';
+import '../../shared/utils/dialog/delete.dart';
 import '../providers/alumne_notifier.dart';
 import 'counter.dart';
 

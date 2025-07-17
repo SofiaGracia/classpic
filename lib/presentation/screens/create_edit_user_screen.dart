@@ -10,6 +10,7 @@ import '../../application/services/saf_methods.dart';
 import '../../domain/entities/student.dart';
 import '../../domain/models/user.dart';
 import '../../domain/models/user_factory.dart';
+import '../../shared/utils/dialog/uri.dart';
 import '../../shared/utils/validator.dart';
 import '../providers/cursos_notifier.dart';
 import '../providers/uri_notifier.dart';
@@ -191,7 +192,7 @@ class _CreateEditUserScreenState<T extends User>
           uriFoto: uriImageUser!,
           id: idGuardaUsuari,
           grup: cursAmbQueShaFetLaFoto,
-          tipusUsuari: widget.isAlumne ? 'Alumnes' : 'Professors');
+          tipusUsuari: widget.isAlumne ? alumnesFolder : professorsFolder);
     }
 
     String? nomCurs;
@@ -213,15 +214,6 @@ class _CreateEditUserScreenState<T extends User>
     }
 
     Navigator.pop(context, usuariNou);
-  }
-
-  void _mostrarDialogUri() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showDialog(
-        context: context,
-        builder: (_) => UriDialog(navigates: true),
-      );
-    });
   }
 
   // Obre la pantalla de càmera i actualitza la imatge si es fa una foto nova.
@@ -253,7 +245,7 @@ class _CreateEditUserScreenState<T extends User>
     final uri = await ref.read(UriProvider.notifier).getUri();
 
     if (uri == null) {
-      _mostrarDialogUri();
+      DialogHelper.mostrarDialogUri(context, true);
       return;
     }
 
