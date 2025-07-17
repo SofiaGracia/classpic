@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/course/course.dart';
 import 'package:xml_fotos/presentation/screens/users_list.dart';
+import 'package:xml_fotos/shared/utils/dialog/uri.dart';
 
 import '../../domain/entities/student.dart';
 import '../../domain/entities/course.dart';
@@ -167,10 +169,17 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
         });
       }
     } catch (e) {
+
+      String error;
+
+      if (e is PlatformException) {
+        error = "No s’ha pogut accedir a la carpeta seleccionada. Potser ha estat esborrada.";
+      } else {
+        error = 'Error al renombrar la carpeta';
+      }
+
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al renombrar la carpeta: $e')),
-        );
+        DialogHelper.mostrarSnackBar(context, error);
       }
       _controller.text = course.name;
     }

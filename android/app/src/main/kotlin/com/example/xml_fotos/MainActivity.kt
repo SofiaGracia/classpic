@@ -2,7 +2,10 @@ package com.example.xml_fotos
 
 import android.app.Activity
 import android.content.Intent
+import android.content.ContentResolver
+import android.content.Context
 import android.net.Uri
+import android.provider.DocumentsContract
 import android.os.Bundle
 import android.util.Log
 
@@ -257,18 +260,99 @@ class MainActivity : FlutterActivity() {
                     val uriStr = call.argument<String>("uri")!!
                     val appName = call.argument<String>("appName")!!
                     val tipusUsuari = call.argument<String>("tipusUsuari")!!
-                    val grup = call.argument<List<String>>("grup")
+                    val grup = call.argument<String>("grup")
 
                     val baseUri = Uri.parse(uriStr)
                     val appFolder = StorageHelper.getAppFolder(context, baseUri, appName)
-                    val destinacio = appFolder?.let { StorageHelper.getUserFolder(it, tipusUsuari, grup) }
+                    val destinacio = appFolder?.let { StorageHelper.getUserFolderIfExists(it, tipusUsuari, grup) }
 
                     if (destinacio == null) {
                         result.error("NO_DEST", "Could not access/create destination", null)
                         return@setMethodCallHandler
-                    } else {
-                        result.success("La carpeta antiga existeix")
                     }
+
+                    val parent = destinacio.parentFile
+                    if (parent == null) {
+                        result.error("NO_PARENT", "No s’ha pogut obtindre la carpeta pare", null)
+                        return@setMethodCallHandler
+                    }
+
+                    val parentUri = parent.uri
+                    val parentDocumentId = DocumentsContract.getDocumentId(parentUri)
+                    val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(parentUri, parentDocumentId)
+
+                    val cursor = context.contentResolver.query(
+                        childrenUri,
+                        arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+                        null,
+                        null,
+                        null
+                    )
+
+                    val newNameValue = newName.trim()
+
+                    cursor?.use {
+                        while (it.moveToNext()) {
+                            val existingName = it.getString(0)
+                            if (existingName == newNameValue) {
+                                result.error("FOLDER_EXISTS", "Ja existeix una carpeta amb eixe nom", null)
+                                return@setMethodCallHandler
+                            }
+                        }
+                    }
+
+                    val newFolderUri = DocumentsContract.createDocument(
+                        contentResolver,
+                        parentUri,
+                        DocumentsContract.Document.MIME_TYPE_DIR,
+                        newNameValue
+                    ) ?: run {
+                        result.error("WRITE_ERROR", "Failed to create folder", null)
+                        return@setMethodCallHandler
+                    }
+
+                    //Seguim a partir d'ací:
+                    // Copiar els arxius del directori vell al nou
+
+                    val targetFolder = DocumentFile.fromTreeUri(context, newFolderUri)
+
+                    if (targetFolder == null || !targetFolder.exists()) {
+                        result.error("FOLDER_INVALID", "No s’ha pogut accedir al nou directori", null)
+                        return@setMethodCallHandler
+                    }
+
+                    fun copyRecursively(src: DocumentFile, dest: DocumentFile) {
+                        val files = src.listFiles()
+                        for (file in files) {
+                            if (file.isDirectory) {
+                                val newSubfolder = dest.createDirectory(file.name ?: "Subcarpeta")
+                                if (newSubfolder != null) {
+                                    copyRecursively(file, newSubfolder)
+                                }
+                            } else if (file.isFile) {
+                                val inputStream = context.contentResolver.openInputStream(file.uri)
+                                val outputFile = dest.createFile(file.type ?: "application/octet-stream", file.name ?: "fitxer")
+                                if (inputStream != null && outputFile != null) {
+                                    val outputStream = context.contentResolver.openOutputStream(outputFile.uri)
+                                    if (outputStream != null) {
+                                        inputStream.copyTo(outputStream)
+                                        outputStream.close()
+                                    }
+                                    inputStream.close()
+                                }
+                            }
+                        }
+                    }
+
+                    try {
+                        copyRecursively(destinacio, targetFolder)
+                        // Opcional: esborrar l'original si cal
+                        destinacio.delete()
+                        result.success("FOLDER_RENAMED_AND_COPIED")
+                    } catch (e: Exception) {
+                        result.error("COPY_FAILED", "Error en copiar el contingut: ${e.message}", null)
+                    }
+
                 }
             }
         }
