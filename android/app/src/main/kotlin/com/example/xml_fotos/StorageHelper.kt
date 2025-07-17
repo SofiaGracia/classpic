@@ -31,6 +31,15 @@ object StorageHelper {
         return grupFolder
     }
 
+    fun getUserFolderIfExists(appFolder: DocumentFile, tipusUsuari: String, grup: String?): DocumentFile? {
+        val userFolder = appFolder.findFile(tipusUsuari) ?: return null
+
+        return if (tipusUsuari == "Alumnes" && grup != null) {
+            userFolder.findFile(grup)
+        } else {
+            userFolder
+        }
+    }
 
     fun writeImageFile(context: Context, destinacio: DocumentFile, fileName: String, bytes: ByteArray): Boolean {
         destinacio.findFile("$fileName.jpg")?.delete()
