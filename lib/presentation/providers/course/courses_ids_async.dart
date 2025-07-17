@@ -1,7 +1,7 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/data/repository/course_db.dart';
-import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
+import 'package:xml_fotos/presentation/providers/course/repository.dart';
 
 import '../../../domain/entities/course.dart';
 

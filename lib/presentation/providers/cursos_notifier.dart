@@ -3,14 +3,12 @@ import 'package:xml_fotos/data/repository/course_db.dart';
 import 'package:xml_fotos/presentation/providers/db/database.dart';
 
 import '../../domain/entities/course.dart';
+import 'course/repository.dart';
 
 part 'cursos_notifier.g.dart';
 
 
-final courseRepositoryProvider = Provider<CourseRepository>((ref) {
-  final db = ref.watch(appDatabaseProvider);
-  return CourseRepository(db.courseDao);
-});
+
 
 @riverpod
 class CursosNotifier extends _$CursosNotifier {

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/providers/curs_widget.dart';
+import 'package:xml_fotos/presentation/providers/course/course.dart';
 import 'package:xml_fotos/presentation/screens/users_list.dart';
 
 import '../../domain/entities/student.dart';
@@ -14,16 +14,12 @@ import 'counter.dart';
 final cursEnEdicioProvider = StateProvider<int?>((ref) => null);
 
 class CursWidget extends ConsumerStatefulWidget {
-  final Course cursPassat;
-  final bool seleccionat;
-  final VoidCallback? onLongPress;
+  final Course coursePassed;
   final Future<void> Function(Course curs) onDelete;
 
   const CursWidget({
-    required this.cursPassat,
+    required this.coursePassed,
     required this.onDelete,
-    this.seleccionat = false,
-    this.onLongPress,
   });
 
   @override
@@ -33,29 +29,25 @@ class CursWidget extends ConsumerStatefulWidget {
 class _CursWidgetState extends ConsumerState<CursWidget> {
   bool isEditing = false;
   late TextEditingController _controller;
-  late Course curs;
+  late Course course;
 
   @override
   void initState() {
     super.initState();
-    curs = widget.cursPassat;
-    _controller = TextEditingController(text: widget.cursPassat.name);
+    course = widget.coursePassed;
+    _controller = TextEditingController(text: widget.coursePassed.name);
   }
 
   @override
   Widget build(BuildContext context) {
-    _controller = TextEditingController(text: widget.cursPassat.name);
-    final curs = widget.cursPassat; // ús directe
+    _controller = TextEditingController(text: widget.coursePassed.name);
+    final curs = widget.coursePassed;
     final cursAsync = ref.watch(cursWidgetNotifierProvider(curs.id!));
     final cursNot = ref.read(cursWidgetNotifierProvider(curs.id!).notifier);
 
     return cursAsync.when(
         data: (curs) => GestureDetector(
               onTap: () async {
-                final llistaUsuaris = await ref
-                    .read(alumnesNotifierProvider.notifier)
-                    .getAlumnesPerCurs(curs.id!);
-
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -95,7 +87,7 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
                         );
                         if (confirmat == true) {
                           //await cursNot.eliminarCurs(curs);
-                          await widget.onDelete(widget.cursPassat);
+                          await widget.onDelete(widget.coursePassed);
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Curs eliminat.')),
@@ -130,10 +122,12 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
             ));
   }
 
-  void _onEditTap(CursWidgetNotifier controller) async {
+  void _onEditTap(CourseWidgetNotifier controller) async {
     final idActualEnEdicio = ref.read(cursEnEdicioProvider);
 
-    if (!isEditing && idActualEnEdicio != null && idActualEnEdicio != curs.id) {
+    if (!isEditing &&
+        idActualEnEdicio != null &&
+        idActualEnEdicio != course.id) {
       // Hi ha un altre curs en edició
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Primer acaba d’editar el curs actual.')),
@@ -145,7 +139,7 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
       await _guardarNom(controller);
       ref.read(cursEnEdicioProvider.notifier).state = null;
     } else {
-      ref.read(cursEnEdicioProvider.notifier).state = curs.id;
+      ref.read(cursEnEdicioProvider.notifier).state = course.id;
     }
 
     if (mounted) {
@@ -155,13 +149,13 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
     }
   }
 
-  Future<void> _guardarNom(CursWidgetNotifier controller) async {
+  Future<void> _guardarNom(CourseWidgetNotifier controller) async {
     final nouNom = _controller.text.trim();
-    if (nouNom.isEmpty || nouNom == curs.name) return;
+    if (nouNom.isEmpty || nouNom == course.name) return;
 
     try {
       //Comprovar que existeix el nom abans d'actualitzar-lo
-      await controller.actualitzaNom(nouNom);
+      await controller.updateCourse(nouNom);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -178,13 +172,13 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
           SnackBar(content: Text('Error al renombrar la carpeta: $e')),
         );
       }
-      _controller.text = curs.name;
+      _controller.text = course.name;
     }
   }
 
   @override
   void dispose() {
-    if (ref.read(cursEnEdicioProvider) == curs.id) {
+    if (ref.read(cursEnEdicioProvider) == course.id) {
       ref.read(cursEnEdicioProvider.notifier).state = null;
     }
     _controller.dispose();
