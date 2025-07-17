@@ -6,6 +6,7 @@ import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
 
 import '../../domain/entities/course.dart';
 import '../providers/course/courses_ids_async.dart';
+import '../providers/course/repository.dart';
 import '../widgets/curs.dart';
 import '../widgets/new_curs_riverpod.dart';
 
@@ -40,7 +41,7 @@ class ListCoursesScreen extends ConsumerWidget {
         : ListView(
       children: llista.map((course) {
         return CursWidget(
-          cursPassat: course,
+          coursePassed: course,
           onDelete: (c) async {
             await ref.read(coursesIdsProvider.notifier).removeCourse(course);
             List<String> courseNames = [];
