@@ -11,6 +11,7 @@ import '../../application/services/saf_methods.dart';
 import '../../domain/entities/student.dart';
 import '../../domain/entities/teacher.dart';
 import '../../domain/errors/import.dart';
+import '../../shared/utils/dialog/uri.dart';
 import '../providers/uri_notifier.dart';
 import '../screens/camera_camera.dart';
 import 'foto_usuari.dart';
@@ -65,10 +66,7 @@ class _CicleUserState extends ConsumerState<CicleUser> {
       }
     } catch (e) {
       if (e is DirectoriBaseNoTriat) {
-        showDialog(
-          context: context,
-          builder: (_) => const UriDialog(navigates: true),
-        );
+        DialogHelper.mostrarDialogUri(context, true);
       }
     }
   }

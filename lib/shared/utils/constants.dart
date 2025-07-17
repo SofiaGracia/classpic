@@ -9,3 +9,5 @@ const maxSizeKB = 90;
 const cropCoverageRatio = 0.9;
 const qualitatImatge = 90;
 const keyFolder = 'folderUri';
+
+const mesErrCreateFolder = "No s'ha creat la nova carpeta";

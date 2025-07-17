@@ -15,7 +15,7 @@ import '../../domain/entities/teacher.dart';
 import '../../domain/models/user.dart';
 import '../../application/services/storage_service.dart';
 import '../../shared/utils/constants.dart';
-import '../../shared/utils/dialog.dart';
+import '../../shared/utils/dialog/delete.dart';
 import '../providers/cursos_notifier.dart';
 import '../providers/teacher/teacher.dart';
 import '../screens/camera_camera.dart';

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/widgets/uri_dialog.dart';
 
+import '../../shared/utils/dialog/uri.dart';
 import '../providers/uri_notifier.dart';
 
 class UriGuard extends ConsumerWidget {
@@ -18,12 +19,7 @@ class UriGuard extends ConsumerWidget {
       data: (uri) {
         if (uri == null) {
           // Mostrar diàleg immediat
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            showDialog(
-              context: context,
-              builder: (_) => UriDialog(navigates: true)
-            );
-          });
+          DialogHelper.mostrarDialogUri(context, true);
           return const SizedBox(); // Mentre es mostra el diàleg
         } else {
           return child; // Tot OK: mostra el contingut normal
