@@ -55,7 +55,7 @@ class ListCoursesScreen extends ConsumerWidget {
         ? Text('No hi ha cursos')
         : ListView(
             children: llista.map((course) {
-              return CursWidget(
+              return CourseWidget(
                 coursePassed: course,
                 onDelete: (c) async {
                   await ref

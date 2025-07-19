@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/course/course.dart';
 import 'package:xml_fotos/presentation/screens/users_list.dart';
 import 'package:xml_fotos/shared/utils/dialog/uri.dart';
+import 'package:xml_fotos/shared/utils/enum/rename_folder_error.dart';
 
 import '../../domain/entities/student.dart';
 import '../../domain/entities/course.dart';
@@ -15,20 +16,20 @@ import 'counter.dart';
 //Creació d'un StateProvider global que guarda l'id del curs en edició
 final cursEnEdicioProvider = StateProvider<int?>((ref) => null);
 
-class CursWidget extends ConsumerStatefulWidget {
+class CourseWidget extends ConsumerStatefulWidget {
   final Course coursePassed;
   final Future<void> Function(Course curs) onDelete;
 
-  const CursWidget({
+  const CourseWidget({
     required this.coursePassed,
     required this.onDelete,
   });
 
   @override
-  ConsumerState<CursWidget> createState() => _CursWidgetState();
+  ConsumerState<CourseWidget> createState() => _CursWidgetState();
 }
 
-class _CursWidgetState extends ConsumerState<CursWidget> {
+class _CursWidgetState extends ConsumerState<CourseWidget> {
   bool isEditing = false;
   late TextEditingController _controller;
   late Course course;
@@ -42,7 +43,7 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
 
   @override
   Widget build(BuildContext context) {
-    _controller = TextEditingController(text: widget.coursePassed.name);
+    //_controller = TextEditingController(text: widget.coursePassed.name);
     final curs = widget.coursePassed;
     final cursAsync = ref.watch(cursWidgetNotifierProvider(curs.id!));
     final cursNot = ref.read(cursWidgetNotifierProvider(curs.id!).notifier);
@@ -168,19 +169,36 @@ class _CursWidgetState extends ConsumerState<CursWidget> {
           _controller.text = nouNom;
         });
       }
-    } catch (e) {
-
+    } on PlatformException catch (e) {
       String error;
 
-      if (e is PlatformException) {
-        error = "No s’ha pogut accedir a la carpeta seleccionada. Potser ha estat esborrada.";
-      } else {
-        error = 'Error al renombrar la carpeta';
+      switch (e.code) {
+        case ErrorRenameFolder.noDestination:
+          error = 'No s’ha trobat la carpeta que vols renombrar.';
+          break;
+        case ErrorRenameFolder.noParent:
+          error = 'No s’ha pogut accedir a la carpeta superior.';
+          break;
+        case ErrorRenameFolder.folderExists:
+          error = 'Ja existix una altra carpeta amb este nom.';
+          break;
+        case ErrorRenameFolder.writeError:
+          error = 'No s’ha pogut renombrar la carpeta. Comprova els permisos o torna-ho a intentar.';
+          break;
+        case ErrorRenameFolder.folderInvalid:
+          error = 'La carpeta seleccionada no és vàlida.';
+          break;
+        case ErrorRenameFolder.copyFailed:
+          error = 'No s’han pogut copiar els fitxers a la nova carpeta.';
+          break;
+        default:
+          error = 'S’ha produït un error inesperat: ${e.message}';
       }
 
       if (context.mounted) {
         DialogHelper.mostrarSnackBar(context, error);
       }
+
       _controller.text = course.name;
     }
   }
