@@ -11,6 +11,8 @@ import '../../domain/entities/student.dart';
 import '../../domain/entities/course.dart';
 import '../../shared/utils/dialog/delete.dart';
 import '../providers/alumne_notifier.dart';
+import '../providers/student/stream.dart';
+import '../providers/student/student_ids_async.dart';
 import 'counter.dart';
 
 //Creació d'un StateProvider global que guarda l'id del curs en edició
@@ -149,7 +151,8 @@ class _CursWidgetState extends ConsumerState<CourseWidget> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     CounterWidget<Student>(
-                      provider: alumnesFiltratsCursProvider(curs.id),
+                      totalBuilder: (ref) => studentIdsProvider(course.id!),
+                      withPhoto: studentCourseHasPhotoStreamProvider(course.id!),
                     ),
                     IconButton(
                       icon: Icon(isEditing ? Icons.check : Icons.edit),

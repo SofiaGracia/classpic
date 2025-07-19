@@ -27,12 +27,19 @@ class StudentRepository {
     return ids;
   }
 
+  Future<List<int>> getStudents() async {
+    final ids = await _dao.getStudents();
+    return ids;
+  }
+
   Future<List<Student>> getStudentsByCurs(int id) async {
     final alumnes = await _dao.getStudentsByCurs(id);
     return alumnes;
   }
 
-  Stream<List<int?>> observeTeacherIdsByCourse(int courseId) => _dao.observeTeacherIdsByCourse(courseId);
+  Stream<int?> streamStudentsWithPhoto() => _dao.streamStudentsWithPhoto();
+
+  Stream<int?> streamStudentsCourseWithPhoto(int courseId) => _dao.streamStudentsCourseWithPhoto(courseId);
 
   Future<void> insertStudents(List<Student> students) async {
     await _dao.insertStudents(students);

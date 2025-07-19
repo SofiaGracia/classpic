@@ -1,16 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/application/services/storage_service.dart';
 import 'package:xml_fotos/presentation/providers/alumne_notifier.dart';
-import 'package:xml_fotos/presentation/providers/provider_id.dart';
 import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
+import 'package:xml_fotos/presentation/providers/student/student_ids_async.dart';
+import 'package:xml_fotos/presentation/providers/teacher/stream.dart';
+import 'package:xml_fotos/presentation/providers/teacher/teachers_ids_async.dart';
 import 'package:xml_fotos/presentation/screens/courses_list.dart';
 import 'package:xml_fotos/presentation/widgets/counter.dart';
 import 'package:xml_fotos/presentation/widgets/status_button_riverpod.dart';
 
 import '../../domain/entities/student.dart';
 import '../../domain/entities/teacher.dart';
+import '../providers/student/stream.dart';
 import 'configuration.dart';
 import 'users_list.dart';
 
@@ -60,8 +62,9 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                       provider: alumnesNotifierProvider),
                   const SizedBox(width: 8),
                   CounterWidget<Student>(
-                    provider: alumnesNotifierProvider,
-                  ),
+                    totalBuilder: (ref) => studentIdsProvider(null),
+                    withPhoto: studentHasPhotoStreamProvider,
+                  )
                 ],
               ),
               // Button for teachers
@@ -83,8 +86,9 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                       provider: professorNotifierProvider),
                   const SizedBox(width: 8),
                   CounterWidget<Teacher>(
-                    provider: professorNotifierProvider,
-                  ),
+                    totalBuilder: (ref) => asyncTeacherIdsProvider,
+                    withPhoto: teacherHasPhotoStreamProvider,
+                  )
                 ],
               ),
               ElevatedButton(

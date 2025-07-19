@@ -6,7 +6,7 @@ import 'package:xml_fotos/presentation/providers/student/repository.dart';
 
 import '../../../domain/entities/student.dart';
 
-class AsyncStudentsIdsNotifier extends FamilyAsyncNotifier<List<int>, int> {
+class AsyncStudentsIdsNotifier extends FamilyAsyncNotifier<List<int>, int?> {
   StudentRepository get _repo => ref.watch(studentRepositoryProvider);
 
   Future<List<int>> _fetchIds(int courseId) async {
@@ -14,8 +14,13 @@ class AsyncStudentsIdsNotifier extends FamilyAsyncNotifier<List<int>, int> {
   }
 
   @override
-  FutureOr<List<int>> build(int courseId) async {
-    return await _fetchIds(courseId);
+  FutureOr<List<int>> build(int? courseId) async {
+
+    if (courseId != null){
+      return _fetchIds(courseId);
+    }else{
+      return _getTotalStudents();
+    }
   }
 
   Future<void> addStudent(Student s) async {
@@ -41,8 +46,12 @@ class AsyncStudentsIdsNotifier extends FamilyAsyncNotifier<List<int>, int> {
       return _fetchIds(s.courseId!);
     });
   }
+
+  Future<List<int>> _getTotalStudents() async {
+    return await _repo.getStudents();
+  }
 }
 
 final studentIdsProvider =
-    AsyncNotifierProvider.family<AsyncStudentsIdsNotifier, List<int>, int>(
+    AsyncNotifierProvider.family<AsyncStudentsIdsNotifier, List<int>, int?>(
         AsyncStudentsIdsNotifier.new);
