@@ -38,15 +38,91 @@ class _CursWidgetState extends ConsumerState<CourseWidget> {
   void initState() {
     super.initState();
     course = widget.coursePassed;
-    _controller = TextEditingController(text: widget.coursePassed.name);
+    _controller = TextEditingController(text: course.name);
+  }
+
+  Future<void> _saveCourseName(CourseWidgetNotifier controller) async {
+    final nouNom = _controller.text.trim();
+    if (nouNom.isEmpty || nouNom == course.name) return;
+
+    try {
+      //Comprovar que existeix el nom abans d'actualitzar-lo
+      await controller.updateCourse(nouNom);
+      setState(() {
+        course = course.copyWith(name: nouNom);
+      });
+
+      if (context.mounted) {
+        DialogHelper.mostrarSnackBar(
+            context, 'Nom del curs actualitzat correctament');
+      }
+    } on PlatformException catch (e) {
+      String error;
+
+      switch (e.code) {
+        case ErrorRenameFolder.noDestination:
+          error = 'No s’ha trobat la carpeta que vols renombrar.';
+          break;
+        case ErrorRenameFolder.noParent:
+          error = 'No s’ha pogut accedir a la carpeta superior.';
+          break;
+        case ErrorRenameFolder.folderExists:
+          error = 'Ja existix una altra carpeta amb este nom.';
+          break;
+        case ErrorRenameFolder.writeError:
+          error =
+              'No s’ha pogut renombrar la carpeta. Comprova els permisos o torna-ho a intentar.';
+          break;
+        case ErrorRenameFolder.folderInvalid:
+          error = 'La carpeta seleccionada no és vàlida.';
+          break;
+        case ErrorRenameFolder.copyFailed:
+          error = 'No s’han pogut copiar els fitxers a la nova carpeta.';
+          break;
+        default:
+          error = 'S’ha produït un error inesperat: ${e.message}';
+      }
+
+      if (context.mounted) {
+        DialogHelper.mostrarSnackBar(context, error);
+      }
+
+      _controller.text = course.name;
+    }
+  }
+
+  void _onEditTap(CourseWidgetNotifier controller) async {
+    final idActualEnEdicio = ref.read(cursEnEdicioProvider);
+
+    if (!isEditing &&
+        idActualEnEdicio != null &&
+        idActualEnEdicio != course.id) {
+      // Hi ha un altre curs en edició
+      DialogHelper.mostrarSnackBar(
+          context, 'Primer acaba d’editar el curs actual.');
+      return;
+    }
+
+    if (isEditing) {
+      await _saveCourseName(controller);
+      ref.read(cursEnEdicioProvider.notifier).state = null;
+
+      //FocusScope.of(context).requestFocus(FocusNode());
+    } else {
+      ref.read(cursEnEdicioProvider.notifier).state = course.id;
+    }
+
+    if (mounted) {
+      setState(() {
+        isEditing = !isEditing;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    //_controller = TextEditingController(text: widget.coursePassed.name);
-    final curs = widget.coursePassed;
-    final cursAsync = ref.watch(cursWidgetNotifierProvider(curs.id!));
-    final cursNot = ref.read(cursWidgetNotifierProvider(curs.id!).notifier);
+    final cursAsync = ref.watch(cursWidgetNotifierProvider(course.id!));
+    final cursNot = ref.read(cursWidgetNotifierProvider(course.id!).notifier);
 
     return cursAsync.when(
         data: (curs) => GestureDetector(
@@ -61,11 +137,12 @@ class _CursWidgetState extends ConsumerState<CourseWidget> {
                 );
               },
               child: ListTile(
+                key: ValueKey(course.id),
                 title: isEditing
                     ? TextField(
                         controller: _controller,
                         autofocus: true,
-                        onSubmitted: (_) => _guardarNom(cursNot),
+                        onSubmitted: (_) => _saveCourseName(cursNot),
                       )
                     : Text(curs.name),
                 trailing: Row(
@@ -91,11 +168,8 @@ class _CursWidgetState extends ConsumerState<CourseWidget> {
                         if (confirmat == true) {
                           //await cursNot.eliminarCurs(curs);
                           await widget.onDelete(widget.coursePassed);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Curs eliminat.')),
-                            );
-                          }
+                          DialogHelper.mostrarSnackBar(
+                              context, 'Curs eliminat.');
                         }
                       },
                     ),
@@ -123,84 +197,6 @@ class _CursWidgetState extends ConsumerState<CourseWidget> {
                 ),
               ),
             ));
-  }
-
-  void _onEditTap(CourseWidgetNotifier controller) async {
-    final idActualEnEdicio = ref.read(cursEnEdicioProvider);
-
-    if (!isEditing &&
-        idActualEnEdicio != null &&
-        idActualEnEdicio != course.id) {
-      // Hi ha un altre curs en edició
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Primer acaba d’editar el curs actual.')),
-      );
-      return;
-    }
-
-    if (isEditing) {
-      await _guardarNom(controller);
-      ref.read(cursEnEdicioProvider.notifier).state = null;
-    } else {
-      ref.read(cursEnEdicioProvider.notifier).state = course.id;
-    }
-
-    if (mounted) {
-      setState(() {
-        isEditing = !isEditing;
-      });
-    }
-  }
-
-  Future<void> _guardarNom(CourseWidgetNotifier controller) async {
-    final nouNom = _controller.text.trim();
-    if (nouNom.isEmpty || nouNom == course.name) return;
-
-    try {
-      //Comprovar que existeix el nom abans d'actualitzar-lo
-      await controller.updateCourse(nouNom);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Nom del curs actualitzat correctament.')),
-        );
-        //_controller.text = nouNom;
-        setState(() {
-          _controller.text = nouNom;
-        });
-      }
-    } on PlatformException catch (e) {
-      String error;
-
-      switch (e.code) {
-        case ErrorRenameFolder.noDestination:
-          error = 'No s’ha trobat la carpeta que vols renombrar.';
-          break;
-        case ErrorRenameFolder.noParent:
-          error = 'No s’ha pogut accedir a la carpeta superior.';
-          break;
-        case ErrorRenameFolder.folderExists:
-          error = 'Ja existix una altra carpeta amb este nom.';
-          break;
-        case ErrorRenameFolder.writeError:
-          error = 'No s’ha pogut renombrar la carpeta. Comprova els permisos o torna-ho a intentar.';
-          break;
-        case ErrorRenameFolder.folderInvalid:
-          error = 'La carpeta seleccionada no és vàlida.';
-          break;
-        case ErrorRenameFolder.copyFailed:
-          error = 'No s’han pogut copiar els fitxers a la nova carpeta.';
-          break;
-        default:
-          error = 'S’ha produït un error inesperat: ${e.message}';
-      }
-
-      if (context.mounted) {
-        DialogHelper.mostrarSnackBar(context, error);
-      }
-
-      _controller.text = course.name;
-    }
   }
 
   @override
