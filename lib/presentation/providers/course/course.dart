@@ -32,16 +32,10 @@ class CourseWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Course, int> {
           tipusUsuari: alumnesFolder,
           grup: current.name);
       await _repo.editarCursDB(updated);
-      //message serà bool si es true canviarem el nom amb _repo.editarCursDB(updated)
-      //I si no pues no
-
-      //Que no existeixca encara la carpeta -> canviar sols el nom ES veu que això no pot passar pq getUserFolder si no existeix te la crea
-      //Que existeixca ja una carpeta amb eixe nom i no la tigam registrada a la base de dades -> no es canvia el nom
-      //Que hi haja un altre error com d'escritura
 
       state = AsyncData(updated);
     } catch (e, st) {
-      rethrow; // re-llença perquè l’UI també el pugui gestionar
+      rethrow; // re-llença perquè l’UI el pugui gestionar
     }
   }
 }

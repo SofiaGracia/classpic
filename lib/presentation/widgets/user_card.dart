@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/saf_methods.dart';
 import 'package:xml_fotos/domain/errors/import.dart';
+import 'package:xml_fotos/presentation/providers/course/repository.dart';
 import 'package:xml_fotos/presentation/providers/student/student.dart';
 import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 import 'package:xml_fotos/presentation/widgets/circ_usu.dart';
@@ -22,36 +23,33 @@ import '../screens/camera_camera.dart';
 import '../screens/create_edit_user_screen.dart';
 import 'foto_usuari.dart';
 
-class UsuariWidgetRInd extends ConsumerStatefulWidget {
+class UserCard extends ConsumerStatefulWidget {
   final User usuari;
   final Future<void> Function(User usuari) onDelete;
 
-  const UsuariWidgetRInd({
+  const UserCard({
     super.key,
     required this.usuari,
     required this.onDelete,
   });
 
   @override
-  ConsumerState<UsuariWidgetRInd> createState() => _UsuariWidgetRState();
+  ConsumerState<UserCard> createState() => _UserCardState();
 }
 
-class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
-  var nomDelGrupActual = null;
+class _UserCardState extends ConsumerState<UserCard> {
+  Future<User?> _editUser(User usuari) async {
+    var nomDelGrupActual = null;
 
-  Future<User?> _editarUsuari(User usuari) async {
     final imageUser = usuari is Student
         ? await PlatformChannel.getFotoAlumneUri(usuari.group!, usuari.uId)
         : await PlatformChannel.getFotoProfessorUri(usuari.uId);
 
     if (usuari is Student) {
-      final cursos = await ref
-          .read(cursosNotifierProvider.notifier)
-          .getCursosSenseModificarState();
-
-      nomDelGrupActual = cursos
-          .firstWhere((c) => c.id.toString() == usuari.courseId.toString())
-          .name;
+      final course = await ref
+          .read(courseRepositoryProvider)
+          .carregaCursDB(usuari.courseId!);
+      nomDelGrupActual = course?.name;
     }
 
     final nouUsuari = await Navigator.push<User>(
@@ -68,10 +66,10 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
       ),
     );
 
-    final usuariARetornar;
+    final userToSave;
     if (usuari is Student) {
       final alu = (nouUsuari as Student);
-      usuariARetornar = (usuari).copyWith(
+      userToSave = (usuari).copyWith(
         id: usuari.id,
         nia: alu.nia,
         name: alu.name,
@@ -84,7 +82,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
       );
     } else {
       final prof = (nouUsuari as Teacher);
-      usuariARetornar = (usuari as Teacher).copyWith(
+      userToSave = (usuari as Teacher).copyWith(
         id: usuari.id,
         dni: prof.dni,
         name: prof.name,
@@ -94,7 +92,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
         photoPathHash: prof.photoPathHash,
       );
     }
-    return usuariARetornar;
+    return userToSave;
   }
 
   @override
@@ -108,14 +106,14 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
 
       provider = ref.read(
           studentWidgetNotifierProvider((widget.usuari as Student).id!)
-              .notifier); //Notifier individual per a student
+              .notifier);
     } else {
-      usuariAsync = ref.watch(
-          teacherWidgetNotifierProvider((widget.usuari as Teacher).id!));
+      usuariAsync = ref
+          .watch(teacherWidgetNotifierProvider((widget.usuari as Teacher).id!));
 
       provider = ref.read(
           teacherWidgetNotifierProvider((widget.usuari as Teacher).id!)
-              .notifier); //Notifier individual per a teacher
+              .notifier);
     }
 
     return usuariAsync.when(
@@ -156,7 +154,7 @@ class _UsuariWidgetRState extends ConsumerState<UsuariWidgetRInd> {
                 IconButton(
                     icon: const Icon(Icons.edit, color: Colors.blue),
                     onPressed: () async {
-                      final actualitzat = await _editarUsuari(usuari);
+                      final actualitzat = await _editUser(usuari);
                       if (actualitzat != null) {
                         provider.updateUser(actualitzat);
                       }

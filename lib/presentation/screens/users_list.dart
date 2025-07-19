@@ -15,7 +15,7 @@ import '../providers/student/student_ids_async.dart';
 import '../providers/teacher/stream.dart';
 import '../providers/teacher/teachers_ids_async.dart';
 import '../widgets/new_user.dart';
-import '../widgets/usuari_riverpod_ind.dart';
+import '../widgets/user_card.dart';
 
 class UsersListScreen<T extends User> extends ConsumerWidget {
   final Course? curs;
@@ -67,7 +67,7 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
         ? Text('No hi ha usuaris')
         : ListView(
       children: llista.map((usuari) {
-        return UsuariWidgetRInd(
+        return UserCard(
           usuari: usuari,
           onDelete: (u) async {
             Uri? uriToDelete;
