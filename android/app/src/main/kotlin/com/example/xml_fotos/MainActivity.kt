@@ -311,9 +311,6 @@ class MainActivity : FlutterActivity() {
                         return@setMethodCallHandler
                     }
 
-                    //Seguim a partir d'ací:
-                    // Copiar els arxius del directori vell al nou
-
                     val targetFolder = DocumentFile.fromTreeUri(context, newFolderUri)
 
                     if (targetFolder == null || !targetFolder.exists()) {

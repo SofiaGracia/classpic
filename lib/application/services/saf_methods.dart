@@ -209,24 +209,14 @@ class PlatformChannel {
     required String tipusUsuari, // "Alumnes" o "Professor"
     String? grup, // només si és Alumne
   }) async {
-    String? result;
 
-    try{
-
-      final algo = await platform.invokeMethod<String?>('renameFolder', {
-        'newName': newName,
-        'uri': uri.toString(),
-        'appName': baseFolderName,
-        'tipusUsuari': tipusUsuari,
-        'grup': grup,
-      });
-
-      result = algo;
-
-    } catch (e) {
-      print(e);
-    }
-
+    final result = await platform.invokeMethod<String?>('renameFolder', {
+      'newName': newName,
+      'uri': uri.toString(),
+      'appName': baseFolderName,
+      'tipusUsuari': tipusUsuari,
+      'grup': grup,
+    });
 
     return result ?? 'Error';
   }

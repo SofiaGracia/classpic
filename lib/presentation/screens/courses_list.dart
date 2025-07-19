@@ -11,7 +11,7 @@ import '../../shared/utils/dialog/uri.dart';
 import '../providers/course/courses_ids_async.dart';
 import '../providers/course/repository.dart';
 import '../providers/uri_notifier.dart';
-import '../widgets/curs.dart';
+import '../widgets/course.dart';
 import '../widgets/new_curs_riverpod.dart';
 
 class ListCoursesScreen extends ConsumerWidget {
@@ -55,7 +55,7 @@ class ListCoursesScreen extends ConsumerWidget {
         ? Text('No hi ha cursos')
         : ListView(
             children: llista.map((course) {
-              return CursWidget(
+              return CourseWidget(
                 coursePassed: course,
                 onDelete: (c) async {
                   await ref
