@@ -97,6 +97,7 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
                     .eliminaFoto(uriToDelete);
               }
             }
+            ref.invalidate(studentIdsProvider(null));
           },
         );
       }).toList(),

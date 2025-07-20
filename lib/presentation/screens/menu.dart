@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/providers/alumne_notifier.dart';
-import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
 import 'package:xml_fotos/presentation/providers/student/student_ids_async.dart';
 import 'package:xml_fotos/presentation/providers/teacher/teachers_ids_async.dart';
 import 'package:xml_fotos/presentation/screens/courses_list.dart';
@@ -59,7 +57,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                           ),
                         );
                       },
-                      provider: alumnesNotifierProvider),
+                      totalBuilder: (ref) => studentIdsProvider(null)),
                   const SizedBox(width: 8),
                   CounterWidget<Student>(
                     totalBuilder: (ref) => studentIdsProvider(null),
@@ -83,7 +81,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                           ),
                         );
                       },
-                      provider: professorNotifierProvider),
+                    totalBuilder: (ref) => asyncTeacherIdsProvider,),
                   const SizedBox(width: 8),
                   CounterWidget<Teacher>(
                     totalBuilder: (ref) => asyncTeacherIdsProvider,

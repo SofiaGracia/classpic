@@ -7,20 +7,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class StatusButtonR extends ConsumerWidget {
   final String text;
   final VoidCallback onPressed;
-  final AutoDisposeAsyncNotifierProvider<dynamic, dynamic> provider;
-  //final Widget? trailing; 
+  final ProviderListenable<AsyncValue<List<int>>> Function(WidgetRef ref)
+  totalBuilder;
 
   StatusButtonR({
     super.key,
     required this.text,
     required this.onPressed,
-    required this.provider,
+    required this.totalBuilder,
     //this.trailing,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final asyncData = ref.watch(provider);
+    final asyncData = ref.watch(totalBuilder(ref));
 
     return asyncData.when(
       loading: () => const CircularProgressIndicator(),
