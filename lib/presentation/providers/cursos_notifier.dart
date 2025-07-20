@@ -7,9 +7,6 @@ import 'course/repository.dart';
 
 part 'cursos_notifier.g.dart';
 
-
-
-
 @riverpod
 class CursosNotifier extends _$CursosNotifier {
 

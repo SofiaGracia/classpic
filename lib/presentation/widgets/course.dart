@@ -10,6 +10,9 @@ import 'package:xml_fotos/shared/utils/enum/rename_folder_error.dart';
 import '../../domain/entities/student.dart';
 import '../../domain/entities/course.dart';
 import '../../shared/utils/dialog/delete.dart';
+import '../providers/student/stream.dart';
+import '../providers/student/student_ids_async.dart';
+import 'counter.dart';
 
 //Creació d'un StateProvider global que guarda l'id del curs en edició
 final cursEnEdicioProvider = StateProvider<int?>((ref) => null);
@@ -105,7 +108,6 @@ class _CursWidgetState extends ConsumerState<CourseWidget> {
       await _saveCourseName(controller);
       ref.read(cursEnEdicioProvider.notifier).state = null;
 
-      //FocusScope.of(context).requestFocus(FocusNode());
     } else {
       ref.read(cursEnEdicioProvider.notifier).state = course.id;
     }
@@ -146,10 +148,10 @@ class _CursWidgetState extends ConsumerState<CourseWidget> {
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    /*CounterWidget<Student>(
+                    CounterWidget<Student>(
                       totalBuilder: (ref) => studentIdsProvider(course.id!),
                       withPhoto: studentCourseHasPhotoStreamProvider(course.id!),
-                    ),*/
+                    ),
                     IconButton(
                       icon: Icon(isEditing ? Icons.check : Icons.edit),
                       onPressed: () => _onEditTap(cursNot),
