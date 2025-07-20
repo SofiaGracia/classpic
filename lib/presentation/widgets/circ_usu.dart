@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/domain/models/has_foto_extension.dart';
 import 'package:xml_fotos/domain/models/user.dart';
-import 'package:xml_fotos/presentation/widgets/uri_dialog.dart';
 
 import '../../application/services/saf_methods.dart';
 import '../../domain/entities/student.dart';
