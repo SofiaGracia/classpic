@@ -4,11 +4,12 @@ import 'package:xml/xml.dart';
 import 'package:xml_fotos/application/services/dir_structure.dart';
 import 'package:xml_fotos/application/services/saf_methods.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
+import 'package:xml_fotos/presentation/providers/student/repository.dart';
+import 'package:xml_fotos/presentation/providers/student/student_ids_async.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
 
 import '../../domain/entities/student.dart';
 import '../../domain/entities/course.dart';
-import '../../presentation/providers/alumne_notifier.dart';
 import '../../presentation/providers/cursos_notifier.dart';
 import '../../data/datasources/xml/alumne_xml.dart';
 import '../../presentation/providers/uri_notifier.dart';
@@ -25,10 +26,10 @@ class AlumneImportHandler {
 
   /// Funció principal que processa el document XML
   Future<void> processa(XmlDocument doc) async {
-    final alumneNot = ref.read(alumnesNotifierProvider.notifier);
+    final alumneNot = ref.read(studentIdsProvider(null).notifier);
 
     // Obté els alumnes de la base de dades sense modificar l'estat del provider
-    final alumnesDB = await ref.read(alumnesNotifierProvider.notifier).getAlumnesSenseModificarState();
+    final alumnesDB = await ref.read(studentRepositoryProvider).findAllStudents();
 
     // Crea el repositori per llegir els alumnes del fitxer XML
     final repo = RepositoryAlumneXml(doc: doc);
@@ -41,12 +42,13 @@ class AlumneImportHandler {
 
       // Si no hi ha alumnes a la base de dades, és la primera importació
       final alumnes = await _importaPrimeraVegada(repo, alumnesXml, cursosXml);
-      await alumneNot.inserirAlumnes(alumnes);
+      //await alumneNot.inserirAlumnes(alumnes);
+      await alumneNot.addStudents(alumnes);
     } else {
 
       // Si ja hi ha alumnes, es fa una actualització
       final alumnes = await actualitzaAlumnes(repo, alumnesXml, alumnesDB, cursosXml);
-      if (alumnes != null) await alumneNot.inserirAlumnes(alumnes);
+      if (alumnes != null) await alumneNot.addStudents(alumnes);
     }
   }
 
@@ -114,7 +116,7 @@ class AlumneImportHandler {
       // Torna a carregar cursos actualitzats
       final cursosActualitzats = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
       // Alumnes a inserir o editar
-      final alumneNot = await ref.read(alumnesNotifierProvider.notifier);
+      final alumneNot = ref.read(studentIdsProvider(null).notifier);
       final alumnesDBMap = {for (final a in alumnesDB) a.nia: a};
       final alumnesAInserir = <Student>[];
       final alumnesAEditar = <Student>[];
@@ -158,10 +160,10 @@ class AlumneImportHandler {
         //Eliminar les fotos dels alumnes
         //Eliminar alumnes
         await storage.eliminaFotos(fotoPaths);
-        await alumneNot.eliminarAlumnes(alumnesAEliminar);
+        await alumneNot.removeStudents(alumnesAEliminar);
       }
 
-      if (alumnesAEditar.isNotEmpty) await alumneNot.editarAlumnes(alumnesAEditar);
+      if (alumnesAEditar.isNotEmpty) await alumneNot.updateStudents(alumnesAEditar);
 
       // Mou les fotos d’alumnes que han canviat de curs
       await Future.wait(alumnesACanviar.map((alumne) {

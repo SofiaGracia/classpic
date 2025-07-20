@@ -3,6 +3,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/domain/models/user.dart';
 import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
+import 'package:xml_fotos/presentation/providers/student/repository.dart';
 import 'package:xml_fotos/presentation/providers/student/stream.dart';
 
 import '../../application/services/saf_methods.dart';
@@ -10,7 +11,6 @@ import '../../application/services/storage_service.dart';
 import '../../domain/entities/student.dart';
 import '../../domain/entities/course.dart';
 import '../../domain/entities/teacher.dart';
-import '../providers/alumne_notifier.dart';
 import '../providers/student/student_ids_async.dart';
 import '../providers/teacher/stream.dart';
 import '../providers/teacher/teachers_ids_async.dart';
@@ -26,11 +26,10 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
     return curs != null ? 'Alumnes de ${curs!.name}' : 'Professors';
   }
 
-  Future<List<T>> _carregaLlista<T extends User>(WidgetRef ref, int? cursId) {
-    if (cursId != null) {
-      return ref
-          .read(alumnesNotifierProvider.notifier)
-          .getAlumnesPerCurs(cursId) as Future<List<T>>;
+  Future<List<T>> _carregaLlista<T extends User>(WidgetRef ref, int? courseId) {
+    if (courseId != null) {
+
+      return ref.read(studentRepositoryProvider).getStudentsByCurs(courseId) as Future<List<T>>;
     } else {
       return ref
           .read(professorNotifierProvider.notifier)

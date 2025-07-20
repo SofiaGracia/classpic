@@ -7,8 +7,6 @@ import 'package:xml_fotos/presentation/providers/student/student_ids_async.dart'
 
 import '../../../data/repository/student.dart';
 import '../../../domain/entities/student.dart';
-import '../alumne_notifier.dart';
-import '../course/courses_ids_async.dart';
 
 class StudentWidgetNotifier extends AutoDisposeFamilyAsyncNotifier<Student, int> {
 

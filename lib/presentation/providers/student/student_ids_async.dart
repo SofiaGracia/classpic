@@ -19,7 +19,7 @@ class AsyncStudentsIdsNotifier extends FamilyAsyncNotifier<List<int>, int?> {
     if (courseId != null){
       return _fetchIds(courseId);
     }else{
-      return _getTotalStudents();
+      return _getAllStudentIds();
     }
   }
 
@@ -31,11 +31,35 @@ class AsyncStudentsIdsNotifier extends FamilyAsyncNotifier<List<int>, int?> {
     });
   }
 
+  Future<void> addStudents(List<Student> s) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _repo.insertStudents(s);
+      return await _repo.getAllStudentIds();
+    });
+  }
+
   Future<void> removeStudent(Student s) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await _repo.deleteStudent(s);
       return _fetchIds(s.courseId!);
+    });
+  }
+
+  Future<void> removeStudents(List<Student> s) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _repo.deleteStudents(s);
+      return await _repo.getAllStudentIds();
+    });
+  }
+
+  Future<void> updateStudents(List<Student> s) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _repo.updateStudents(s);
+      return await _repo.getAllStudentIds();
     });
   }
 
@@ -47,8 +71,8 @@ class AsyncStudentsIdsNotifier extends FamilyAsyncNotifier<List<int>, int?> {
     });
   }
 
-  Future<List<int>> _getTotalStudents() async {
-    return await _repo.getStudents();
+  Future<List<int>> _getAllStudentIds() async {
+    return await _repo.getAllStudentIds();
   }
 }
 
