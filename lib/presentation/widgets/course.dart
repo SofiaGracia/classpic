@@ -10,10 +10,6 @@ import 'package:xml_fotos/shared/utils/enum/rename_folder_error.dart';
 import '../../domain/entities/student.dart';
 import '../../domain/entities/course.dart';
 import '../../shared/utils/dialog/delete.dart';
-import '../providers/alumne_notifier.dart';
-import '../providers/student/stream.dart';
-import '../providers/student/student_ids_async.dart';
-import 'counter.dart';
 
 //Creació d'un StateProvider global que guarda l'id del curs en edició
 final cursEnEdicioProvider = StateProvider<int?>((ref) => null);

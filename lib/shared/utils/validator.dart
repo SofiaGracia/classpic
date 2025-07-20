@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/presentation/providers/student/repository.dart';
+import 'package:xml_fotos/presentation/providers/teacher/repository.dart';
 
-import '../../presentation/providers/alumne_notifier.dart';
 import '../../presentation/providers/professor_notifier.dart';
 import 'constants.dart';
 
@@ -19,23 +20,8 @@ class Validator {
     }
     return null;
   }
-  //Validar dni
-  /*static String? validarDni(String? valor){
-    if(valor == null || valor.isEmpty){
-      return 'Per favor introdueix el dni';
-    }
-    return null;
-  }
 
-  //Validar nia
-  static String? validarNia(String? valor){
-    if(valor == null || valor.isEmpty){
-      return 'Per favor introdueix el nia';
-    }
-    return null;
-  }*/
-
-  static String? validarUsuId(String? valor, WidgetRef ref, bool isAlumne, String? id){
+  static String? validarUsuId(String? valor, WidgetRef ref, bool isAlumne){
 
     if(valor == null || valor.isEmpty){
       return 'Has d’omplir ID';
@@ -45,22 +31,6 @@ class Validator {
       return 'L\'ID ha de tenir entre $numNia i $numMax caràcters.';
     }
 
-    final llistaExistents = isAlumne
-        ? ref.read(alumnesNotifierProvider).maybeWhen(
-      data: (alumnes) => alumnes,
-      orElse: () => [],
-    )
-        : ref.read(professorNotifierProvider).maybeWhen(
-      data: (professors) => professors,
-      orElse: () => [],
-    );
-
-    final idJaExisteix =
-    llistaExistents.any((usuari) => usuari.uId == valor && (id == null || id != valor));
-
-    if(idJaExisteix){
-      return 'Ja existeix un usuari amb aquest ID.';
-    }
     return null;
   }
 }

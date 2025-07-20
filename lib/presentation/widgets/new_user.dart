@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
+import 'package:xml_fotos/presentation/providers/student/repository.dart';
 
 import '../../application/services/codi_generator.dart';
 import '../../domain/models/user.dart';
-import '../providers/alumne_notifier.dart';
 import '../providers/professor_notifier.dart';
 import '../screens/create_edit_user_screen.dart';
 
@@ -32,8 +32,7 @@ class NewUserR<T extends User> extends ConsumerWidget {
             existeixFunc: (codi) async {
               return isAlumne
                   ? await ref
-                      .read(alumnesNotifierProvider.notifier)
-                      .existeixNia(codi)
+                      .read(studentRepositoryProvider).findStudentByNia(codi) != null
                   : await ref
                       .read(professorNotifierProvider.notifier)
                       .existeixDni(codi);

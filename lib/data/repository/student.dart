@@ -27,7 +27,7 @@ class StudentRepository {
     return ids;
   }
 
-  Future<List<int>> getStudents() async {
+  Future<List<int>> getAllStudentIds() async {
     final ids = await _dao.getStudents();
     return ids;
   }

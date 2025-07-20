@@ -13,6 +13,8 @@ import '../../domain/models/user_factory.dart';
 import '../../shared/utils/dialog/uri.dart';
 import '../../shared/utils/validator.dart';
 import '../providers/cursos_notifier.dart';
+import '../providers/student/repository.dart';
+import '../providers/teacher/repository.dart';
 import '../providers/uri_notifier.dart';
 import '../widgets/drop_down_button.dart';
 import '../widgets/foto_usuari.dart';
@@ -159,6 +161,16 @@ class _CreateEditUserScreenState<T extends User>
       idGuardaUsuari = normalitzat;
     });
 
+    final llistaExistents = isAlumne? await ref.read(studentRepositoryProvider).findAllStudents() : await ref.read(teacherRepositoryProvider).carregaProfessorsDB();
+
+    final idJaExisteix =
+    llistaExistents.any((usuari) => usuari.uId == idGuardaUsuari && (usuari.uId == null || usuari.uId != idGuardaUsuari));
+
+    if(idJaExisteix){
+      DialogHelper.mostrarSnackBar(context, 'Ja existeix un usuari amb aquest ID.');
+      return;
+    }
+
     final usuariNou = crearUsuariGeneric();
 
     if (foto != null) {
@@ -282,7 +294,7 @@ class _CreateEditUserScreenState<T extends User>
                 key: idFieldKey,
                 controller: idController,
                 validator: (text) => Validator.validarUsuId(
-                    idController.text, ref, isAlumne, usuari?.uId),
+                    idController.text, ref, isAlumne),
                 textCapitalization: TextCapitalization.characters,
                 decoration: InputDecoration(
                   labelText: "Identificador (NIA o DNI)",
