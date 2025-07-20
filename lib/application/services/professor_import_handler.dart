@@ -2,8 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
 import 'package:xml_fotos/application/services/saf_methods.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
+import 'package:xml_fotos/presentation/providers/teacher/repository.dart';
+import 'package:xml_fotos/presentation/providers/teacher/teachers_ids_async.dart';
 
-import '../../presentation/providers/professor_notifier.dart';
 import '../../data/datasources/xml/professor_xml.dart';
 
 /// Aquesta classe s'encarrega de processar i importar professors des d'un fitxer XML.
@@ -19,10 +20,10 @@ class ProfessorImportHandler{
   Future<void> processa(XmlDocument doc) async {
 
     // Obtenim el Notifier de professors per poder modificar el seu estat
-    final profNot = ref.read(professorNotifierProvider.notifier);
+    final profNot = ref.read(asyncTeacherIdsProvider.notifier);
 
     // Obtenim els professors actuals de la base de dades (sense modificar el state de Riverpod)
-    final professorsDB = await ref.read(professorNotifierProvider.notifier).getProfessorsSenseModificarState();
+    final professorsDB = await ref.read(teacherRepositoryProvider).carregaProfessorsDB();
 
     // Parsegem el document XML per obtenir la llista de professors nous
     final professorsXml = await RepositoryProfessorXml(doc: doc).carregaLlistaProfessorsXml();
@@ -31,7 +32,7 @@ class ProfessorImportHandler{
     if (professorsDB.isEmpty) {
 
       // Inserim tots els professors parsejats
-      await profNot.inserirProfessors(professorsXml);
+      await profNot.addTeachers(professorsXml);
     } else {
 
       // Si ja hi ha professors, cal comparar i sincronitzar
@@ -46,7 +47,7 @@ class ProfessorImportHandler{
       final pEliminar = professorsDB.where((p) => !professorsXml.any((px) => px.dni == p.dni)).toList();
 
       // Inserim els professors nous, si n'hi ha
-      if (pAfegir.isNotEmpty) await profNot.inserirProfessors(pAfegir);
+      if (pAfegir.isNotEmpty) await profNot.addTeachers(pAfegir);
 
       // Eliminem professors que ja no apareixen al fitxer XML
       if (pEliminar.isNotEmpty){
@@ -68,7 +69,7 @@ class ProfessorImportHandler{
         await storage.eliminaFotos(fotoPaths);
 
         // Eliminem els professors de la base de dades
-        await profNot.eliminarProfessors(pEliminar);
+        await profNot.removeTeachers(pEliminar);
       }
     }
   }

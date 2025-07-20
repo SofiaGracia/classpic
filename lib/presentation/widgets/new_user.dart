@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
 import 'package:xml_fotos/presentation/providers/student/repository.dart';
+import 'package:xml_fotos/presentation/providers/teacher/repository.dart';
 
 import '../../application/services/codi_generator.dart';
 import '../../domain/models/user.dart';
-import '../providers/professor_notifier.dart';
 import '../screens/create_edit_user_screen.dart';
 
 class NewUserR<T extends User> extends ConsumerWidget {
@@ -33,9 +33,8 @@ class NewUserR<T extends User> extends ConsumerWidget {
               return isAlumne
                   ? await ref
                       .read(studentRepositoryProvider).findStudentByNia(codi) != null
-                  : await ref
-                      .read(professorNotifierProvider.notifier)
-                      .existeixDni(codi);
+                  :
+              await ref.read(teacherRepositoryProvider).carregaProfessorDBbyDni(codi) != null;
             });
 
         var nomDelGrupActual = null;
@@ -48,21 +47,6 @@ class NewUserR<T extends User> extends ConsumerWidget {
               .firstWhere((c) => c.id.toString() == cursId.toString())
               .name;
         }
-
-        /*final nouUsuari = await Navigator.push<Usuari>(
-          context,
-          MaterialPageRoute(
-            builder: (_) => NewEditUserScreen<T>(
-              usuari: null,
-              getId: getId,
-              isAlumne: isAlumne,
-              cursId: isAlumne? cursId: null,
-              cursNom: nomDelGrupActual,
-              codiUsuari: codiUsuari,
-              imageUser: null,
-            ),
-          ),
-        );*/
 
         final nouUsuari = await Navigator.push<User>(
           context,

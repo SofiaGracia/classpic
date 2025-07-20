@@ -24,10 +24,26 @@ class AsyncTeacherIdsNotifier extends AsyncNotifier<List<int>> {
     });
   }
 
+  Future<void> addTeachers(List<Teacher> t) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _repo.insertarProfessorsDB(t);
+      return _fetchIds();
+    });
+  }
+
   Future<void> removeTeacher(Teacher t) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await _repo.deleteTeacher(t);
+      return _fetchIds();
+    });
+  }
+
+  Future<void> removeTeachers(List<Teacher> t) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _repo.eliminarProfessorsDB(t);
       return _fetchIds();
     });
   }
