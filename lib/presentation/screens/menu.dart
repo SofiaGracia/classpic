@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/alumne_notifier.dart';
 import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
 import 'package:xml_fotos/presentation/providers/student/student_ids_async.dart';
-import 'package:xml_fotos/presentation/providers/teacher/stream.dart';
 import 'package:xml_fotos/presentation/providers/teacher/teachers_ids_async.dart';
 import 'package:xml_fotos/presentation/screens/courses_list.dart';
 import 'package:xml_fotos/presentation/widgets/counter.dart';
@@ -13,6 +12,7 @@ import 'package:xml_fotos/presentation/widgets/status_button_riverpod.dart';
 import '../../domain/entities/student.dart';
 import '../../domain/entities/teacher.dart';
 import '../providers/student/stream.dart';
+import '../providers/teacher/stream.dart';
 import 'configuration.dart';
 import 'users_list.dart';
 

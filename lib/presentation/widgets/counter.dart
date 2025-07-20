@@ -6,7 +6,7 @@ import '../../domain/models/user.dart';
 class CounterWidget<T extends User> extends ConsumerWidget {
   final ProviderListenable<AsyncValue<List<int>>> Function(WidgetRef ref)
       totalBuilder;
-  final AutoDisposeStreamProvider<int?> withPhoto;
+  final AutoDisposeStreamProvider<List<T>?> withPhoto;
 
   const CounterWidget({
     super.key,
@@ -16,6 +16,7 @@ class CounterWidget<T extends User> extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
     final totalAsync = ref.watch(totalBuilder(ref));
 
     return totalAsync.when(
@@ -24,7 +25,10 @@ class CounterWidget<T extends User> extends ConsumerWidget {
         final ambFotoAsync = ref.watch(withPhoto);
 
         return ambFotoAsync.when(
-          data: (ambFoto) {
+          data: (ambFotoCount) {
+
+            final ambFoto = ambFotoCount?.length ?? 0;
+
             return Text(
               '$ambFoto/$total',
               style: TextStyle(

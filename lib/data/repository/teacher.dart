@@ -28,7 +28,7 @@ class TeacherRepository {
     return ids;
   }
 
-  Stream<int?> streamTeachersWithPhoto() => _dao.streamTeachersWithPhoto();
+  Stream<List<Teacher>?> streamTeachersWithPhoto() => _dao.streamTeachersWithPhoto();
 
   Future<void> insertTeacher(Teacher professor) async {
     await _dao.insertTeacher(professor);

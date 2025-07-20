@@ -18,8 +18,11 @@ abstract class TeacherDao {
   @Query('SELECT name FROM teacher')
   Stream<List<String>> findAllTeachersName();
 
-  @Query('SELECT COUNT(*) FROM teacher WHERE hasFoto = 1')
-  Stream<int?> streamTeachersWithPhoto();
+  @Query('SELECT * FROM teacher WHERE hasFoto = 1')
+  Stream<List<Teacher>?> streamTeachersWithPhoto();
+
+  //@Query('SELECT COALESCE(COUNT(*), 0) FROM teacher WHERE hasFoto = 1')
+  //Stream<int?> streamTeachersWithPhoto();
 
   @Query('SELECT * FROM teacher WHERE id = :id')
   Future<Teacher?> findTeacherById(int id);

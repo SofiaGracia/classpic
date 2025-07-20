@@ -37,9 +37,9 @@ class StudentRepository {
     return alumnes;
   }
 
-  Stream<int?> streamStudentsWithPhoto() => _dao.streamStudentsWithPhoto();
+  Stream<List<Student>?> streamStudentsWithPhoto() => _dao.streamStudentsWithPhoto();
 
-  Stream<int?> streamStudentsCourseWithPhoto(int courseId) => _dao.streamStudentsCourseWithPhoto(courseId);
+  Stream<List<Student>?> streamStudentsCourseWithPhoto(int courseId) => _dao.streamStudentsCourseWithPhoto(courseId);
 
   Future<void> insertStudents(List<Student> students) async {
     await _dao.insertStudents(students);

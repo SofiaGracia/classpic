@@ -50,6 +50,7 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
         onCreate: (u) async {
           if (u is Student) {
             await ref.read(studentIdsProvider(curs!.id!).notifier).addStudent(u);
+            ref.invalidate(studentIdsProvider(null));
           } else {
             await ref.read(asyncTeacherIdsProvider.notifier).addTeacher(u as Teacher);
           }
