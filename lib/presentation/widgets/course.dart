@@ -150,10 +150,10 @@ class _CursWidgetState extends ConsumerState<CourseWidget> {
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CounterWidget<Student>(
+                    /*CounterWidget<Student>(
                       totalBuilder: (ref) => studentIdsProvider(course.id!),
                       withPhoto: studentCourseHasPhotoStreamProvider(course.id!),
-                    ),
+                    ),*/
                     IconButton(
                       icon: Icon(isEditing ? Icons.check : Icons.edit),
                       onPressed: () => _onEditTap(cursNot),
