@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/domain/models/user.dart';
-import 'package:xml_fotos/presentation/providers/professor_notifier.dart';
 import 'package:xml_fotos/presentation/providers/student/repository.dart';
-import 'package:xml_fotos/presentation/providers/student/stream.dart';
+import 'package:xml_fotos/presentation/providers/teacher/repository.dart';
 
 import '../../application/services/saf_methods.dart';
 import '../../application/services/storage_service.dart';
@@ -12,7 +11,6 @@ import '../../domain/entities/student.dart';
 import '../../domain/entities/course.dart';
 import '../../domain/entities/teacher.dart';
 import '../providers/student/student_ids_async.dart';
-import '../providers/teacher/stream.dart';
 import '../providers/teacher/teachers_ids_async.dart';
 import '../widgets/new_user.dart';
 import '../widgets/user_card.dart';
@@ -28,12 +26,11 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
 
   Future<List<T>> _carregaLlista<T extends User>(WidgetRef ref, int? courseId) {
     if (courseId != null) {
-
-      return ref.read(studentRepositoryProvider).getStudentsByCurs(courseId) as Future<List<T>>;
+      return ref.read(studentRepositoryProvider).getStudentsByCurs(courseId)
+          as Future<List<T>>;
     } else {
-      return ref
-          .read(professorNotifierProvider.notifier)
-          .getProfessorsSenseModificarState() as Future<List<T>>;
+      return ref.read(teacherRepositoryProvider).carregaProfessorsDB()
+          as Future<List<T>>;
     }
   }
 
@@ -46,19 +43,23 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
       floatingActionButton: ref == null
           ? null
           : NewUserR<User>(
-        onCreate: (u) async {
-          if (u is Student) {
-            await ref.read(studentIdsProvider(curs!.id!).notifier).addStudent(u);
-            ref.invalidate(studentIdsProvider(null));
-          } else {
-            await ref.read(asyncTeacherIdsProvider.notifier).addTeacher(u as Teacher);
-          }
-        },
-        cursId: curs != null ? curs?.id : null,
-        getId: (u) =>
-        curs != null ? (u as Student).nia : (u as Teacher).dni,
-        isAlumne: curs != null,
-      ),
+              onCreate: (u) async {
+                if (u is Student) {
+                  await ref
+                      .read(studentIdsProvider(curs!.id!).notifier)
+                      .addStudent(u);
+                  ref.invalidate(studentIdsProvider(null));
+                } else {
+                  await ref
+                      .read(asyncTeacherIdsProvider.notifier)
+                      .addTeacher(u as Teacher);
+                }
+              },
+              cursId: curs != null ? curs?.id : null,
+              getId: (u) =>
+                  curs != null ? (u as Student).nia : (u as Teacher).dni,
+              isAlumne: curs != null,
+            ),
     );
   }
 
@@ -66,41 +67,45 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
     return llista.isEmpty
         ? Text('No hi ha usuaris')
         : ListView(
-      children: llista.map((usuari) {
-        return UserCard(
-          usuari: usuari,
-          onDelete: (u) async {
-            Uri? uriToDelete;
+            children: llista.map((usuari) {
+              return UserCard(
+                usuari: usuari,
+                onDelete: (u) async {
+                  Uri? uriToDelete;
 
-            if (u is Student) {
-              await ref.read(studentIdsProvider(curs!.id!).notifier).removeStudent(u);
+                  if (u is Student) {
+                    await ref
+                        .read(studentIdsProvider(curs!.id!).notifier)
+                        .removeStudent(u);
 
-              if (u.hasFoto) {
-                final uriAlumne = await PlatformChannel.getFotoAlumneUri(
-                    u.group!, u.nia);
+                    if (u.hasFoto) {
+                      final uriAlumne = await PlatformChannel.getFotoAlumneUri(
+                          u.group!, u.nia);
 
-                uriToDelete = uriAlumne;
-              }
-            } else {
-              await ref.read(asyncTeacherIdsProvider.notifier).removeTeacher(u as Teacher);
-              if (u.hasFoto) {
-                final uriProf =
-                await PlatformChannel.getFotoProfessorUri(u.dni);
+                      uriToDelete = uriAlumne;
+                    }
+                  } else {
+                    await ref
+                        .read(asyncTeacherIdsProvider.notifier)
+                        .removeTeacher(u as Teacher);
+                    if (u.hasFoto) {
+                      final uriProf =
+                          await PlatformChannel.getFotoProfessorUri(u.dni);
 
-                uriToDelete = uriProf;
-              }
+                      uriToDelete = uriProf;
+                    }
 
-              if (uriToDelete != null) {
-                await ref
-                    .read(StorageServiceProvider)
-                    .eliminaFoto(uriToDelete);
-              }
-            }
-            ref.invalidate(studentIdsProvider(null));
-          },
-        );
-      }).toList(),
-    );
+                    if (uriToDelete != null) {
+                      await ref
+                          .read(StorageServiceProvider)
+                          .eliminaFoto(uriToDelete);
+                    }
+                  }
+                  ref.invalidate(studentIdsProvider(null));
+                },
+              );
+            }).toList(),
+          );
   }
 
   Widget _buildLlistaAmbStream({
@@ -130,14 +135,14 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return curs != null
         ? _buildLlistaAmbStream(
-      idsAsync: ref.watch(studentIdsProvider(curs!.id!)),
-      futureLlista: () => _carregaLlista(ref, curs!.id),
-      ref: ref,
-    )
+            idsAsync: ref.watch(studentIdsProvider(curs!.id!)),
+            futureLlista: () => _carregaLlista(ref, curs!.id),
+            ref: ref,
+          )
         : _buildLlistaAmbStream(
-      idsAsync: ref.watch(asyncTeacherIdsProvider),
-      futureLlista: () => _carregaLlista(ref, null),
-      ref: ref,
-    );
+            idsAsync: ref.watch(asyncTeacherIdsProvider),
+            futureLlista: () => _carregaLlista(ref, null),
+            ref: ref,
+          );
   }
 }
