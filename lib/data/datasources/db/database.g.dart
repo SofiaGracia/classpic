@@ -84,7 +84,7 @@ class _$AppDatabase extends AppDatabase {
     Callback? callback,
   ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 23,
+      version: 24,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -134,7 +134,7 @@ class _$StudentDao extends StudentDao {
   _$StudentDao(
     this.database,
     this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database),
+  )   : _queryAdapter = QueryAdapter(database, changeListener),
         _studentInsertionAdapter = InsertionAdapter(
             database,
             'student',
@@ -148,7 +148,8 @@ class _$StudentDao extends StudentDao {
                   'photoPathHash': item.photoPathHash,
                   's1': item.s1,
                   's2': item.s2
-                }),
+                },
+            changeListener),
         _studentUpdateAdapter = UpdateAdapter(
             database,
             'student',
@@ -163,7 +164,8 @@ class _$StudentDao extends StudentDao {
                   'photoPathHash': item.photoPathHash,
                   's1': item.s1,
                   's2': item.s2
-                }),
+                },
+            changeListener),
         _studentDeletionAdapter = DeletionAdapter(
             database,
             'student',
@@ -178,7 +180,8 @@ class _$StudentDao extends StudentDao {
                   'photoPathHash': item.photoPathHash,
                   's1': item.s1,
                   's2': item.s2
-                });
+                },
+            changeListener);
 
   final sqflite.DatabaseExecutor database;
 
@@ -230,12 +233,46 @@ class _$StudentDao extends StudentDao {
   }
 
   @override
-  Stream<List<int?>> observeTeacherIdsByCourse(int courseId) {
+  Future<List<int>> getStudents() async {
+    return _queryAdapter.queryList(
+        'SELECT id FROM student WHERE id IS NOT NULL',
+        mapper: (Map<String, Object?> row) => row.values.first as int);
+  }
+
+  @override
+  Stream<List<Student>?> streamStudentsWithPhoto() {
     return _queryAdapter.queryListStream(
-        'SELECT id FROM teacher WHERE id IS NOT NULL AND courseId = ?1',
-        mapper: (Map<String, Object?> row) => row.values.first as int,
+        'SELECT * FROM student WHERE hasFoto = 1',
+        mapper: (Map<String, Object?> row) => Student(
+            id: row['id'] as int?,
+            nia: row['nia'] as String,
+            name: row['name'] as String,
+            s1: row['s1'] as String,
+            hasFoto: (row['hasFoto'] as int) != 0,
+            s2: row['s2'] as String?,
+            photoPathHash: row['photoPathHash'] as String?,
+            courseId: row['courseId'] as int?,
+            group: row['group'] as String?),
+        queryableName: 'student',
+        isView: false);
+  }
+
+  @override
+  Stream<List<Student>?> streamStudentsCourseWithPhoto(int courseId) {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM student WHERE hasFoto = 1 AND courseId = ?1',
+        mapper: (Map<String, Object?> row) => Student(
+            id: row['id'] as int?,
+            nia: row['nia'] as String,
+            name: row['name'] as String,
+            s1: row['s1'] as String,
+            hasFoto: (row['hasFoto'] as int) != 0,
+            s2: row['s2'] as String?,
+            photoPathHash: row['photoPathHash'] as String?,
+            courseId: row['courseId'] as int?,
+            group: row['group'] as String?),
         arguments: [courseId],
-        queryableName: 'teacher',
+        queryableName: 'student',
         isView: false);
   }
 
@@ -414,6 +451,22 @@ class _$TeacherDao extends TeacherDao {
   }
 
   @override
+  Stream<List<Teacher>?> streamTeachersWithPhoto() {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM teacher WHERE hasFoto = 1',
+        mapper: (Map<String, Object?> row) => Teacher(
+            id: row['id'] as int?,
+            dni: row['dni'] as String,
+            name: row['name'] as String,
+            s1: row['s1'] as String,
+            hasFoto: (row['hasFoto'] as int) != 0,
+            s2: row['s2'] as String?,
+            photoPathHash: row['photoPathHash'] as String?),
+        queryableName: 'teacher',
+        isView: false);
+  }
+
+  @override
   Future<Teacher?> findTeacherById(int id) async {
     return _queryAdapter.query('SELECT * FROM teacher WHERE id = ?1',
         mapper: (Map<String, Object?> row) => Teacher(
@@ -425,30 +478,6 @@ class _$TeacherDao extends TeacherDao {
             s2: row['s2'] as String?,
             photoPathHash: row['photoPathHash'] as String?),
         arguments: [id]);
-  }
-
-  @override
-  Stream<List<int?>> observeIdsTeacher() {
-    return _queryAdapter.queryListStream(
-        'SELECT id FROM teacher WHERE id IS NOT NULL',
-        mapper: (Map<String, Object?> row) => row.values.first as int,
-        queryableName: 'teacher',
-        isView: false);
-  }
-
-  @override
-  Stream<List<Teacher>> streamAllTeachers() {
-    return _queryAdapter.queryListStream('SELECT * FROM teacher',
-        mapper: (Map<String, Object?> row) => Teacher(
-            id: row['id'] as int?,
-            dni: row['dni'] as String,
-            name: row['name'] as String,
-            s1: row['s1'] as String,
-            hasFoto: (row['hasFoto'] as int) != 0,
-            s2: row['s2'] as String?,
-            photoPathHash: row['photoPathHash'] as String?),
-        queryableName: 'teacher',
-        isView: false);
   }
 
   @override

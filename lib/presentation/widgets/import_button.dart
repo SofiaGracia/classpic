@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/domain/errors/import.dart';
-import 'package:xml_fotos/presentation/screens/configuration.dart';
-import 'package:xml_fotos/presentation/widgets/uri_dialog.dart';
-import 'package:xml_fotos/presentation/widgets/uri_guard.dart';
 import '../../shared/utils/dialog/uri.dart';
 import '../providers/import_controller.dart';
 
