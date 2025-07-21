@@ -94,12 +94,11 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
 
                       uriToDelete = uriProf;
                     }
-
-                    if (uriToDelete != null) {
-                      await ref
-                          .read(StorageServiceProvider)
-                          .eliminaFoto(uriToDelete);
-                    }
+                  }
+                  if (uriToDelete != null) {
+                    await ref
+                        .read(StorageServiceProvider)
+                        .eliminaFoto(uriToDelete);
                   }
                   ref.invalidate(studentIdsProvider(null));
                 },
