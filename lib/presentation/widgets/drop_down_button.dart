@@ -1,14 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
+import 'package:xml_fotos/domain/entities/course.dart';
+import 'package:xml_fotos/presentation/providers/course/courses_ids_async.dart';
 
 class CursosDropdown extends ConsumerStatefulWidget {
   final int cursId;
   final void Function(String grupNom) onGrupSeleccionat;
+  final List<Course>? courses;
 
   const CursosDropdown(
-      {super.key, required this.cursId, required this.onGrupSeleccionat});
+      {super.key, required this.cursId, required this.onGrupSeleccionat, required this.courses});
 
   @override
   ConsumerState<CursosDropdown> createState() => _DropDownCursosState();
@@ -17,30 +19,34 @@ class CursosDropdown extends ConsumerStatefulWidget {
 class _DropDownCursosState extends ConsumerState<CursosDropdown> {
   @override
   Widget build(BuildContext context) {
-    final cursosAsync = ref.watch(cursosNotifierProvider);
+    final cursosAsync = ref.watch(coursesIdsProvider);
 
     return cursosAsync.when(
-        data: (cursos) {
-          final cursTrobat = cursos.firstWhere((c) => c.id == widget.cursId);
-          var valorSeleccionat = cursTrobat.id.toString();
+        data: (ids) {
+          final idTrobat = ids.firstWhere((id) => id == widget.cursId);
+          var valorSeleccionat = idTrobat.toString();
 
           return DropdownButtonFormField<String>(
             value: valorSeleccionat,
             onChanged: (nouId) {
               if (nouId != null) {
-                final cursSeleccionat =
-                    cursos.firstWhere((c) => c.id.toString() == nouId);
+                final idSeleccionat =
+                    ids.firstWhere((id) => id.toString() == nouId);
                 setState(() {
-                  valorSeleccionat = cursSeleccionat.id.toString();
+                  valorSeleccionat = idSeleccionat.toString();
                 });
-                widget.onGrupSeleccionat(cursSeleccionat.name);
+
+                //No tenim el nom del curs, tenim un mètode en el repo però és async
+                final cursSeleccionat = widget.courses?.firstWhere((c) => c.id.toString() == nouId);
+
+                widget.onGrupSeleccionat(cursSeleccionat!.name);
               }
             },
             decoration: const InputDecoration(
               labelText: "Curs",
               border: OutlineInputBorder(),
             ),
-            items: cursos.map((c) {
+            items: widget.courses?.map((c) {
               return DropdownMenuItem<String>(
                 value: c.id.toString(),
                 child: Text(c.name),

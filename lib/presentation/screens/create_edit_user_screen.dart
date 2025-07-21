@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
+import 'package:xml_fotos/domain/entities/course.dart';
+import 'package:xml_fotos/presentation/providers/course/repository.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
 
 import '../../application/services/codi_generator.dart';
@@ -12,7 +14,6 @@ import '../../domain/models/user.dart';
 import '../../domain/models/user_factory.dart';
 import '../../shared/utils/dialog/uri.dart';
 import '../../shared/utils/validator.dart';
-import '../providers/cursos_notifier.dart';
 import '../providers/student/repository.dart';
 import '../providers/teacher/repository.dart';
 import '../providers/uri_notifier.dart';
@@ -28,6 +29,7 @@ class CreateEditUserScreen<T extends User> extends ConsumerStatefulWidget {
   final bool isAlumne;
   final int? cursId;
   final String? cursNom;
+  final List<Course>? courses;
 
   //Referent a usuari
   final String codiUsuari;
@@ -39,6 +41,7 @@ class CreateEditUserScreen<T extends User> extends ConsumerStatefulWidget {
       required this.isAlumne,
       required this.cursId,
       required this.cursNom,
+      required this.courses,
       required this.codiUsuari,
       required this.uriImageUser});
 
@@ -50,7 +53,7 @@ class CreateEditUserScreen<T extends User> extends ConsumerStatefulWidget {
 class _CreateEditUserScreenState<T extends User>
     extends ConsumerState<CreateEditUserScreen> {
   //FORMULARI:
-    final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final idFieldKey = GlobalKey<FormFieldState>();
 
   // Controladors pels camps del formulari
@@ -135,7 +138,8 @@ class _CreateEditUserScreenState<T extends User>
     final grupAntic = cursAmbQueShaFetLaFoto;
 
     if (grupAntic != grupNou && faFaltaMoure) {
-      final id = idAmbQueEsFaLaFoto ?? (idGuardaUsuari != idActual? idGuardaUsuari: idActual) ;
+      final id = idAmbQueEsFaLaFoto ??
+          (idGuardaUsuari != idActual ? idGuardaUsuari : idActual);
       await ref
           .read(StorageServiceProvider)
           .mouFotoAlumne(grupAntic, grupNou, id);
@@ -161,13 +165,17 @@ class _CreateEditUserScreenState<T extends User>
       idGuardaUsuari = normalitzat;
     });
 
-    final llistaExistents = isAlumne? await ref.read(studentRepositoryProvider).findAllStudents() : await ref.read(teacherRepositoryProvider).carregaProfessorsDB();
+    final llistaExistents = isAlumne
+        ? await ref.read(studentRepositoryProvider).findAllStudents()
+        : await ref.read(teacherRepositoryProvider).carregaProfessorsDB();
 
-    final idJaExisteix =
-    llistaExistents.any((usuari) => usuari.uId == idGuardaUsuari && (usuari.uId == null || usuari.uId != idGuardaUsuari));
+    final idJaExisteix = llistaExistents.any((usuari) =>
+        usuari.uId == idGuardaUsuari &&
+        (usuari.uId == null || usuari.uId != idGuardaUsuari));
 
-    if(idJaExisteix){
-      DialogHelper.mostrarSnackBar(context, 'Ja existeix un usuari amb aquest ID.');
+    if (idJaExisteix) {
+      DialogHelper.mostrarSnackBar(
+          context, 'Ja existeix un usuari amb aquest ID.');
       return;
     }
 
@@ -212,8 +220,8 @@ class _CreateEditUserScreenState<T extends User>
       int? idCurs;
 
       final cursTrobat = await ref
-          .read(cursosNotifierProvider.notifier)
-          .getCursPerNom(nomCursSeleccionat!);
+          .read(courseRepositoryProvider)
+          .findCursNom(nomCursSeleccionat!);
 
       nomCurs = cursTrobat!.name;
       idCurs = cursTrobat.id;
@@ -246,8 +254,8 @@ class _CreateEditUserScreenState<T extends User>
     String? cursFoto;
     if (isAlumne) {
       final cursTrobat = await ref
-          .read(cursosNotifierProvider.notifier)
-          .getCursPerNom(nomCursSeleccionat!);
+          .read(courseRepositoryProvider)
+          .findCursNom(nomCursSeleccionat!);
 
       if (cursTrobat != null) {
         cursFoto = cursTrobat.name;
@@ -293,8 +301,8 @@ class _CreateEditUserScreenState<T extends User>
               TextFormField(
                 key: idFieldKey,
                 controller: idController,
-                validator: (text) => Validator.validarUsuId(
-                    idController.text, ref, isAlumne),
+                validator: (text) =>
+                    Validator.validarUsuId(idController.text, ref, isAlumne),
                 textCapitalization: TextCapitalization.characters,
                 decoration: InputDecoration(
                   labelText: "Identificador (NIA o DNI)",
@@ -333,7 +341,8 @@ class _CreateEditUserScreenState<T extends User>
                     cursId: widget.cursId!,
                     onGrupSeleccionat: (nomCurs) {
                       nomCursSeleccionat = nomCurs;
-                    })
+                    }, courses: widget.courses,)
+
               ],
               const SizedBox(height: 30),
               GestureDetector(

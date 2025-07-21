@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
-import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
 
 import '../../application/services/saf_methods.dart';
@@ -26,7 +25,6 @@ class ListCoursesScreen extends ConsumerWidget {
       ),
       body: fill,
       floatingActionButton: NewCursR(
-        provider: cursosNotifierProvider,
         onCreate: (c) async {
           final uri = await ref?.read(UriProvider.notifier).getUri();
 

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
+import 'package:xml_fotos/presentation/providers/course/repository.dart';
 import 'package:xml_fotos/presentation/providers/student/repository.dart';
 import 'package:xml_fotos/presentation/providers/teacher/repository.dart';
 
@@ -38,10 +38,11 @@ class NewUserR<T extends User> extends ConsumerWidget {
             });
 
         var nomDelGrupActual = null;
+        var cursos = null;
 
         if (isAlumne){
 
-          final cursos = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
+          cursos = await ref.read(courseRepositoryProvider).carregarCursosDB();
 
           nomDelGrupActual = cursos
               .firstWhere((c) => c.id.toString() == cursId.toString())
@@ -58,6 +59,7 @@ class NewUserR<T extends User> extends ConsumerWidget {
               cursNom: nomDelGrupActual,
               codiUsuari: codiUsuari,
               uriImageUser: null,
+              courses: cursos,
             ),
           ),
         );
