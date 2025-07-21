@@ -164,10 +164,9 @@ class _CursWidgetState extends ConsumerState<CourseWidget> {
                           titol: 'Eliminar curs',
                           botoConfirmar: 'Si, eliminar',
                           missatge:
-                              'Estàs segur que vols eliminar aquest curs?',
+                              'Estàs segur que vols eliminar aquest curs? S\'eliminaran els alumnes a dins del curs',
                         );
                         if (confirmat == true) {
-                          //await cursNot.eliminarCurs(curs);
                           await widget.onDelete(widget.coursePassed);
                           DialogHelper.mostrarSnackBar(
                               context, 'Curs eliminat.');
