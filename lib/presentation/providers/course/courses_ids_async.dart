@@ -26,12 +26,38 @@ class CoursesIdsNotifier extends AsyncNotifier<List<int>> {
     });
   }
 
+  Future<void> addCourses(List<Course> c) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _repo.inserirCursosDB(c);
+      return _fetchIds();
+    });
+  }
+
   Future<void> removeCourse(Course c) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await _repo.eliminarCursDB(c);
       return _fetchIds();
     });
+  }
+
+  Future<void> removeCourses(List<Course> c) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _repo.eliminarCursosDB(c);
+      return _fetchIds();
+    });
+  }
+
+  Future<void> cleanCourses() async {
+    try {
+      final repo = await _repo;
+      await repo.buidarCursosBD(); // Elimina de la BD
+      state = AsyncData(<int>[]);   // Reflecteix-ho a l’estat
+    } catch (e, st) {
+      state = AsyncError(e, st);     // Gestiona errors
+    }
   }
 }
 

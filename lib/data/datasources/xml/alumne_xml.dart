@@ -1,14 +1,9 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
 import 'package:xml_fotos/application/services/codi_generator.dart';
-import 'package:xml_fotos/data/datasources/xml/xml.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
 
 import '../../../domain/entities/student.dart';
 import '../../../domain/entities/course.dart';
-import '../../../presentation/providers/cursos_notifier.dart';
-import '../../repository/course_db.dart';
 
 class RepositoryAlumneXml {
 

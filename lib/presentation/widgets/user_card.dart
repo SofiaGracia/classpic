@@ -1,27 +1,17 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/saf_methods.dart';
-import 'package:xml_fotos/domain/errors/import.dart';
 import 'package:xml_fotos/presentation/providers/course/repository.dart';
 import 'package:xml_fotos/presentation/providers/student/student.dart';
-import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 import 'package:xml_fotos/presentation/widgets/circ_usu.dart';
-import 'package:xml_fotos/presentation/widgets/uri_dialog.dart';
 
 import '../../domain/entities/student.dart';
 import '../../domain/entities/teacher.dart';
 import '../../domain/models/user.dart';
-import '../../application/services/storage_service.dart';
-import '../../shared/utils/constants.dart';
 import '../../shared/utils/dialog/delete.dart';
-import '../providers/cursos_notifier.dart';
 import '../providers/teacher/teacher.dart';
-import '../screens/camera_camera.dart';
 import '../screens/create_edit_user_screen.dart';
-import 'foto_usuari.dart';
 
 class UserCard extends ConsumerStatefulWidget {
   final User usuari;
@@ -45,11 +35,15 @@ class _UserCardState extends ConsumerState<UserCard> {
         ? await PlatformChannel.getFotoAlumneUri(usuari.group!, usuari.uId)
         : await PlatformChannel.getFotoProfessorUri(usuari.uId);
 
+    var courses = null;
+
     if (usuari is Student) {
       final course = await ref
           .read(courseRepositoryProvider)
           .carregaCursDB(usuari.courseId!);
       nomDelGrupActual = course?.name;
+
+      courses = await ref.read(courseRepositoryProvider).carregarCursosDB();
     }
 
     final nouUsuari = await Navigator.push<User>(
@@ -62,6 +56,7 @@ class _UserCardState extends ConsumerState<UserCard> {
           cursNom: nomDelGrupActual,
           codiUsuari: usuari is Student ? usuari.nia : (usuari as Teacher).dni,
           uriImageUser: imageUser,
+          courses: courses,
         ),
       ),
     );

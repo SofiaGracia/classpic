@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/providers/cursos_notifier.dart';
+import 'package:xml_fotos/presentation/providers/course/repository.dart';
 
 import '../../domain/entities/course.dart';
 
 class NewCursR extends ConsumerWidget {
-  final AutoDisposeAsyncNotifierProvider<dynamic, List<Course>> provider;
   final Future<void> Function(Course curs) onCreate;
 
-  const NewCursR({required this.provider, required this.onCreate});
+  const NewCursR({required this.onCreate});
 
   String crearGrupSenseNom(Set<String> nomsCursos) {
     String nomBase = 'nou grup';
@@ -27,8 +26,7 @@ class NewCursR extends ConsumerWidget {
     return FloatingActionButton(
       onPressed: () async {
         final controlador = TextEditingController();
-        //final cursos = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
-        final cursos = await ref.read(cursosNotifierProvider.notifier).getCursosSenseModificarState();
+        final cursos = await ref.read(courseRepositoryProvider).carregarCursosDB();
         final nomsExistents = cursos.map((c) => c.name.toLowerCase()).toSet();
 
         final nom = await showDialog<String>(
