@@ -55,6 +55,15 @@ class AsyncStudentsIdsNotifier extends FamilyAsyncNotifier<List<int>, int?> {
     });
   }
 
+  Future<void> removeStudentsByCourseId(int courseId) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _repo.deleteStudentsByCourseId(courseId);
+      return await _repo.getAllStudentIds();
+      //return
+    });
+  }
+
   Future<void> updateStudents(List<Student> s) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {

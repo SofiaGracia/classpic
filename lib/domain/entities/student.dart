@@ -10,7 +10,7 @@ import 'course.dart';
       childColumns: ['courseId'],
       parentColumns: ['id'],
       entity: Course,
-      onDelete: ForeignKeyAction.setNull,
+      onDelete: ForeignKeyAction.cascade,
     )
   ],
 )

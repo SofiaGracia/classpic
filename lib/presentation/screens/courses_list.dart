@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
+import 'package:xml_fotos/presentation/providers/student/student_ids_async.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
 
 import '../../application/services/saf_methods.dart';
@@ -56,6 +57,11 @@ class ListCoursesScreen extends ConsumerWidget {
               return CourseWidget(
                 coursePassed: course,
                 onDelete: (c) async {
+
+                  //Borrar tots els alumnes que tinguen eixe grup
+                  await ref.read(studentIdsProvider(c.id).notifier).removeStudentsByCourseId(c.id!);
+                  ref.invalidate(studentIdsProvider(null));
+
                   await ref
                       .read(coursesIdsProvider.notifier)
                       .removeCourse(course);

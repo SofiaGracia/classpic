@@ -58,6 +58,10 @@ class StudentRepository {
     await _dao.deleteStudents(students);
   }
 
+  Future<void> deleteStudentsByCourseId(int courseId) async {
+    await _dao.deleteStudentsByCourseId(courseId);
+  }
+
   Future<void> updateStudent(Student student) async {
     await _dao.updateStudent(student);
   }

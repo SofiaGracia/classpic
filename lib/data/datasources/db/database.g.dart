@@ -84,7 +84,7 @@ class _$AppDatabase extends AppDatabase {
     Callback? callback,
   ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 24,
+      version: 26,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -100,7 +100,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `student` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `nia` TEXT NOT NULL, `group` TEXT, `courseId` INTEGER, `hasFoto` INTEGER NOT NULL, `name` TEXT NOT NULL, `photoPathHash` TEXT, `s1` TEXT NOT NULL, `s2` TEXT, FOREIGN KEY (`courseId`) REFERENCES `course` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL)');
+            'CREATE TABLE IF NOT EXISTS `student` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `nia` TEXT NOT NULL, `group` TEXT, `courseId` INTEGER, `hasFoto` INTEGER NOT NULL, `name` TEXT NOT NULL, `photoPathHash` TEXT, `s1` TEXT NOT NULL, `s2` TEXT, FOREIGN KEY (`courseId`) REFERENCES `course` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `teacher` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `dni` TEXT NOT NULL, `hasFoto` INTEGER NOT NULL, `name` TEXT NOT NULL, `photoPathHash` TEXT, `s1` TEXT NOT NULL, `s2` TEXT)');
         await database.execute(
@@ -321,6 +321,12 @@ class _$StudentDao extends StudentDao {
             photoPathHash: row['photoPathHash'] as String?,
             courseId: row['courseId'] as int?,
             group: row['group'] as String?),
+        arguments: [courseId]);
+  }
+
+  @override
+  Future<void> deleteStudentsByCourseId(int courseId) async {
+    await _queryAdapter.queryNoReturn('DELETE FROM student WHERE courseId = ?1',
         arguments: [courseId]);
   }
 

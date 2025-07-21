@@ -52,6 +52,9 @@ abstract class StudentDao {
   @delete
   Future<void> deleteStudents(List<Student> students);
 
+  @Query('DELETE FROM student WHERE courseId = :courseId')
+  Future<void> deleteStudentsByCourseId(int courseId);
+
   @update
   Future<void> updateStudent(Student student);
 
