@@ -31,25 +31,17 @@ class UriNotifier extends AsyncNotifier<String?> {
       if (uri != null) {
         //Comprovar si la uri és de un directori que té dades o no
         //Mostrarem un dialog si sí guardar la uri en el shared preferences i si no no
-        final messageDialog = await CheckDirService(ref).checkDir(uri);
-        if (messageDialog != null) {
-          final confirmat = await showConfirmacioDialog(
-              context: context,
-              titol: 'Directori triat:',
-              botoConfirmar: 'Si, triar',
-              missatge: messageDialog,
-              botoCancel: 'Cancel·la, tria un altre directori');
-          if (confirmat == true) {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString(keyFolder, uri);
-            state = AsyncData(uri);
+        final messageDialog = await CheckDirService(ref).checkDir(context, uri);
+        if (messageDialog == true) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString(keyFolder, uri);
+          state = AsyncData(uri);
 
-            //Li passem la info a PlatformChannel
-            PlatformChannel.setBaseUri(uri);
+          //Li passem la info a PlatformChannel
+          PlatformChannel.setBaseUri(uri);
 
-            //Ací cridarem al mètode per a crear l'estructura de carpetes
-            await DirStrucService.creaEstructuraInicial(uri);
-          }
+          //Ací cridarem al mètode per a crear l'estructura de carpetes
+          await DirStrucService.creaEstructuraInicial(uri);
         }
       } else {
         // Si la uri és null, considerem que no hi ha URI i actualitzem l'estat

@@ -1,15 +1,28 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/saf_methods.dart';
 import 'package:xml_fotos/presentation/providers/course/repository.dart';
 import 'package:xml_fotos/presentation/providers/student/repository.dart';
 import 'package:xml_fotos/presentation/providers/teacher/repository.dart';
+import 'package:xml_fotos/shared/utils/dialog/uri.dart';
 
 import '../../shared/utils/constants.dart';
+import '../../shared/utils/dialog/delete.dart';
 
 class CheckDirService {
   final Ref ref;
 
   CheckDirService(this.ref);
+
+  Future<bool?> showDialog(BuildContext context, String message) async {
+    final result = await showConfirmacioDialog(
+        context: context,
+        titol: 'Avís:',
+        botoConfirmar: 'Triar directori',
+        missatge: message,
+        botoCancel: 'Tria un altre directori');
+    return result;
+  }
 
   Future<bool> dbHasData() async {
     final students =
@@ -33,7 +46,7 @@ class CheckDirService {
         uri: uri, tipusUsuari: user, grups: groups);
   }
 
-  Future<String?> checkDir(String uriDirBase) async {
+  Future<bool?> checkDir(BuildContext context, String uriDirBase) async {
     var directoriAmbFotos = false;
 
     final hasData = await dbHasData();
@@ -74,21 +87,26 @@ class CheckDirService {
     }
 
     if (!hasData && !directoriAmbFotos) {
-      return "✅ Tot correcte. No hi ha dades ni fotos.";
+      DialogHelper.mostrarSnackBar(context, "Directori triat correctament");
+      return true;
     }
 
     if (hasData && !directoriAmbFotos) {
-      return "⚠️ Inconsistència: hi ha usuaris amb fotos, però no hi ha fotos al directori.";
+      return await showDialog(context,
+          "Inconsistència: hi ha usuaris amb fotos, però no hi ha fotos al directori.");
     }
 
     if (!hasData && directoriAmbFotos) {
-      return "⚠️ Inconsistència: hi ha fotos al directori, però cap usuari les té associades.";
+      return await showDialog(context,
+          "Inconsistència: hi ha fotos al directori, però cap usuari les té associades.");
     }
 
     if (hasData && directoriAmbFotos) {
-      return "⚠️ Possibles inconsistències: comprova que les fotos coincideixen amb els usuaris.";
+      return await showDialog(context,
+          "Possibles inconsistències: comprova que les fotos coincideixen amb els usuaris.");
     }
 
-    return 'Error al triar el nou directori';
+    DialogHelper.mostrarSnackBar(context, "Error al triar el nou directori");
+    return false;
   }
 }
