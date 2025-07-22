@@ -87,4 +87,23 @@ object StorageHelper {
         return allDeleted
     }
 
+    fun checkUri(context: Context, uriStr: String, appName: String, tipusFolder: String): Boolean {
+        val baseUri = Uri.parse(uriStr)
+        val baseDir = DocumentFile.fromTreeUri(context, baseUri)
+        if (baseDir == null) {
+            return false
+        }
+
+        val appFolder = baseDir.findFile(appName)
+        if (appFolder == null) {
+            return false
+        }
+
+        val tipusFolder = appFolder.findFile(tipusFolder)
+        if (tipusFolder == null){
+            return false
+        }
+
+        return true
+    }
 }

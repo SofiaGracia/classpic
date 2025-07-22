@@ -351,6 +351,48 @@ class MainActivity : FlutterActivity() {
                     }
 
                 }
+
+                "checkUri" -> {
+                    val uriStr = call.argument<String>("uri")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing uri", false)
+                    val appName = call.argument<String>("appName")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing appName", false)
+                    val tipusFolder = call.argument<String>("folder")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing folder", false)
+
+                    val dirExists = StorageHelper.checkUri(context, uriStr, appName, tipusFolder)
+                    if(dirExists){
+                        result.success(true)
+                    }else{
+                        result.error("ESTRUCTURE ERROR", "Estructure does not exists", false)
+                    }
+                }
+
+                "checkFolderHasPhotos" -> {
+                    val baseUriStr = call.argument<String>("uri")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing uri", false)
+                    val appName = call.argument<String>("appName")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing appName", false)
+                    val user = call.argument<String>("user")
+                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing user", false)
+                    val groups = call.argument<List<String>?>("groups")
+
+                    val baseUri = Uri.parse(baseUriStr)
+                    val appFolder = StorageHelper.getAppFolder(context, baseUri, appName)
+
+                    val folder = StorageHelper.getUserFolder(appFolder!!, user, groups)
+
+                    val hasPhotos = folder?.listFiles()
+                        ?.any { it.isFile && it.name?.endsWith(".jpg", ignoreCase = true) == true
+                                || it.name?.endsWith(".jpeg", ignoreCase = true) == true
+                                || it.name?.endsWith(".png", ignoreCase = true) == true }
+
+                    if (hasPhotos == true) {
+                        result.success(true)
+                    } else {
+                        result.success(false)
+                    }
+                }
             }
         }
     }

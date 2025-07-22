@@ -209,7 +209,6 @@ class PlatformChannel {
     required String tipusUsuari, // "Alumnes" o "Professor"
     String? grup, // només si és Alumne
   }) async {
-
     final result = await platform.invokeMethod<String?>('renameFolder', {
       'newName': newName,
       'uri': uri.toString(),
@@ -219,5 +218,38 @@ class PlatformChannel {
     });
 
     return result ?? 'Error';
+  }
+
+  static Future<bool> checkBaseDirExists(
+      {required String uri, required String folder}) async {
+    try {
+      final result = await platform.invokeMethod('checkUri', {
+        'uri': uri,
+        'appName': baseFolderName,
+        'folder': folder,
+      });
+      return result;
+    } catch (e) {
+      print('$e');
+    }
+    return false;
+  }
+
+  static Future<bool> checkFolderHasPhotos(
+      {required String uri,
+      required String tipusUsuari,
+      required List<String>? grups}) async {
+    try {
+      final result = await platform.invokeMethod('checkFolderHasPhotos', {
+        'uri': uri,
+        'appName': baseFolderName,
+        'user': tipusUsuari,
+        'groups': grups,
+      });
+      return result;
+    } catch (e) {
+      print('$e');
+    }
+    return false;
   }
 }
