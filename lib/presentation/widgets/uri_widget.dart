@@ -21,7 +21,7 @@ class _UriWidgetState extends ConsumerState<UriWidget>{
         icon: Icon(Icons.folder_open),
         tooltip: 'Canviar carpeta',
         onPressed: () {
-          ref.read(UriProvider.notifier).updateUri();
+          ref.read(UriProvider.notifier).updateUri(context);
         },
       ),
     );

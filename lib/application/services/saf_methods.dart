@@ -220,22 +220,36 @@ class PlatformChannel {
     return result ?? 'Error';
   }
 
-  static Future<bool> checkBaseDirExists({required String uri, required String folder}) async {
-    final result = await platform.invokeMethod('checkUri', {
-      'uri': uri,
-      'appName': baseFolderName,
-      'folder': folder,
-    });
-    return result;
+  static Future<bool> checkBaseDirExists(
+      {required String uri, required String folder}) async {
+    try {
+      final result = await platform.invokeMethod('checkUri', {
+        'uri': uri,
+        'appName': baseFolderName,
+        'folder': folder,
+      });
+      return result;
+    } catch (e) {
+      print('$e');
+    }
+    return false;
   }
 
-  static Future<bool> checkFolderHasPhotos({required String uri, required String tipusUsuari, required List<String>? grups}) async {
-    final result = await platform.invokeMethod('checkFolderHasPhotos', {
-      'uri': uri,
-      'appName': baseFolderName,
-      'user': tipusUsuari,
-      'groups': grups,
-    });
-    return result;
+  static Future<bool> checkFolderHasPhotos(
+      {required String uri,
+      required String tipusUsuari,
+      required List<String>? grups}) async {
+    try {
+      final result = await platform.invokeMethod('checkFolderHasPhotos', {
+        'uri': uri,
+        'appName': baseFolderName,
+        'user': tipusUsuari,
+        'groups': grups,
+      });
+      return result;
+    } catch (e) {
+      print('$e');
+    }
+    return false;
   }
 }

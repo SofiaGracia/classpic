@@ -68,7 +68,7 @@ class _CursWidgetState extends ConsumerState<CourseWidget> {
           error = 'No s’ha pogut accedir a la carpeta superior.';
           break;
         case ErrorRenameFolder.folderExists:
-          error = 'Ja existix una altra carpeta amb este nom.';
+          error = 'Ja existix al directori extern una carpeta amb este nom.';
           break;
         case ErrorRenameFolder.writeError:
           error =

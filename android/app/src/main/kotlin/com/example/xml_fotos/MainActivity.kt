@@ -376,7 +376,6 @@ class MainActivity : FlutterActivity() {
                     val user = call.argument<String>("user")
                         ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing user", false)
                     val groups = call.argument<List<String>?>("groups")
-                        ?: return@setMethodCallHandler result.error("MISSING_ARG", "Missing groups", false)
 
                     val baseUri = Uri.parse(baseUriStr)
                     val appFolder = StorageHelper.getAppFolder(context, baseUri, appName)

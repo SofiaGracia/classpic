@@ -4,7 +4,6 @@ import 'package:xml_fotos/presentation/providers/course/repository.dart';
 import 'package:xml_fotos/presentation/providers/student/repository.dart';
 import 'package:xml_fotos/presentation/providers/teacher/repository.dart';
 
-import '../../presentation/providers/uri_notifier.dart';
 import '../../shared/utils/constants.dart';
 
 class CheckDirService {
@@ -34,12 +33,10 @@ class CheckDirService {
         uri: uri, tipusUsuari: user, grups: groups);
   }
 
-  Future<String?> checkDir() async {
+  Future<String?> checkDir(String uriDirBase) async {
     var directoriAmbFotos = false;
 
     final hasData = await dbHasData();
-
-    final uriDirBase = await ref.read(UriProvider.notifier).getUri();
 
     //checkear si existeix teacher si sí comprovar si té fotos
     final teacherHasDir =
@@ -47,7 +44,7 @@ class CheckDirService {
     if (teacherHasDir) {
       //comprovar si té fotos
       final teacherHasPhotos =
-          await dirHasPhotos(uriDirBase!, professorsFolder, null);
+          await dirHasPhotos(uriDirBase, professorsFolder, null);
       if (teacherHasPhotos) {
         directoriAmbFotos = true;
       }
@@ -60,15 +57,18 @@ class CheckDirService {
       final courses =
           await ref.read(courseRepositoryProvider).carregarCursosDB();
 
-      for (final course in courses) {
-        List<String> oneCourse = [];
-        oneCourse.add(course.name);
-        final studentHasPhoto =
-            await dirHasPhotos(uriDirBase!, alumnesFolder, oneCourse);
-
-        if (studentHasPhoto) {
-          directoriAmbFotos = true;
-          break;
+      if (courses.isEmpty) {
+        directoriAmbFotos = await dirHasPhotos(uriDirBase, alumnesFolder, null);
+      } else {
+        for (final course in courses) {
+          List<String> oneCourse = [];
+          oneCourse.add(course.name);
+          final studentHasPhoto =
+              await dirHasPhotos(uriDirBase, alumnesFolder, oneCourse);
+          if (studentHasPhoto) {
+            directoriAmbFotos = true;
+            break;
+          }
         }
       }
     }
@@ -88,5 +88,7 @@ class CheckDirService {
     if (hasData && directoriAmbFotos) {
       return "⚠️ Possibles inconsistències: comprova que les fotos coincideixen amb els usuaris.";
     }
+
+    return 'Error al triar el nou directori';
   }
 }
