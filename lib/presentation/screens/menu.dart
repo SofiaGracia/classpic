@@ -55,75 +55,70 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                       child: ListView(
                         padding: const EdgeInsets.all(40.0),
                         children: [
-                          Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Accés a alumnes i professors',
-                                  style: getTheme(context).textTheme.titleLarge,
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(height: 24),
-                                // Button for students
-                                CounterWidget<Student>(
-                                  totalBuilder: (ref) =>
-                                      studentIdsProvider(null),
-                                  withPhoto: studentHasPhotoStreamProvider,
-                                ),
-                                StatusButtonR(
-                                    text: 'Alumnes',
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              ListCoursesScreen(),
-                                        ),
-                                      );
-                                    },
-                                    totalBuilder: (ref) =>
-                                        studentIdsProvider(null)),
-                                const SizedBox(height: 24),
-                                CounterWidget<Teacher>(
-                                  totalBuilder: (ref) =>
-                                      asyncTeacherIdsProvider,
-                                  withPhoto: teacherHasPhotoStreamProvider,
-                                ),
-                                // Button for teachers
-                                StatusButtonR(
-                                  text: 'Professors',
-                                  onPressed: () async {
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Accés a alumnes i professors',
+                                style: getTheme(context).textTheme.titleLarge,
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 24),
+                              // Button for students
+                              CounterWidget<Student>(
+                                totalBuilder: (ref) => studentIdsProvider(null),
+                                withPhoto: studentHasPhotoStreamProvider,
+                              ),
+                              StatusButtonR(
+                                  text: 'Alumnes',
+                                  onPressed: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            UsersListScreen<Teacher>(
-                                          curs: null,
-                                        ),
+                                            ListCoursesScreen(),
                                       ),
                                     );
                                   },
                                   totalBuilder: (ref) =>
-                                      asyncTeacherIdsProvider,
-                                ),
-                                const SizedBox(height: 30),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            ConfigurationScreen(),
+                                      studentIdsProvider(null)),
+                              const SizedBox(height: 24),
+                              CounterWidget<Teacher>(
+                                totalBuilder: (ref) => asyncTeacherIdsProvider,
+                                withPhoto: teacherHasPhotoStreamProvider,
+                              ),
+                              // Button for teachers
+                              StatusButtonR(
+                                text: 'Professors',
+                                onPressed: () async {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          UsersListScreen<Teacher>(
+                                        curs: null,
                                       ),
-                                    );
-                                  },
-                                  child: const Text('Configuració'),
-                                  style: getStyleElevatedButton(
-                                      context, themeColor),
-                                ),
-                              ],
-                            ),
+                                    ),
+                                  );
+                                },
+                                totalBuilder: (ref) => asyncTeacherIdsProvider,
+                              ),
+                              const SizedBox(height: 30),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ConfigurationScreen(),
+                                    ),
+                                  );
+                                },
+                                child: const Text('Configuració'),
+                                style:
+                                    getStyleElevatedButton(context, themeColor),
+                              ),
+                            ],
                           ),
                         ],
                       ))),

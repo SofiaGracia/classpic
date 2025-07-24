@@ -37,7 +37,7 @@ ThemeData getTheme(BuildContext context) {
 ElevatedButtonThemeData getThemeElevatedButton(
     BuildContext context, Color color) {
   return ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(backgroundColor: color));
+      style: ElevatedButton.styleFrom(backgroundColor: color),);
 }
 
 //ElevatedButtons style
