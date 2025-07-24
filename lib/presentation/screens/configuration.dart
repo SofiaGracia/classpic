@@ -4,9 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/widgets/image_configuration.dart';
 import 'package:xml_fotos/presentation/widgets/import_button.dart';
 import 'package:xml_fotos/presentation/widgets/uri_widget.dart';
-
-import '../../application/services/storage_service.dart';
-import 'manage_broken_images.dart';
+import 'package:xml_fotos/shared/themes/basic_theme.dart';
 
 class ConfigurationScreen extends ConsumerStatefulWidget {
 
@@ -30,38 +28,50 @@ class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Menú',
+          'Configuració',
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
-      body: Expanded(
-        //Hi ha que sustituir-ho per un scrollable de algo
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Importar dades de:',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                //Student's ImportButton
-                ImportButton(isAlumne: true),
-                const SizedBox(height: 16),
-                //Teacher's ImportButton
-                ImportButton(isAlumne: false),
-                const SizedBox(height: 16),
-                const SizedBox(height: 16),
-                ImageConfigurationWidget(),
-                UriWidget(),
-              ],
-            ),
+      body: ListView(
+        padding: EdgeInsets.all(20),
+        children: [
+          Row(
+            children: [
+                  Text(
+                    'Importar dades de:',
+                    style: getTheme(context).textTheme.bodyMedium?.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+            ],
           ),
-        ),
-      ),
+          const SizedBox(height: 16),
+          //Student's ImportButton
+          ImportButton(isAlumne: true),
+          const SizedBox(height: 16),
+          //Teacher's ImportButton
+          ImportButton(isAlumne: false),
+          const SizedBox(height: 30),
+          Row(
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Resolució de la imatge:',
+                    style: getTheme(context).textTheme.bodyMedium?.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  ImageConfigurationWidget(),
+
+                ],
+              )
+            ],
+          ),
+          const SizedBox(height: 30),
+          UriWidget()
+        ],
+      )
     );
   }
 }

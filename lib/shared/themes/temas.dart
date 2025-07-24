@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-ThemeData getTheme(BuildContext context, Brightness appBrightness) {
+/*ThemeData getTheme(BuildContext context, Brightness appBrightness) {
   return ThemeData(
     primaryColor: Colors.teal,
     scaffoldBackgroundColor: Colors.teal[50],
@@ -25,4 +25,4 @@ ThemeData getTheme(BuildContext context, Brightness appBrightness) {
       ),
     ),
   );
-}
+}*/

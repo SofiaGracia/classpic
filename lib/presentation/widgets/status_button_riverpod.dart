@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../shared/utils/constants.dart';
+
 /// Botó amb estat que reflecteix l'estat de càrrega d'un provider.
 /// Mostra un indicador, un error o un botó actiu segons les dades.
 class StatusButtonR extends ConsumerWidget {
@@ -41,7 +43,7 @@ class StatusButtonR extends ConsumerWidget {
         onPressed: onPressed,
         child: Text(text),
         style: ElevatedButton.styleFrom(
-          backgroundColor: llista.isEmpty ? Colors.grey : Colors.blue,
+          backgroundColor: llista.isEmpty ? Colors.grey : defaultButtonColor,
         ),
       ),
     );

@@ -4,6 +4,7 @@ import 'package:xml_fotos/presentation/providers/db/database.dart';
 import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
 import 'package:xml_fotos/presentation/screens/configuration.dart';
 import 'package:xml_fotos/presentation/screens/splash.dart';
+import 'package:xml_fotos/shared/themes/basic_theme.dart';
 
 import 'data/datasources/db/database_service.dart';
 
@@ -37,10 +38,11 @@ class MyApp extends ConsumerWidget {
         '/config': (context) => ConfigurationScreen()
       },
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
+      /*theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         useMaterial3: true,
-      ),
+      ),*/
+      theme: getTheme(context),
       home: SplashScreen(),
     );
   }
