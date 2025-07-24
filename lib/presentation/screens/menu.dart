@@ -42,7 +42,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
             Align(
               alignment: Alignment.bottomCenter,
               child: FractionallySizedBox(
-                  heightFactor: 0.5, // ocupa meitat inferior
+                  heightFactor: 0.6, // ocupa meitat inferior
                   widthFactor: 1.0,
                   child: Card(
                     shape: const RoundedRectangleBorder(
@@ -65,58 +65,44 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                             ),
                             const SizedBox(height: 24),
                             // Button for students
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                StatusButtonR(
-                                    text: 'Alumnes',
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              ListCoursesScreen(),
-                                        ),
-                                      );
-                                    },
-                                    totalBuilder: (ref) =>
-                                        studentIdsProvider(null)),
-                                const SizedBox(width: 8),
-                                CounterWidget<Student>(
-                                  totalBuilder: (ref) =>
-                                      studentIdsProvider(null),
-                                  withPhoto: studentHasPhotoStreamProvider,
-                                )
-                              ],
+                            CounterWidget<Student>(
+                              totalBuilder: (ref) => studentIdsProvider(null),
+                              withPhoto: studentHasPhotoStreamProvider,
+                            ),
+                            StatusButtonR(
+                                text: 'Alumnes',
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ListCoursesScreen(),
+                                    ),
+                                  );
+                                },
+                                totalBuilder: (ref) =>
+                                    studentIdsProvider(null)),
+                            const SizedBox(height: 24),
+                            CounterWidget<Teacher>(
+                              totalBuilder: (ref) => asyncTeacherIdsProvider,
+                              withPhoto: teacherHasPhotoStreamProvider,
                             ),
                             // Button for teachers
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                StatusButtonR(
-                                  text: 'Professors',
-                                  onPressed: () async {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            UsersListScreen<Teacher>(
-                                          curs: null,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  totalBuilder: (ref) =>
-                                      asyncTeacherIdsProvider,
-                                ),
-                                const SizedBox(width: 8),
-                                CounterWidget<Teacher>(
-                                  totalBuilder: (ref) =>
-                                      asyncTeacherIdsProvider,
-                                  withPhoto: teacherHasPhotoStreamProvider,
-                                )
-                              ],
+                            StatusButtonR(
+                              text: 'Professors',
+                              onPressed: () async {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UsersListScreen<Teacher>(
+                                      curs: null,
+                                    ),
+                                  ),
+                                );
+                              },
+                              totalBuilder: (ref) => asyncTeacherIdsProvider,
                             ),
+                            const SizedBox(height: 30),
                             ElevatedButton(
                               onPressed: () async {
                                 Navigator.push(

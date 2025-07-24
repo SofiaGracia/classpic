@@ -38,7 +38,8 @@ ElevatedButtonThemeData getThemeElevatedButton(
 
 //ElevatedButtons style
 ButtonStyle getStyleElevatedButton(BuildContext context, Color color) {
-  return ButtonStyle(backgroundColor:
+  return ButtonStyle(
+      backgroundColor:
       WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
     if (states.contains(WidgetState.pressed)) {
       return Theme.of(context).colorScheme.primary.withValues();
