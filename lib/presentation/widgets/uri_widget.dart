@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../shared/themes/basic_theme.dart';
 import '../providers/uri_notifier.dart';
 
 class UriWidget extends ConsumerStatefulWidget {
@@ -15,8 +16,8 @@ class _UriWidgetState extends ConsumerState<UriWidget>{
 
   Widget mostrarUriWidget(String? uri){
     return ListTile(
-      title: Text('Carpeta seleccionada'),
-      subtitle: Text(uri ?? 'Cap carpeta seleccionada'),
+      title: Text('Carpeta seleccionada', style: getTheme(context).textTheme.bodyMedium,),
+      subtitle: Text(uri ?? 'Cap carpeta seleccionada', style: getTheme(context).textTheme.bodySmall),
       trailing: IconButton(
         icon: Icon(Icons.folder_open),
         tooltip: 'Canviar carpeta',

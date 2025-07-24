@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/models/qualitat_foto.dart';
 import '../../domain/models/resolucio.dart';
+import '../../shared/themes/basic_theme.dart';
 import '../providers/configuration_foto.dart';
 
 class ImageResolutionWidget extends ConsumerWidget {
@@ -19,7 +20,7 @@ class ImageResolutionWidget extends ConsumerWidget {
             final r = resolucioPerQualitat(qualitat);
             return DropdownMenuItem(
               value: qualitat,
-              child: Text('${qualitat.name.toUpperCase()} (${r.amplada}x${r.alcada})'),
+              child: Text('${qualitat.name.toUpperCase()} (${r.amplada}x${r.alcada})', style: getTheme(context).textTheme.bodyMedium,),
             );
           }).toList(),
           onChanged: (novaQualitat) async {

@@ -14,12 +14,16 @@ ThemeData getTheme(BuildContext context) {
       ),
       bodyMedium: TextStyle(
         fontSize: 16,
-        color: Colors.black87,
+        color: HexColor.fromHex('2D0C57'),
       ),
       labelSmall: TextStyle(
         fontSize: 12,
         fontStyle: FontStyle.italic,
         color: Colors.grey[700],
+      ),
+      bodySmall: TextStyle(
+        fontSize: 16,
+        color: HexColor.fromHex('9586A8'),
       ),
     ),
     //Widgets
