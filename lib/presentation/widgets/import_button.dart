@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/domain/errors/import.dart';
+import 'package:xml_fotos/shared/themes/basic_theme.dart';
+import '../../shared/utils/constants.dart';
 import '../../shared/utils/dialog/uri.dart';
 import '../providers/import_controller.dart';
 
@@ -46,6 +48,7 @@ class ImportButton extends ConsumerWidget {
       child: controller.isLoading
           ? CircularProgressIndicator()
           : Text(isAlumne ? 'Importar Alumnes' : 'Importar Professors'),
+      style: getStyleElevatedButton(context, themeColor),
     );
   }
 }
