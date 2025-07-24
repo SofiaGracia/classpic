@@ -37,25 +37,20 @@ class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
         children: [
           Row(
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
                   Text(
                     'Importar dades de:',
                     style: getTheme(context).textTheme.bodyMedium?.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 24),
-                  //Student's ImportButton
-                  ImportButton(isAlumne: true),
-                  const SizedBox(height: 16),
-                  //Teacher's ImportButton
-                  ImportButton(isAlumne: false),
-
-                ],
-              )
             ],
           ),
+          const SizedBox(height: 16),
+          //Student's ImportButton
+          ImportButton(isAlumne: true),
+          const SizedBox(height: 16),
+          //Teacher's ImportButton
+          ImportButton(isAlumne: false),
+          const SizedBox(height: 30),
           Row(
             children: [
               Column(
@@ -73,6 +68,7 @@ class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
               )
             ],
           ),
+          const SizedBox(height: 30),
           UriWidget()
         ],
       )
