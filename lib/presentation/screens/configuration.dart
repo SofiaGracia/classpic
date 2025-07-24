@@ -42,7 +42,7 @@ class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
                 children: [
                   Text(
                     'Importar dades de:',
-                    style: getTheme(context).textTheme.bodyMedium?.copyWith(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: getTheme(context).textTheme.bodyMedium?.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),
@@ -63,7 +63,7 @@ class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
                 children: [
                   Text(
                     'Resolució de la imatge:',
-                    style: getTheme(context).textTheme.bodyMedium?.copyWith(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: getTheme(context).textTheme.bodyMedium?.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),

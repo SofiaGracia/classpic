@@ -45,82 +45,88 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                   heightFactor: 0.6, // ocupa meitat inferior
                   widthFactor: 1.0,
                   child: Card(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30.0),
-                        topRight: Radius.circular(30.0),
-                      ),
-                    ),
-                    margin: EdgeInsets.zero,
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Accés a alumnes i professors',
-                              style: getTheme(context).textTheme.titleLarge,
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 24),
-                            // Button for students
-                            CounterWidget<Student>(
-                              totalBuilder: (ref) => studentIdsProvider(null),
-                              withPhoto: studentHasPhotoStreamProvider,
-                            ),
-                            StatusButtonR(
-                                text: 'Alumnes',
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ListCoursesScreen(),
-                                    ),
-                                  );
-                                },
-                                totalBuilder: (ref) =>
-                                    studentIdsProvider(null)),
-                            const SizedBox(height: 24),
-                            CounterWidget<Teacher>(
-                              totalBuilder: (ref) => asyncTeacherIdsProvider,
-                              withPhoto: teacherHasPhotoStreamProvider,
-                            ),
-                            // Button for teachers
-                            StatusButtonR(
-                              text: 'Professors',
-                              onPressed: () async {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        UsersListScreen<Teacher>(
-                                      curs: null,
-                                    ),
-                                  ),
-                                );
-                              },
-                              totalBuilder: (ref) => asyncTeacherIdsProvider,
-                            ),
-                            const SizedBox(height: 30),
-                            ElevatedButton(
-                              onPressed: () async {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ConfigurationScreen(),
-                                  ),
-                                );
-                              },
-                              child: const Text('Configuració'),
-                              style:
-                                  getStyleElevatedButton(context, themeColor),
-                            ),
-                          ],
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30.0),
+                          topRight: Radius.circular(30.0),
                         ),
                       ),
-                    ),
-                  )),
+                      margin: EdgeInsets.zero,
+                      child: ListView(
+                        padding: const EdgeInsets.all(40.0),
+                        children: [
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Accés a alumnes i professors',
+                                  style: getTheme(context).textTheme.titleLarge,
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 24),
+                                // Button for students
+                                CounterWidget<Student>(
+                                  totalBuilder: (ref) =>
+                                      studentIdsProvider(null),
+                                  withPhoto: studentHasPhotoStreamProvider,
+                                ),
+                                StatusButtonR(
+                                    text: 'Alumnes',
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ListCoursesScreen(),
+                                        ),
+                                      );
+                                    },
+                                    totalBuilder: (ref) =>
+                                        studentIdsProvider(null)),
+                                const SizedBox(height: 24),
+                                CounterWidget<Teacher>(
+                                  totalBuilder: (ref) =>
+                                      asyncTeacherIdsProvider,
+                                  withPhoto: teacherHasPhotoStreamProvider,
+                                ),
+                                // Button for teachers
+                                StatusButtonR(
+                                  text: 'Professors',
+                                  onPressed: () async {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            UsersListScreen<Teacher>(
+                                          curs: null,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  totalBuilder: (ref) =>
+                                      asyncTeacherIdsProvider,
+                                ),
+                                const SizedBox(height: 30),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ConfigurationScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('Configuració'),
+                                  style: getStyleElevatedButton(
+                                      context, themeColor),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ))),
             ),
           ],
         ));
