@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/shared/utils/dialog/uri.dart';
 
 import '../../shared/utils/constants.dart';
 
@@ -10,7 +11,7 @@ class StatusButtonR extends ConsumerWidget {
   final String text;
   final VoidCallback onPressed;
   final ProviderListenable<AsyncValue<List<int>>> Function(WidgetRef ref)
-  totalBuilder;
+      totalBuilder;
 
   StatusButtonR({
     super.key,
@@ -20,6 +21,19 @@ class StatusButtonR extends ConsumerWidget {
     //this.trailing,
   });
 
+  Widget _buildWidget(List<int>? llista) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        child: Text(text),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: llista == null ? Colors.grey : llista.isEmpty? Colors.grey : defaultButtonColor,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncData = ref.watch(totalBuilder(ref));
@@ -27,25 +41,11 @@ class StatusButtonR extends ConsumerWidget {
     return asyncData.when(
       loading: () => const CircularProgressIndicator(),
       error: (err, _) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error carregant: $err')),
-          );
-        });
+        DialogHelper.mostrarSnackBar(context, 'Error carregant: $err');
         debugPrint('Error carregant: $err');
-        return ElevatedButton(
-          onPressed: onPressed,
-          child: Text(text),
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-        );
+        return _buildWidget(null);
       },
-      data: (llista) => ElevatedButton(
-        onPressed: onPressed,
-        child: Text(text),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: llista.isEmpty ? Colors.grey : defaultButtonColor,
-        ),
-      ),
+      data: (llista) => _buildWidget(llista)
     );
   }
 }
