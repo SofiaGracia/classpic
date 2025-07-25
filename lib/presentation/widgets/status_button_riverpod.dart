@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/shared/themes/basic_theme.dart';
 import 'package:xml_fotos/shared/utils/dialog/uri.dart';
 
 import '../../shared/utils/constants.dart';
@@ -21,15 +22,13 @@ class StatusButtonR extends ConsumerWidget {
     //this.trailing,
   });
 
-  Widget _buildWidget(List<int>? llista) {
+  Widget _buildWidget(List<int>? llista, BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: onPressed,
         child: Text(text),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: llista == null ? Colors.grey : llista.isEmpty? Colors.grey : defaultButtonColor,
-        ),
+        style: getStyleElevatedButton(context, llista == null? Colors.grey : llista.isEmpty? Colors.grey : defaultButtonColor)
       ),
     );
   }
@@ -43,9 +42,9 @@ class StatusButtonR extends ConsumerWidget {
       error: (err, _) {
         DialogHelper.mostrarSnackBar(context, 'Error carregant: $err');
         debugPrint('Error carregant: $err');
-        return _buildWidget(null);
+        return _buildWidget(null, context);
       },
-      data: (llista) => _buildWidget(llista)
+      data: (llista) => _buildWidget(llista, context)
     );
   }
 }
