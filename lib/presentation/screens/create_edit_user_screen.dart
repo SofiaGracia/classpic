@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/application/services/storage_service.dart';
 import 'package:xml_fotos/domain/entities/course.dart';
 import 'package:xml_fotos/presentation/providers/course/repository.dart';
+import 'package:xml_fotos/shared/themes/basic_theme.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
 
 import '../../application/services/codi_generator.dart';
@@ -369,6 +370,7 @@ class _CreateEditUserScreenState<T extends User>
                 onPressed: _guardarUsuari,
                 icon: const Icon(Icons.save),
                 label: const Text("Guardar"),
+                style: getStyleElevatedButton(context, defaultButtonColor),
               )
             ],
           ),

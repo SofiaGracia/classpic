@@ -43,6 +43,11 @@ ElevatedButtonThemeData getThemeElevatedButton(
 //ElevatedButtons style
 ButtonStyle getStyleElevatedButton(BuildContext context, Color color) {
   return ButtonStyle(
+    shape: WidgetStateProperty.resolveWith<RoundedRectangleBorder?> ((Set<WidgetState> states){
+      return RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12))
+      );
+    }),
       backgroundColor:
       WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
     if (states.contains(WidgetState.pressed)) {
