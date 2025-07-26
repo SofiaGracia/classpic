@@ -1,20 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/providers/student/student_ids_async.dart';
-import 'package:xml_fotos/presentation/providers/teacher/teachers_ids_async.dart';
-import 'package:xml_fotos/presentation/screens/courses_list.dart';
-import 'package:xml_fotos/presentation/widgets/counter.dart';
-import 'package:xml_fotos/presentation/widgets/status_button_riverpod.dart';
-import 'package:xml_fotos/shared/themes/basic_theme.dart';
+import 'package:xml_fotos/presentation/screens/users_list.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
+import 'package:xml_fotos/shared/utils/decor_form.dart';
+import 'package:xml_fotos/shared/utils/list_forms.dart';
 
 import '../../domain/entities/student.dart';
 import '../../domain/entities/teacher.dart';
+import '../../shared/themes/basic_theme.dart';
 import '../providers/student/stream.dart';
+import '../providers/student/student_ids_async.dart';
 import '../providers/teacher/stream.dart';
+import '../providers/teacher/teachers_ids_async.dart';
+import '../widgets/counter.dart';
+import '../widgets/status_button_riverpod.dart';
 import 'configuration.dart';
-import 'users_list.dart';
+import 'courses_list.dart';
 
 class MenuScreen extends ConsumerStatefulWidget {
   const MenuScreen({super.key});
@@ -26,8 +28,13 @@ class MenuScreen extends ConsumerStatefulWidget {
 class _MenuScreenState extends ConsumerState<MenuScreen> {
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.sizeOf(context).width;
+    double height = MediaQuery.sizeOf(context).height;
+
+    final sizeScreen = Size(width, height);
+
     return Scaffold(
-        appBar: AppBar(
+        /*appBar: AppBar(
           title: Center(
             child: Text(
               'Menu',
@@ -35,14 +42,15 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
             ),
           ),
           backgroundColor: menuBackground,
-        ),
+        ),*/
         body: Stack(
           children: [
             Expanded(child: Container(color: menuBackground)),
+            ListForms(sizeScreen: sizeScreen),
             Align(
               alignment: Alignment.bottomCenter,
               child: FractionallySizedBox(
-                  heightFactor: 0.6, // ocupa meitat inferior
+                  heightFactor: 0.5, // ocupa meitat inferior
                   widthFactor: 1.0,
                   child: Card(
                       shape: const RoundedRectangleBorder(

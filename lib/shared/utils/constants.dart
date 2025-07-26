@@ -20,7 +20,11 @@ const mesErrCreateFolder = "No s'ha creat la nova carpeta";
 Color themeColor = Color.fromARGB(100, 233, 226, 255);
 
 //Menu purple
-Color menuBackground = HexColor.fromHex('C08EFF');
+Color menuBackground = HexColor.fromHex('A363F3');
+Color mainOrganic = HexColor.fromHex('7E19FF');
 
 //Elevated buttons
 Color defaultButtonColor = HexColor.fromHex('FFBF59'); //Yellow
+
+//main_organic constants:
+const pi = 3.14;
