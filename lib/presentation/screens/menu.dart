@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/screens/users_list.dart';
 import 'package:xml_fotos/shared/utils/constants.dart';
-import 'package:xml_fotos/shared/utils/decor_form.dart';
 import 'package:xml_fotos/shared/utils/list_forms.dart';
 
 import '../../domain/entities/student.dart';
@@ -28,11 +27,6 @@ class MenuScreen extends ConsumerStatefulWidget {
 class _MenuScreenState extends ConsumerState<MenuScreen> {
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.sizeOf(context).width;
-    double height = MediaQuery.sizeOf(context).height;
-
-    final sizeScreen = Size(width, height);
-
     return Scaffold(
         /*appBar: AppBar(
           title: Center(
@@ -46,7 +40,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
         body: Stack(
           children: [
             Expanded(child: Container(color: menuBackground)),
-            ListForms(sizeScreen: sizeScreen),
+            ListForms(),
             Align(
               alignment: Alignment.bottomCenter,
               child: FractionallySizedBox(

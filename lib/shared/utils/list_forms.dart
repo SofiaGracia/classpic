@@ -1,44 +1,39 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:xml_fotos/shared/themes/color_extension.dart';
-
-import 'constants.dart';
-import 'decor_form.dart';
+import 'package:xml_fotos/domain/models/shape_config.dart';
+import 'package:xml_fotos/shared/utils/constants.dart';
+import 'package:xml_fotos/shared/utils/decorative_form.dart';
 
 class ListForms extends StatelessWidget {
-  final Size sizeScreen;
-
-  const ListForms({super.key, required this.sizeScreen});
+  const ListForms({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final firstC = CustomPaint(
-      painter: DecorForm(
-          sizeScreen: sizeScreen,
-          rectWidth: 700,
-          rectHeight: 700,
-          rectLeftPosition: -675,
-          rectTopPosition: -150,
-          color: mainOrganic,
-          strokeW: 240),
-    );
+    final sizeScreen = MediaQuery.sizeOf(context);
 
-    final secondC = CustomPaint(
-      painter: DecorForm(
-          sizeScreen: sizeScreen,
-          rectWidth: 150,
-          rectHeight: 150,
-          rectLeftPosition: -280,
-          rectTopPosition: -530,
-          color: HexColor.fromHex('8529FA'),
-          strokeW: 240),
-    );
+    final shapes = [
+      ShapeConfig(
+          leftPosition: sizeScreen.width / 2,
+          topPosition: sizeScreen.width / 2,
+          sqrTop: 0,
+          sqrLeft: sizeScreen.width / 2,
+          color: topRightForm),
+      ShapeConfig(
+          leftPosition: (sizeScreen.width / 2) + 90,
+          topPosition: (sizeScreen.width / 2) + 60,
+          sqrTop: sizeScreen.width / 2,
+          sqrLeft: (sizeScreen.width / 2) + 100,
+          color: rightForm),
+      ShapeConfig(
+          leftPosition: (sizeScreen.width / 2) - 10,
+          topPosition: (sizeScreen.width / 2) + 40,
+          sqrTop: sizeScreen.width / 2,
+          sqrLeft: 0,
+          color: bottomLeftForm),
+    ];
 
-    return Stack(
-      children: [
-        Transform.rotate(angle: 6.59 * (pi / 4), child: firstC),
-        Transform.rotate(angle: 6.7/pi, child: secondC),
-      ],
+    return CustomPaint(
+      painter: MultiDecorFormPainter(shapes: shapes, sizeScreen: sizeScreen),
     );
   }
 }

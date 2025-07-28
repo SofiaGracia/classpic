@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:xml_fotos/shared/themes/color_extension.dart';
 
 const baseFolderName = 'ClassPic';
@@ -21,10 +22,13 @@ Color themeColor = Color.fromARGB(100, 233, 226, 255);
 
 //Menu purple
 Color menuBackground = HexColor.fromHex('A363F3');
-Color mainOrganic = HexColor.fromHex('7E19FF');
+Color topRightForm = Colors.deepPurple;
+Color rightForm = Colors.purple;
+Color bottomLeftForm = HexColor.fromHex('7E19FF');
 
 //Elevated buttons
 Color defaultButtonColor = HexColor.fromHex('FFBF59'); //Yellow
 
-//main_organic constants:
+//Constants used for graphic effects
 const pi = 3.14;
+const strokeW = 240;
