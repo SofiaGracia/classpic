@@ -12,6 +12,7 @@ import '../../domain/entities/course.dart';
 import '../../shared/utils/dialog/delete.dart';
 import '../providers/student/stream.dart';
 import '../providers/student/student_ids_async.dart';
+import '../screens/users_search_list.dart';
 import 'counter.dart';
 
 //Creació d'un StateProvider global que guarda l'id del curs en edició
@@ -131,7 +132,7 @@ class _CursWidgetState extends ConsumerState<CourseWidget> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => UsersListScreen<Student>(
-                      curs: curs,
+                      course: curs,
                     ),
                   ),
                 );

@@ -84,7 +84,7 @@ class _$AppDatabase extends AppDatabase {
     Callback? callback,
   ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 26,
+      version: 27,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -452,6 +452,23 @@ class _$TeacherDao extends TeacherDao {
   Stream<List<String>> findAllTeachersName() {
     return _queryAdapter.queryListStream('SELECT name FROM teacher',
         mapper: (Map<String, Object?> row) => row.values.first as String,
+        queryableName: 'teacher',
+        isView: false);
+  }
+
+  @override
+  Stream<List<Teacher>> findTeachersByName(String name) {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM teacher WHERE name LIKE ?1 || \"%\"',
+        mapper: (Map<String, Object?> row) => Teacher(
+            id: row['id'] as int?,
+            dni: row['dni'] as String,
+            name: row['name'] as String,
+            s1: row['s1'] as String,
+            hasFoto: (row['hasFoto'] as int) != 0,
+            s2: row['s2'] as String?,
+            photoPathHash: row['photoPathHash'] as String?),
+        arguments: [name],
         queryableName: 'teacher',
         isView: false);
   }
