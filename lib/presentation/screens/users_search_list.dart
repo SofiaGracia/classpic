@@ -1,27 +1,44 @@
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/domain/models/user.dart';
-import 'package:xml_fotos/presentation/providers/student/repository.dart';
-import 'package:xml_fotos/presentation/providers/teacher/repository.dart';
 
 import '../../application/services/saf_methods.dart';
 import '../../application/services/storage_service.dart';
-import '../../domain/entities/student.dart';
 import '../../domain/entities/course.dart';
+import '../../domain/entities/student.dart';
 import '../../domain/entities/teacher.dart';
+import '../../domain/models/user.dart';
+import '../providers/student/repository.dart';
 import '../providers/student/student_ids_async.dart';
+import '../providers/teacher/repository.dart';
+import '../providers/teacher/stream.dart';
 import '../providers/teacher/teachers_ids_async.dart';
 import '../widgets/new_user.dart';
+import '../widgets/search_widget.dart';
 import '../widgets/user_card.dart';
 
-class UsersListScreen<T extends User> extends ConsumerWidget {
-  final Course? curs;
+class UsersListScreen<T extends User> extends ConsumerStatefulWidget {
+  final Course? course;
 
-  const UsersListScreen({super.key, required this.curs});
+  const UsersListScreen({super.key, required this.course});
+
+  @override
+  UsersListScreenState createState() => UsersListScreenState();
+}
+
+class UsersListScreenState<T extends User>
+    extends ConsumerState<UsersListScreen> {
+  String valueSearched = '';
+  late Course? course;
+
+  @override
+  void initState() {
+    super.initState();
+    course = widget.course;
+  }
 
   String _getTitol() {
-    return curs != null ? 'Alumnes de ${curs!.name}' : 'Professors';
+    return course != null ? 'Alumnes de ${course!.name}' : 'Professors';
   }
 
   Future<List<T>> _carregaLlista<T extends User>(WidgetRef ref, int? courseId) {
@@ -39,14 +56,28 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
       appBar: AppBar(
         title: Text((_getTitol())),
       ),
-      body: fill,
+      body: Column(
+        children: [
+          SearchWidget(
+            onValueSearched: (value) {
+              setState(() {
+                valueSearched = value;
+              });
+            },
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Expanded(child: fill)
+        ],
+      ),
       floatingActionButton: ref == null
           ? null
           : NewUserR<User>(
               onCreate: (u) async {
                 if (u is Student) {
                   await ref
-                      .read(studentIdsProvider(curs!.id!).notifier)
+                      .read(studentIdsProvider(course!.id!).notifier)
                       .addStudent(u);
                   ref.invalidate(studentIdsProvider(null));
                 } else {
@@ -55,10 +86,10 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
                       .addTeacher(u as Teacher);
                 }
               },
-              cursId: curs != null ? curs?.id : null,
+              cursId: course != null ? course?.id : null,
               getId: (u) =>
-                  curs != null ? (u as Student).nia : (u as Teacher).dni,
-              isAlumne: curs != null,
+                  course != null ? (u as Student).nia : (u as Teacher).dni,
+              isAlumne: course != null,
             ),
     );
   }
@@ -66,8 +97,10 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
   Widget _buildLlista(BuildContext context, WidgetRef ref, List<T> llista) {
     return llista.isEmpty
         ? Text('No hi ha usuaris')
-        : ListView(
-            children: llista.map((usuari) {
+        : ListView.builder(
+            itemCount: llista.length,
+            itemBuilder: (context, index) {
+              final usuari = llista[index];
               return UserCard(
                 usuari: usuari,
                 onDelete: (u) async {
@@ -75,7 +108,7 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
 
                   if (u is Student) {
                     await ref
-                        .read(studentIdsProvider(curs!.id!).notifier)
+                        .read(studentIdsProvider(course!.id!).notifier)
                         .removeStudent(u);
 
                     if (u.hasFoto) {
@@ -103,11 +136,10 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
                   ref.invalidate(studentIdsProvider(null));
                 },
               );
-            }).toList(),
-          );
+            });
   }
 
-  Widget _buildLlistaAmbStream({
+  Widget _buildLlistaAmbNotifier({
     required AsyncValue<List<int>> idsAsync,
     required Future<List<T>> Function() futureLlista,
     required WidgetRef ref,
@@ -130,19 +162,38 @@ class UsersListScreen<T extends User> extends ConsumerWidget {
     );
   }
 
+  Widget _buildLlistaAmbStream(
+      {required AsyncValue<List<T>> usersAsync, required WidgetRef ref}) {
+    return usersAsync.when(
+      data: (users) {
+        return _buildScaffold(ref, _buildLlista(context, ref, users));
+      },
+      error: (e, _) => _buildScaffold(null, Text('Error: $e')),
+      loading: () =>
+          _buildScaffold(ref, const Center(child: CircularProgressIndicator())),
+    );
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return curs != null
-        ? _buildLlistaAmbStream(
-            idsAsync: ref.watch(studentIdsProvider(curs!.id!)),
-            futureLlista: () => _carregaLlista(ref, curs!.id),
-            ref: ref,
-          )
-        : _buildLlistaAmbStream(
-            idsAsync: ref.watch(asyncTeacherIdsProvider),
-            futureLlista: () => _carregaLlista(ref, null),
-            ref: ref,
-          );
+  Widget build(BuildContext context) {
+    if (valueSearched == '') {
+      return course != null
+          ? _buildLlistaAmbNotifier(
+              idsAsync: ref.watch(studentIdsProvider(course!.id!)),
+              futureLlista: () => _carregaLlista(ref, course!.id),
+              ref: ref,
+            )
+          : _buildLlistaAmbNotifier(
+              idsAsync: ref.watch(asyncTeacherIdsProvider),
+              futureLlista: () => _carregaLlista(ref, null),
+              ref: ref,
+            );
+    } else {
+      //return course != null ? : ;
+      return _buildLlistaAmbStream(
+          usersAsync: ref.watch(teacherSearchStreamProvider(valueSearched))
+              as AsyncValue<List<T>>,
+          ref: ref);
+    }
   }
 }
-*/

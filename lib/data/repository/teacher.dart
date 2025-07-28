@@ -30,6 +30,8 @@ class TeacherRepository {
 
   Stream<List<Teacher>?> streamTeachersWithPhoto() => _dao.streamTeachersWithPhoto();
 
+  Stream<List<Teacher>> getStreamedTeachersByName(String name) => _dao.findTeachersByName(name);
+
   Future<void> insertTeacher(Teacher professor) async {
     await _dao.insertTeacher(professor);
   }

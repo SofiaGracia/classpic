@@ -18,6 +18,9 @@ abstract class TeacherDao {
   @Query('SELECT name FROM teacher')
   Stream<List<String>> findAllTeachersName();
 
+  @Query('SELECT * FROM teacher WHERE name LIKE :name || "%"')
+  Stream<List<Teacher>> findTeachersByName(String name);
+
   @Query('SELECT * FROM teacher WHERE hasFoto = 1')
   Stream<List<Teacher>?> streamTeachersWithPhoto();
 

@@ -8,3 +8,8 @@ final teacherHasPhotoStreamProvider = StreamProvider.autoDispose<List<Teacher>?>
   final repo = ref.watch(teacherRepositoryProvider);
   return repo.streamTeachersWithPhoto();
 });
+
+final teacherSearchStreamProvider = StreamProvider.autoDispose.family<List<Teacher>, String>((ref, name){
+  final repo = ref.watch(teacherRepositoryProvider);
+  return repo.getStreamedTeachersByName(name);
+});
