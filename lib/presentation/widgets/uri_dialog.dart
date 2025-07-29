@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:xml_fotos/shared/themes/basic_theme.dart';
 
 class UriDialog extends StatelessWidget {
 
@@ -10,7 +11,7 @@ class UriDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Directori no configurat'),
+      title: Text('Directori no configurat', style: getTheme(context).textTheme.titleLarge,),
       content: const Text(
         'Has de seleccionar una carpeta per a guardar les fotos.',
       ),

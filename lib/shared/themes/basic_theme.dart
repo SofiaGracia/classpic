@@ -17,7 +17,7 @@ ThemeData getTheme(BuildContext context) {
         color: HexColor.fromHex('2D0C57'),
       ),
       labelSmall: TextStyle(
-        fontSize: 12,
+        fontSize: 14,
         fontStyle: FontStyle.italic,
         color: Colors.grey[700],
       ),

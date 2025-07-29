@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml_fotos/presentation/providers/course/course.dart';
-import 'package:xml_fotos/presentation/screens/users_list.dart';
+import 'package:xml_fotos/shared/themes/basic_theme.dart';
 import 'package:xml_fotos/shared/utils/dialog/uri.dart';
 import 'package:xml_fotos/shared/utils/enum/rename_folder_error.dart';
 
@@ -145,7 +145,7 @@ class _CursWidgetState extends ConsumerState<CourseWidget> {
                         autofocus: true,
                         onSubmitted: (_) => _saveCourseName(cursNot),
                       )
-                    : Text(curs.name),
+                    : Text(curs.name, style: getTheme(context).textTheme.bodyMedium,),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

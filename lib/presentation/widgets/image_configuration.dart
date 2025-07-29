@@ -8,14 +8,15 @@ class ImageConfigurationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          Text('resolucio de la imatge',
-          style: getTheme(context).textTheme.bodyMedium,),
-          ImageResolutionWidget()
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'Resolucio de la imatge',
+          style: getTheme(context).textTheme.bodyMedium,
+        ),
+        ImageResolutionWidget()
+      ],
     );
   }
 }

@@ -50,7 +50,14 @@ class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
           const SizedBox(height: 16),
           //Teacher's ImportButton
           ImportButton(isAlumne: false),
-          const SizedBox(height: 30),
+          const SizedBox(height: 15),
+          Divider(
+            color: Colors.grey,
+            thickness: 0.5,
+            //indent: 20,
+            //endIndent: 20,
+          ),
+          const SizedBox(height: 15),
           Row(
             children: [
               Column(
@@ -68,7 +75,29 @@ class _ConfigurationScreenState extends ConsumerState<ConfigurationScreen> {
               )
             ],
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 15),
+          Divider(
+            color: Colors.grey,
+            thickness: 0.5,
+            //indent: 20,
+            //endIndent: 20,
+          ),
+          const SizedBox(height: 15),
+          Row(
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Seleccionar carpeta:',
+                    style: getTheme(context).textTheme.bodyMedium?.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              )
+            ],
+          ),
+          const SizedBox(height: 16),
           UriWidget()
         ],
       )
