@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:xml_fotos/shared/themes/basic_theme.dart';
+import 'package:classpic/shared/themes/basic_theme.dart';
 
 class UriDialog extends StatelessWidget {
 

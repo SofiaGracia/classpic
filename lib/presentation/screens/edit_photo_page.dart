@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:xml_fotos/application/services/image_editing.dart';
+import 'package:classpic/application/services/image_editing.dart';
 
 import '../../domain/models/qualitat_foto.dart';
 import '../../domain/models/resolucio.dart';

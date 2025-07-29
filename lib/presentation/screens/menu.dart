@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/screens/users_search_list.dart';
-import 'package:xml_fotos/shared/utils/constants.dart';
-import 'package:xml_fotos/shared/utils/list_forms.dart';
+import 'package:classpic/presentation/screens/users_search_list.dart';
+import 'package:classpic/shared/utils/constants.dart';
+import 'package:classpic/shared/utils/list_forms.dart';
 
 import '../../domain/entities/student.dart';
 import '../../domain/entities/teacher.dart';

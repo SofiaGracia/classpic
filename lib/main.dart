@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/providers/db/database.dart';
-import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
-import 'package:xml_fotos/presentation/screens/configuration.dart';
-import 'package:xml_fotos/presentation/screens/splash.dart';
-import 'package:xml_fotos/shared/themes/basic_theme.dart';
+import 'package:classpic/presentation/providers/db/database.dart';
+import 'package:classpic/presentation/providers/uri_notifier.dart';
+import 'package:classpic/presentation/screens/configuration.dart';
+import 'package:classpic/presentation/screens/splash.dart';
+import 'package:classpic/shared/themes/basic_theme.dart';
 
 import 'data/datasources/db/database_service.dart';
 

@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xml_fotos/application/services/check_dir.dart';
-import 'package:xml_fotos/shared/utils/constants.dart';
+import 'package:classpic/application/services/check_dir.dart';
+import 'package:classpic/shared/utils/constants.dart';
 
 import '../../application/services/dir_structure.dart';
 import '../../application/services/saf_methods.dart';

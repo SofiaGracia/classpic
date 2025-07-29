@@ -1,4 +1,4 @@
-import 'package:xml_fotos/domain/models/user.dart';
+import 'package:classpic/domain/models/user.dart';
 
 import '../entities/student.dart';
 import '../entities/teacher.dart';

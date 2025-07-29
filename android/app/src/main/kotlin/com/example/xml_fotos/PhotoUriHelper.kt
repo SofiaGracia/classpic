@@ -1,4 +1,4 @@
-package com.example.xml_fotos
+package com.example.classpic
 
 import android.content.Context
 import android.net.Uri

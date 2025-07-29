@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/widgets/uri_dialog.dart';
+import 'package:classpic/presentation/widgets/uri_dialog.dart';
 
 import '../../shared/utils/dialog/uri.dart';
 import '../providers/uri_notifier.dart';

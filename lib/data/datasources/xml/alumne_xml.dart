@@ -1,6 +1,6 @@
 import 'package:xml/xml.dart';
-import 'package:xml_fotos/application/services/codi_generator.dart';
-import 'package:xml_fotos/shared/utils/constants.dart';
+import 'package:classpic/application/services/codi_generator.dart';
+import 'package:classpic/shared/utils/constants.dart';
 
 import '../../../domain/entities/student.dart';
 import '../../../domain/entities/course.dart';

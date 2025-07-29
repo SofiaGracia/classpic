@@ -1,4 +1,4 @@
-import 'package:xml_fotos/domain/models/qualitat_foto.dart';
+import 'package:classpic/domain/models/qualitat_foto.dart';
 
 class Resolucio {
   final int amplada;

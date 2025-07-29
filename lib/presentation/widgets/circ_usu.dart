@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/domain/models/has_foto_extension.dart';
-import 'package:xml_fotos/domain/models/user.dart';
+import 'package:classpic/domain/models/has_foto_extension.dart';
+import 'package:classpic/domain/models/user.dart';
 
 import '../../application/services/saf_methods.dart';
 import '../../domain/entities/student.dart';

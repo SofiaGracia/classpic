@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/application/services/saf_methods.dart';
-import 'package:xml_fotos/presentation/providers/course/repository.dart';
-import 'package:xml_fotos/presentation/providers/student/repository.dart';
-import 'package:xml_fotos/presentation/providers/teacher/repository.dart';
-import 'package:xml_fotos/shared/utils/dialog/uri.dart';
+import 'package:classpic/application/services/saf_methods.dart';
+import 'package:classpic/presentation/providers/course/repository.dart';
+import 'package:classpic/presentation/providers/student/repository.dart';
+import 'package:classpic/presentation/providers/teacher/repository.dart';
+import 'package:classpic/shared/utils/dialog/uri.dart';
 
 import '../../shared/utils/constants.dart';
 import '../../shared/utils/dialog/delete.dart';

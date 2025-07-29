@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/providers/course/repository.dart';
+import 'package:classpic/presentation/providers/course/repository.dart';
 
 import '../../domain/entities/course.dart';
 
