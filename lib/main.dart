@@ -14,6 +14,7 @@ Future<void> main() async {
   final container = ProviderContainer();
   final uri = await container.read(UriProvider.future); // force build()
 
+
   final db = await DatabaseService().connectDB();
 
   runApp(
