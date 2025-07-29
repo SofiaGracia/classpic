@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:xml_fotos/presentation/providers/student/stream.dart';
 
 import '../../application/services/saf_methods.dart';
 import '../../application/services/storage_service.dart';
@@ -163,11 +164,23 @@ class UsersListScreenState<T extends User>
     );
   }
 
-  Widget _buildLlistaAmbStream(
-      {required AsyncValue<List<T>> usersAsync, required WidgetRef ref}) {
+  Widget _buildLlistaTeacherAmbStream(
+      {required AsyncValue<List<Teacher>> usersAsync, required WidgetRef ref}) {
     return usersAsync.when(
       data: (users) {
-        return _buildScaffold(ref, _buildLlista(context, ref, users));
+        return _buildScaffold(ref, _buildLlista(context, ref, users as List<T>));
+      },
+      error: (e, _) => _buildScaffold(null, Text('Error: $e')),
+      loading: () =>
+          _buildScaffold(ref, const Center(child: CircularProgressIndicator())),
+    );
+  }
+
+  Widget _buildLlistaStudentAmbStream(
+      {required AsyncValue<List<Student>> usersAsync, required WidgetRef ref}) {
+    return usersAsync.when(
+      data: (users) {
+        return _buildScaffold(ref, _buildLlista(context, ref, users as List<T>));
       },
       error: (e, _) => _buildScaffold(null, Text('Error: $e')),
       loading: () =>
@@ -190,11 +203,13 @@ class UsersListScreenState<T extends User>
               ref: ref,
             );
     } else {
-      //return course != null ? : ;
-      return _buildLlistaAmbStream(
-          usersAsync: ref.watch(teacherSearchStreamProvider(valueSearched))
-              as AsyncValue<List<T>>,
-          ref: ref);
+      return course != null
+          ? _buildLlistaStudentAmbStream(
+              usersAsync:ref.watch(studentSearchStreamProvider((course!.id!, valueSearched))),
+              ref: ref)
+          : _buildLlistaTeacherAmbStream(
+              usersAsync: ref.watch(teacherSearchStreamProvider(valueSearched)),
+              ref: ref);
     }
   }
 }
