@@ -1,5 +1,5 @@
 import 'package:floor/floor.dart';
-import 'package:xml_fotos/domain/models/user.dart';
+import 'package:classpic/domain/models/user.dart';
 
 @Entity(tableName: 'teacher')
 class Teacher extends User {

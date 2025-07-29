@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/data/repository/student.dart';
+import 'package:classpic/data/repository/student.dart';
 
 import '../db/database.dart';
 

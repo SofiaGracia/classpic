@@ -1,5 +1,5 @@
 
-import 'package:xml_fotos/data/datasources/db/dao/teacher_dao.dart';
+import 'package:classpic/data/datasources/db/dao/teacher_dao.dart';
 
 import '../../domain/entities/teacher.dart';
 

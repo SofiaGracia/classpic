@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:xml_fotos/presentation/providers/teacher/repository.dart';
+import 'package:classpic/presentation/providers/teacher/repository.dart';
 
 import '../../../data/repository/teacher.dart';
 import '../../../domain/entities/teacher.dart';

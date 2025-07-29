@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/application/services/saf_methods.dart';
-import 'package:xml_fotos/presentation/providers/course/repository.dart';
+import 'package:classpic/application/services/saf_methods.dart';
+import 'package:classpic/presentation/providers/course/repository.dart';
 
 import '../../../data/repository/course_db.dart';
 import '../../../domain/entities/course.dart';

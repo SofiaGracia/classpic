@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/application/services/storage_service.dart';
-import 'package:xml_fotos/presentation/providers/student/student_ids_async.dart';
-import 'package:xml_fotos/shared/utils/constants.dart';
+import 'package:classpic/application/services/storage_service.dart';
+import 'package:classpic/presentation/providers/student/student_ids_async.dart';
+import 'package:classpic/shared/utils/constants.dart';
 
 import '../../application/services/saf_methods.dart';
 import '../../domain/entities/course.dart';

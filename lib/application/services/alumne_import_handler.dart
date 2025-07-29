@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
-import 'package:xml_fotos/application/services/dir_structure.dart';
-import 'package:xml_fotos/application/services/saf_methods.dart';
-import 'package:xml_fotos/application/services/storage_service.dart';
-import 'package:xml_fotos/presentation/providers/course/courses_ids_async.dart';
-import 'package:xml_fotos/presentation/providers/course/repository.dart';
-import 'package:xml_fotos/presentation/providers/student/repository.dart';
-import 'package:xml_fotos/presentation/providers/student/student_ids_async.dart';
+import 'package:classpic/application/services/dir_structure.dart';
+import 'package:classpic/application/services/saf_methods.dart';
+import 'package:classpic/application/services/storage_service.dart';
+import 'package:classpic/presentation/providers/course/courses_ids_async.dart';
+import 'package:classpic/presentation/providers/course/repository.dart';
+import 'package:classpic/presentation/providers/student/repository.dart';
+import 'package:classpic/presentation/providers/student/student_ids_async.dart';
 
 import '../../domain/entities/student.dart';
 import '../../domain/entities/course.dart';

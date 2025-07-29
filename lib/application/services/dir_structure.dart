@@ -1,4 +1,4 @@
-import 'package:xml_fotos/application/services/saf_methods.dart';
+import 'package:classpic/application/services/saf_methods.dart';
 
 class DirStrucService {
   static Future<void> creaEstructuraInicial(String uri) async {

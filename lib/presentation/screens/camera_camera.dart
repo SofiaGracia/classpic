@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image/image.dart' as img;
-import 'package:xml_fotos/presentation/providers/configuration_foto.dart';
+import 'package:classpic/presentation/providers/configuration_foto.dart';
 
 import '../../application/services/saf_methods.dart';
 import '../../shared/utils/guide_oval_painter.dart';

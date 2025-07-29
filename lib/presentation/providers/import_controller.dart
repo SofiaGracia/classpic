@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/providers/uri_notifier.dart';
+import 'package:classpic/presentation/providers/uri_notifier.dart';
 import '../../data/datasources/xml/xml.dart';
 import '../../application/services/alumne_import_handler.dart';
 import '../../application/services/professor_import_handler.dart';

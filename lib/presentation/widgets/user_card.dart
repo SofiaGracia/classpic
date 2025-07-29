@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/application/services/saf_methods.dart';
-import 'package:xml_fotos/presentation/providers/course/repository.dart';
-import 'package:xml_fotos/presentation/providers/student/student.dart';
-import 'package:xml_fotos/presentation/widgets/circ_usu.dart';
+import 'package:classpic/application/services/saf_methods.dart';
+import 'package:classpic/presentation/providers/course/repository.dart';
+import 'package:classpic/presentation/providers/student/student.dart';
+import 'package:classpic/presentation/widgets/circ_usu.dart';
 
 import '../../domain/entities/student.dart';
 import '../../domain/entities/teacher.dart';

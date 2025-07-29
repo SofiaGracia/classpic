@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/domain/entities/course.dart';
-import 'package:xml_fotos/presentation/providers/course/courses_ids_async.dart';
+import 'package:classpic/domain/entities/course.dart';
+import 'package:classpic/presentation/providers/course/courses_ids_async.dart';
 
 class CursosDropdown extends ConsumerStatefulWidget {
   final int cursId;

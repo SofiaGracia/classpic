@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xml/xml.dart';
-import 'package:xml_fotos/application/services/saf_methods.dart';
-import 'package:xml_fotos/application/services/storage_service.dart';
-import 'package:xml_fotos/presentation/providers/teacher/repository.dart';
-import 'package:xml_fotos/presentation/providers/teacher/teachers_ids_async.dart';
+import 'package:classpic/application/services/saf_methods.dart';
+import 'package:classpic/application/services/storage_service.dart';
+import 'package:classpic/presentation/providers/teacher/repository.dart';
+import 'package:classpic/presentation/providers/teacher/teachers_ids_async.dart';
 
 import '../../data/datasources/xml/professor_xml.dart';
 

@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:xml_fotos/shared/themes/color_extension.dart';
+import 'package:classpic/shared/themes/color_extension.dart';
 
 const baseFolderName = 'ClassPic';
 const alumnesFolder = 'Alumnes';

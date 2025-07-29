@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/application/services/saf_methods.dart';
+import 'package:classpic/application/services/saf_methods.dart';
 
 import '../../domain/entities/course.dart';
 import '../../presentation/providers/uri_notifier.dart';
