@@ -29,6 +29,9 @@ abstract class StudentDao {
 
   @Query('SELECT * FROM student WHERE hasFoto = 1 AND courseId = :courseId')
   Stream<List<Student>?> streamStudentsCourseWithPhoto(int courseId);
+  
+  @Query('SELECT * FROM student WHERE courseId = :courseId AND name LIKE :name || "%"')
+  Stream<List<Student>> getStreamedStudents(int courseId, String name);
 
   @Query('SELECT * FROM student WHERE id = :id')
   Future<Student?> findStudentById(int id);

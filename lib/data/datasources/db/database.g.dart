@@ -277,6 +277,28 @@ class _$StudentDao extends StudentDao {
   }
 
   @override
+  Stream<List<Student>> getStreamedStudents(
+    int courseId,
+    String name,
+  ) {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM student WHERE courseId = ?1 AND name LIKE ?2 || \"%\"',
+        mapper: (Map<String, Object?> row) => Student(
+            id: row['id'] as int?,
+            nia: row['nia'] as String,
+            name: row['name'] as String,
+            s1: row['s1'] as String,
+            hasFoto: (row['hasFoto'] as int) != 0,
+            s2: row['s2'] as String?,
+            photoPathHash: row['photoPathHash'] as String?,
+            courseId: row['courseId'] as int?,
+            group: row['group'] as String?),
+        arguments: [courseId, name],
+        queryableName: 'student',
+        isView: false);
+  }
+
+  @override
   Future<Student?> findStudentById(int id) async {
     return _queryAdapter.query('SELECT * FROM student WHERE id = ?1',
         mapper: (Map<String, Object?> row) => Student(
