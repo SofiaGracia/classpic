@@ -51,7 +51,7 @@ class ListCoursesScreen extends ConsumerWidget {
   Widget _buildLlista(
       BuildContext context, WidgetRef ref, List<Course> llista) {
     return llista.isEmpty
-        ? Text('No hi ha cursos')
+        ? Align(alignment: Alignment.topCenter, child: Text('No hi ha cursos'),)
         : ListView(
             children: llista.map((course) {
               return CourseWidget(
