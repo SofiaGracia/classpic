@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/widgets/image_configuration.dart';
-import 'package:xml_fotos/presentation/widgets/import_button.dart';
-import 'package:xml_fotos/presentation/widgets/uri_widget.dart';
-import 'package:xml_fotos/shared/themes/basic_theme.dart';
+import 'package:classpic/presentation/widgets/image_configuration.dart';
+import 'package:classpic/presentation/widgets/import_button.dart';
+import 'package:classpic/presentation/widgets/uri_widget.dart';
+import 'package:classpic/shared/themes/basic_theme.dart';
 
 class ConfigurationScreen extends ConsumerStatefulWidget {
 

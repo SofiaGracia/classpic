@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/providers/course/course.dart';
-import 'package:xml_fotos/shared/themes/basic_theme.dart';
-import 'package:xml_fotos/shared/utils/dialog/uri.dart';
-import 'package:xml_fotos/shared/utils/enum/rename_folder_error.dart';
+import 'package:classpic/presentation/providers/course/course.dart';
+import 'package:classpic/shared/themes/basic_theme.dart';
+import 'package:classpic/shared/utils/dialog/uri.dart';
+import 'package:classpic/shared/utils/enum/rename_folder_error.dart';
 
 import '../../domain/entities/student.dart';
 import '../../domain/entities/course.dart';

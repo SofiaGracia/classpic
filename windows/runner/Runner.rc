@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "xml_fotos" "\0"
+            VALUE "FileDescription", "classpic" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "xml_fotos" "\0"
+            VALUE "InternalName", "classpic" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "xml_fotos.exe" "\0"
-            VALUE "ProductName", "xml_fotos" "\0"
+            VALUE "OriginalFilename", "classpic.exe" "\0"
+            VALUE "ProductName", "classpic" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

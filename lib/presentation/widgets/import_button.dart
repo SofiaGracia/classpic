@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/domain/errors/import.dart';
-import 'package:xml_fotos/shared/themes/basic_theme.dart';
+import 'package:classpic/domain/errors/import.dart';
+import 'package:classpic/shared/themes/basic_theme.dart';
 import '../../shared/utils/constants.dart';
 import '../../shared/utils/dialog/uri.dart';
 import '../providers/import_controller.dart';

@@ -1,6 +1,6 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/providers/student/repository.dart';
+import 'package:classpic/presentation/providers/student/repository.dart';
 
 import '../../../domain/entities/student.dart';
 

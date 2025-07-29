@@ -1,4 +1,4 @@
-import 'package:xml_fotos/data/datasources/db/dao/course_dao.dart';
+import 'package:classpic/data/datasources/db/dao/course_dao.dart';
 
 import 'dao/student_dao.dart';
 import 'dao/teacher_dao.dart';

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:xml_fotos/presentation/providers/student/repository.dart';
-import 'package:xml_fotos/presentation/providers/student/student_ids_async.dart';
+import 'package:classpic/presentation/providers/student/repository.dart';
+import 'package:classpic/presentation/providers/student/student_ids_async.dart';
 
 import '../../../data/repository/student.dart';
 import '../../../domain/entities/student.dart';

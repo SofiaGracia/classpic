@@ -1,4 +1,4 @@
-package com.example.xml_fotos
+package com.example.classpic
 
 import android.app.Activity
 import android.content.Intent
@@ -16,8 +16,8 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
 
-import com.example.xml_fotos.StorageHelper
-import com.example.xml_fotos.PhotoUriHelper
+import com.example.classpic.StorageHelper
+import com.example.classpic.PhotoUriHelper
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "classpic/saf_methods"

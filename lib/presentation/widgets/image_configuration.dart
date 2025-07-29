@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:xml_fotos/shared/themes/basic_theme.dart';
+import 'package:classpic/shared/themes/basic_theme.dart';
 
 import 'image_resolution.dart';
 

@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/providers/course/repository.dart';
-import 'package:xml_fotos/presentation/providers/student/repository.dart';
-import 'package:xml_fotos/presentation/providers/teacher/repository.dart';
+import 'package:classpic/presentation/providers/course/repository.dart';
+import 'package:classpic/presentation/providers/student/repository.dart';
+import 'package:classpic/presentation/providers/teacher/repository.dart';
 
 import '../../application/services/codi_generator.dart';
 import '../../domain/models/user.dart';

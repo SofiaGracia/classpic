@@ -1,4 +1,4 @@
-import 'package:xml_fotos/domain/models/user.dart';
+import 'package:classpic/domain/models/user.dart';
 
 import '../../application/services/saf_methods.dart';
 import '../entities/student.dart';

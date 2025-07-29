@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:xml_fotos/shared/themes/color_extension.dart';
-import 'package:xml_fotos/shared/utils/constants.dart';
+import 'package:classpic/shared/themes/color_extension.dart';
+import 'package:classpic/shared/utils/constants.dart';
 
 ThemeData getTheme(BuildContext context) {
   return ThemeData(

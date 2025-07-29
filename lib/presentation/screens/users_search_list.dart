@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:xml_fotos/presentation/providers/student/stream.dart';
+import 'package:classpic/presentation/providers/student/stream.dart';
 
 import '../../application/services/saf_methods.dart';
 import '../../application/services/storage_service.dart';

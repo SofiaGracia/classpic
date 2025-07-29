@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:xml_fotos/domain/models/shape_config.dart';
-import 'package:xml_fotos/shared/utils/constants.dart';
-import 'package:xml_fotos/shared/utils/decorative_form.dart';
+import 'package:classpic/domain/models/shape_config.dart';
+import 'package:classpic/shared/utils/constants.dart';
+import 'package:classpic/shared/utils/decorative_form.dart';
 
 class ListForms extends StatelessWidget {
   const ListForms({super.key});
