@@ -59,6 +59,7 @@ class UsersListScreenState<T extends User>
       body: Column(
         children: [
           SearchWidget(
+            value: valueSearched,
             onValueSearched: (value) {
               setState(() {
                 valueSearched = value;
