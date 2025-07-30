@@ -99,11 +99,13 @@ flutter run
 - Multi-language support
 
 ## Screenshots
+## Screenshots
 
-| Menú inicial | Menú d'importació | Configuració |
-|--------------|------------------|--------------|
+| Initial menu | Menu with imported info | Configuration |
+|--------------|-------------------------|----------------|
 | <img src="./screenshots/01menu_no_import.jpeg" width="250"/> | <img src="./screenshots/02menu_import.jpeg" width="250"/> | <img src="./screenshots/03configuration.jpeg" width="250"/> |
 
-| Cursos | Detall d'usuari |
-|--------|-----------------|
+| Courses | User details |
+|---------|---------------|
 | <img src="./screenshots/04courses.jpeg" width="250"/> | <img src="./screenshots/05user.jpeg" width="250"/> |
+
