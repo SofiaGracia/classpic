@@ -39,3 +39,13 @@ flutter pub get
 # Executar aplicació
 flutter run
 ```
+
+## Roadmap
+- Suport multiidioma
+
+## Captures de pantalla
+![image info](./screenshots/01menu_no_import.jpeg)
+![image info](./screenshots/02menu_import.jpeg)
+![image info](./screenshots/03configuration.jpeg)
+![image info](./screenshots/04courses.jpeg)
+![image info](./screenshots/05user.jpeg)
