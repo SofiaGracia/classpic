@@ -44,8 +44,66 @@ flutter run
 - Suport multiidioma
 
 ## Captures de pantalla
-![image info](./screenshots/01menu_no_import.jpeg)
-![image info](./screenshots/02menu_import.jpeg)
-![image info](./screenshots/03configuration.jpeg)
-![image info](./screenshots/04courses.jpeg)
-![image info](./screenshots/05user.jpeg)
+
+| Menú inicial | Menú d'importació | Configuració |
+|--------------|------------------|--------------|
+| <img src="./screenshots/01menu_no_import.jpeg" width="250"/> | <img src="./screenshots/02menu_import.jpeg" width="250"/> | <img src="./screenshots/03configuration.jpeg" width="250"/> |
+
+| Cursos | Detall d'usuari |
+|--------|-----------------|
+| <img src="./screenshots/04courses.jpeg" width="250"/> | <img src="./screenshots/05user.jpeg" width="250"/> |
+
+# Classpic
+
+## Description
+Classpic is an application designed to manage photos of students and teachers.  
+It is aimed at school administrators, allowing them to easily organize photos into folders by courses and users.
+
+## Main Features
+- Create and manage users (students and teachers) and their corresponding courses.
+- Take photos directly from the application.
+- Store and organize photos into folders.
+- Register additional user information (name, surname, NIA, DNI, etc.).
+
+## Technologies Used
+- **Frontend:** Flutter (version 3.27.4)
+- **Local database:** Floor + Floor Generator
+- **State management:** Riverpod + Riverpod Generator
+- **Camera and image:** Camera, Image Picker, Image Cropper, Flutter Image Compress
+- **Animations:** Lottie, Animated Splash Screen
+- **Other utilities:** Shared Preferences, Path Provider, Permission Handler
+
+## Project Status
+The project is currently in the **MVP** phase.
+
+## Prerequisites
+- Flutter SDK >= **3.6.2**
+- Dart SDK (included with Flutter)
+- Device with a camera or emulator with camera support
+
+## Installation & Local Execution
+```bash
+# Clone the repository
+git clone https://github.com/SofiaGracia/classpic.git
+
+# Go to the project folder
+cd classpic
+
+# Install dependencies
+flutter pub get
+
+# Run the app
+flutter run
+```
+## Roadmap
+- Multi-language support
+
+## Screenshots
+
+| Menú inicial | Menú d'importació | Configuració |
+|--------------|------------------|--------------|
+| <img src="./screenshots/01menu_no_import.jpeg" width="250"/> | <img src="./screenshots/02menu_import.jpeg" width="250"/> | <img src="./screenshots/03configuration.jpeg" width="250"/> |
+
+| Cursos | Detall d'usuari |
+|--------|-----------------|
+| <img src="./screenshots/04courses.jpeg" width="250"/> | <img src="./screenshots/05user.jpeg" width="250"/> |
