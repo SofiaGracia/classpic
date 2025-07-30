@@ -53,6 +53,9 @@ flutter run
 |--------|-----------------|
 | <img src="./screenshots/04courses.jpeg" width="250"/> | <img src="./screenshots/05user.jpeg" width="250"/> |
 
+## License
+This project is licensed under the [MIT License](LICENSE).
+
 # Classpic
 
 ## Description
