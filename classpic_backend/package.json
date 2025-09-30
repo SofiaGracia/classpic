@@ -1,0 +1,18 @@
+{
+  "name": "classpic_backend",
+  "version": "1.0.0",
+  "description": "Backend for Classpic",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodejs app.js"
+  },
+  "author": "SofiaGracia",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
