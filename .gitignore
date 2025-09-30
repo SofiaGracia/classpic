@@ -11,7 +11,8 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
-
+classpic_backend/node_modules/
+classpic_backend/certs/
 # IntelliJ related
 *.iml
 *.ipr
@@ -43,3 +44,4 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/classpic_backend/node_modules/qs/.editorconfig
