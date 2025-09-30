@@ -11,6 +11,8 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+classpic_backend/node_modules/
+classpic_backend/certs/
 
 # IntelliJ related
 *.iml
