@@ -12,8 +12,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final container = ProviderContainer();
-  final uri = await container.read(UriProvider.future); // force build()
-
+  await container.read(UriProvider.future); // force build()
 
   final db = await DatabaseService().connectDB();
 
@@ -32,12 +31,9 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     return MaterialApp(
       title: 'Classpic',
-      routes: {
-        '/config': (context) => ConfigurationScreen()
-      },
+      routes: {'/config': (context) => ConfigurationScreen()},
       debugShowCheckedModeBanner: false,
       /*theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
